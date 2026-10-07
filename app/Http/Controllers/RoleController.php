@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Services\RoleService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -64,13 +63,9 @@ class RoleController extends Controller
                 'redirect' => true,
                 'url' => route('roles.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -121,13 +116,9 @@ class RoleController extends Controller
                 'redirect' => true,
                 'url' => route('roles.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 

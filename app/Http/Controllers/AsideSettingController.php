@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomException;
 use App\Models\AsideSetting;
 use App\Services\AsideSettingService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -62,19 +60,9 @@ class AsideSettingController extends Controller
                 'redirect' => true,
                 'url' => route('clear.cache'),
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 

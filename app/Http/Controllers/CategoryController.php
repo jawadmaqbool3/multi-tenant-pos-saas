@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Services\CategoryService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -63,13 +62,9 @@ class CategoryController extends Controller
                 'redirect' => true,
                 'url' => route('categories.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -123,13 +118,9 @@ class CategoryController extends Controller
                 'redirect' => true,
                 'url' => route('categories.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 

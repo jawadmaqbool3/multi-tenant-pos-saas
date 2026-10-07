@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomException;
 use App\Models\DashboardSetting;
 use App\Services\DashboardSettingService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -84,19 +82,9 @@ class DashboardSettingController extends Controller
                 'reload' => true,
                 'message' => 'Settings Saved',
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 

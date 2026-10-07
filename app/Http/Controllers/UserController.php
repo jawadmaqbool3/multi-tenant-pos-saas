@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomException;
 use App\Models\User;
 use App\Services\UserService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -54,20 +52,9 @@ class UserController extends Controller
                 'redirect' => true,
                 'url' => route('users.index'),
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-                'console' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -100,20 +87,9 @@ class UserController extends Controller
                 'redirect' => true,
                 'url' => route('users.index'),
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-                'console' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 

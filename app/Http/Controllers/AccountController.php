@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomException;
 use App\Services\ChatOfAccountService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -47,19 +45,9 @@ class AccountController extends Controller
                 'message' => 'Account Added',
                 'table_reload' => true,
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -80,19 +68,9 @@ class AccountController extends Controller
                 'message' => 'Account Updated',
                 'table_reload' => true,
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -107,19 +85,9 @@ class AccountController extends Controller
                 'message' => 'Account Deleted',
                 'table_reload' => true,
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 }

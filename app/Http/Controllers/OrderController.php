@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomException;
 use App\Models\Order;
 use App\Services\OrderService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -61,19 +59,9 @@ class OrderController extends Controller
                 'url' => route('sales.order.print', $order->uid),
                 'message' => 'New order is placed',
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -138,19 +126,9 @@ class OrderController extends Controller
                 'table_reload' => true,
                 'message' => 'Order reverted',
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -165,19 +143,9 @@ class OrderController extends Controller
                 'table_reload' => true,
                 'message' => 'Order marked as paid',
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -192,19 +160,9 @@ class OrderController extends Controller
                 'table_reload' => true,
                 'message' => 'Order Refunded',
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 }

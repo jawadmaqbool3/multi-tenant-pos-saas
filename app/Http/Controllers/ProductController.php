@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Services\ProductService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -49,13 +48,9 @@ class ProductController extends Controller
                 'redirect' => true,
                 'url' => route('products.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -88,13 +83,9 @@ class ProductController extends Controller
                 'redirect' => true,
                 'url' => route('products.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 

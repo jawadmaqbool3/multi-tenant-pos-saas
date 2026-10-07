@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomException;
 use App\Models\Supplier;
 use App\Models\Voucher;
 use App\Services\SupplierService;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -83,13 +81,9 @@ class SupplierController extends Controller
                 'redirect' => true,
                 'url' => route('suppliers.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -136,13 +130,9 @@ class SupplierController extends Controller
                 'redirect' => true,
                 'url' => route('suppliers.index'),
             ]);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 
@@ -184,19 +174,9 @@ class SupplierController extends Controller
                 'table_reload' => true,
                 'message' => 'Payment Completed',
             ]);
-        } catch (CustomException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return response([
-                $e->getLevel() => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response([
-                'error' => true,
-                'message' => 'Something went wrong',
-                'console' => $e->getMessage(),
-            ]);
+            throw $e;
         }
     }
 }

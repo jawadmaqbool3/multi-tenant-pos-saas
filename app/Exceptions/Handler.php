@@ -37,5 +37,23 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (CustomException $e) {
+            return response([
+                $e->getLevel() => true,
+                'message' => $e->getMessage(),
+            ]);
+        });
+
+        $this->renderable(function (Throwable $e, $request) {
+            if (!$request->expectsJson() && !$request->ajax()) {
+                return null;
+            }
+            return response([
+                'error' => true,
+                'message' => 'Something went wrong',
+                'console' => $e->getMessage(),
+            ]);
+        });
     }
 }
