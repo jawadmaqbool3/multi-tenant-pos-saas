@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PurchaseOrder;
+use App\Http\Requests\StorePurchaseOrderRequest;
 use App\Services\PurchaseOrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,17 +31,10 @@ class PurchaseOrderController extends Controller
         return view('purchase_orders.create', compact('suppliers'));
     }
 
-    public function store(Request $request)
+    public function store(StorePurchaseOrderRequest $request)
     {
         DB::beginTransaction();
         try {
-            $this->validate($request, [
-                'supplier' => 'required',
-                'product' => 'required',
-                'quantity' => 'required',
-                'purchase' => 'required',
-                'retail' => 'required',
-            ]);
             $this->service->store($request);
             DB::commit();
             return response([

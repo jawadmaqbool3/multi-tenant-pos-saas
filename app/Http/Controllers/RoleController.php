@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
+use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,14 +47,10 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreRoleRequest $request)
     {
         DB::beginTransaction();
         try {
-            $request->validate([
-                'status' => 'required',
-                'name' => 'required'
-            ]);
 
             $this->service->store($request);
 
@@ -98,14 +96,10 @@ class RoleController extends Controller
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role)
     {
         DB::beginTransaction();
         try {
-            $request->validate([
-                'status' => 'required',
-                'name' => 'required'
-            ]);
 
             $this->service->update($request, $role);
 

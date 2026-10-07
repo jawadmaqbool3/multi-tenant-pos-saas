@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,16 +32,8 @@ class UserController extends Controller
         return view('users.create', compact('roles'));
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $this->validate($request, [
-            'password' => 'required|same:co_password',
-            'co_password' => 'required|min:8',
-            'email' => 'required|unique:users,email',
-            'name' => 'required|min:3',
-            'role' => 'required',
-            'status' => 'required',
-        ]);
 
         DB::beginTransaction();
         try {
@@ -69,13 +63,8 @@ class UserController extends Controller
         return view('users.edit', compact('roles', 'user'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $this->validate($request, [
-            'name' => 'required|min:3',
-            'role' => 'required',
-            'status' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->update($request, $user);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AsideSetting;
+use App\Http\Requests\UpdateAsideSettingRequest;
 use App\Services\AsideSettingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,11 +46,8 @@ class AsideSettingController extends Controller
         //
     }
 
-    public function update(Request $request)
+    public function update(UpdateAsideSettingRequest $request)
     {
-        $this->validate($request, [
-            'categories' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->update($request);

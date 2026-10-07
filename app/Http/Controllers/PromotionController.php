@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promotion;
+use App\Http\Requests\StorePromotionRequest;
+use App\Http\Requests\UpdatePromotionRequest;
 use App\Services\PromotionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,13 +48,8 @@ class PromotionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePromotionRequest $request)
     {
-        $this->validate($request,[
-            'name' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required'
-        ]);
         DB::beginTransaction();
         try {
             $this->service->store($request);
@@ -99,13 +96,8 @@ class PromotionController extends Controller
      * @param  \App\Models\Promotion  $promotion
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Promotion $promotion)
+    public function update(UpdatePromotionRequest $request, Promotion $promotion)
     {
-        $this->validate($request,[
-            'name' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required'
-        ]);
         DB::beginTransaction();
         try {
             $this->service->update($request, $promotion);

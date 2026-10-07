@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Http\Requests\UpdateSettingRequest;
 use App\Services\SettingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,13 +23,8 @@ class SettingController extends Controller
         return view('settings.generalSettings', compact('setting'));
     }
 
-    public function update(Request $request, Setting $setting = null)
+    public function update(UpdateSettingRequest $request, Setting $setting = null)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required',
-            'address' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->update($request, $setting);

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\VoucherType;
+use App\Http\Requests\StoreVoucherTypeRequest;
+use App\Http\Requests\UpdateVoucherTypeRequest;
 use App\Services\VoucherTypeService;
 use Illuminate\Http\Request;
 
@@ -45,12 +47,8 @@ class VoucherTypeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreVoucherTypeRequest $request)
     {
-        $this->validate($request,[
-            'name' => 'required',
-            'short' => 'required'
-        ]);
         $this->service->store($request);
         return response([
             'success' => true,
@@ -88,11 +86,8 @@ class VoucherTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, VoucherType $voucherType)
+    public function update(UpdateVoucherTypeRequest $request, VoucherType $voucherType)
     {
-        $this->validate($request,[
-            'name' => 'required'
-        ]);
         $this->service->update($request, $voucherType);
         return response([
             'success' => true,

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use App\Models\Voucher;
+use App\Http\Requests\StoreSupplierRequest;
+use App\Http\Requests\PaySupplierRequest;
 use App\Services\SupplierService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -65,12 +67,8 @@ class SupplierController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreSupplierRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'status' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->store($request);
@@ -157,13 +155,10 @@ class SupplierController extends Controller
         return $this->service->payAmountToSupplier($params);
     }
 
-    public function pay(Request $request, Supplier $supplier)
+    public function pay(PaySupplierRequest $request, Supplier $supplier)
     {
         DB::beginTransaction();
         try {
-            $this->validate($request, [
-                'amount' => 'required',
-            ]);
             $this->service->payAmountToSupplier([
                 'amount' => $request->amount,
                 'supplier' => $supplier->uid

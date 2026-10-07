@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 use App\Services\EmployeeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,15 +31,8 @@ class EmployeeController extends Controller
         return view('employees.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreEmployeeRequest $request)
     {
-        $this->validate($request, [
-            'password' => 'required|same:co_password',
-            'co_password' => 'required|min:8',
-            'email' => 'required|unique:users,email',
-            'name' => 'required|min:3',
-            'status' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->store($request);
@@ -64,12 +59,8 @@ class EmployeeController extends Controller
         return view('employees.edit', compact('employee'));
     }
 
-    public function update(Request $request, User $employee)
+    public function update(UpdateEmployeeRequest $request, User $employee)
     {
-        $this->validate($request, [
-            'name' => 'required|min:3',
-            'status' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->update($request, $employee);

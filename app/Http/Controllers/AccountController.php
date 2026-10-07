@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAccountRequest;
+use App\Http\Requests\UpdateAccountRequest;
 use App\Services\ChatOfAccountService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,13 +30,8 @@ class AccountController extends Controller
         return view('accounts.index', compact('accounts'));
     }
 
-    public function store(Request $request)
+    public function store(StoreAccountRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'account' => 'required',
-            'status' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->store($request);
@@ -51,13 +48,8 @@ class AccountController extends Controller
         }
     }
 
-    public function update(Request $request, $account)
+    public function update(UpdateAccountRequest $request, $account)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'status' => 'required',
-            'level' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->update($request, $account);

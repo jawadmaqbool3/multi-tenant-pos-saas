@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,13 +47,8 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            "thumbnail" => "mimes:jpeg,jpg,bmp,png|max:2000",
-            'status' => 'required'
-        ]);
         DB::beginTransaction();
         try {
             $this->service->store($request);
@@ -97,17 +94,8 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'status' => 'required'
-        ]);
-        if ($request->thumbnail) {
-            $this->validate($request, [
-                "thumbnail" => "required|mimes:jpeg,jpg,bmp,png|max:2000",
-            ]);
-        }
         DB::beginTransaction();
         try {
             $this->service->update($request, $category);

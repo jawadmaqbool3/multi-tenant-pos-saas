@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,13 +33,8 @@ class ProductController extends Controller
         return view('products.create', compact('categories', 'productImageDirectory'));
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'thumbnail' => 'mimes:jpeg,jpg,bmp,png|max:2000',
-            'status' => 'required',
-        ]);
         DB::beginTransaction();
         try {
             $this->service->store($request);
@@ -66,15 +63,10 @@ class ProductController extends Controller
         return view('products.edit', compact('product', 'categories', 'productImageDirectory'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
         DB::beginTransaction();
         try {
-            if ($request->thumbnail) {
-                $this->validate($request, [
-                    "thumbnail" => "required|mimes:jpeg,jpg,bmp,png|max:2000"
-                ]);
-            }
             $this->service->update($request, $product);
             DB::commit();
             return response([

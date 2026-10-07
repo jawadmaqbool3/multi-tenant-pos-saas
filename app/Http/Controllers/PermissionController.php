@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
+use App\Http\Requests\StorePermissionRequest;
+use App\Http\Requests\UpdatePermissionRequest;
 use App\Services\PermissionService;
 use Illuminate\Http\Request;
 
@@ -44,12 +46,8 @@ class PermissionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePermissionRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'module' => 'required'
-        ]);
         $this->service->store($request);
         return response([
             'success' => true,
@@ -87,12 +85,8 @@ class PermissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Permission $permission)
+    public function update(UpdatePermissionRequest $request, Permission $permission)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'module' => 'required'
-        ]);
         $this->service->update($request, $permission);
         return response([
             'success' => true,
