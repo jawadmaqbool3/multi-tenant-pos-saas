@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\Core\Helper;
-use App\Exceptions\CustomException;
+use App\Exceptions\EmailAlreadyTakenException;
+use App\Exceptions\PasswordMismatchException;
 use App\Repositories\EmployeePersonalInformationRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
@@ -79,11 +80,11 @@ class EmployeeService
     public function update($request, $employee)
     {
         if ($request->password && $request->password != $request->co_password) {
-            throw new CustomException('Password mismatch', 'error');
+            throw new PasswordMismatchException();
         }
 
         if ($this->users->query()->where('email', $request->email)->where('id', '!=', $employee->id)->exists()) {
-            throw new CustomException('Email already has been taken', 'error');
+            throw new EmailAlreadyTakenException();
         }
         $image = $employee->image;
         if ($request->file('image')) {

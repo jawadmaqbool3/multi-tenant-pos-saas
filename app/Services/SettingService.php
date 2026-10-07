@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\Core\Helper;
-use App\Exceptions\CustomException;
+use App\Exceptions\ImageUploadFailedException;
+use App\Exceptions\SettingNotFoundException;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Setting;
 use App\Repositories\PermissionRepository;
@@ -84,7 +85,7 @@ class SettingService
         $filename = $setting->logo;
         if ($request->file('logo')) {
             if ($setting == false) {
-                throw new CustomException('Setting not found.', 'error');
+                throw new SettingNotFoundException();
             }
             $filename = $this->logoUpload($request->file('logo'), $setting->logo);
         }
@@ -153,7 +154,7 @@ class SettingService
                 'filename' => $filename
             ]);
             if ($image == false) {
-                throw new CustomException('Failed to upload image', 'error');
+                throw new ImageUploadFailedException();
             }
         }
         return $filename;

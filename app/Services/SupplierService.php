@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Core\Helper;
-use App\Exceptions\CustomException;
+use App\Exceptions\InsufficientSupplierBalanceException;
 use App\Models\Voucher;
 use App\Repositories\AccountLevel4Repository;
 use App\Repositories\StockHistoryRepository;
@@ -131,7 +131,7 @@ class SupplierService
         $amount = $params['amount'];
         $supplier = $this->suppliers->query()->where('uid', $params['supplier'])->first();
         if ($amount > $supplier->balance) {
-            throw new CustomException('Amount cannot be less than supplier balance', 'warning');
+            throw new InsufficientSupplierBalanceException();
         }
         $voucher_type = $this->voucherTypes->query()->filter()->where('short', 'BPV')->first();
         $voucher_no = $voucher_type->short . '-' . ($voucher_type->vouchers->count() + 1);

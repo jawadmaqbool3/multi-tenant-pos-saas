@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\NoProductsAddedException;
 use App\Repositories\ProductRepository;
 use App\Repositories\PromotionProductsRepository;
 use App\Repositories\PromotionRepository;
@@ -36,7 +36,7 @@ class PromotionService
     public function store($request)
     {
         if (sizeof($request->product) == 0) {
-            throw new CustomException('Add some products first', 'warning');
+            throw new NoProductsAddedException();
         }
         $promotion = $this->promotion->create([
             'name' => $request->name,
@@ -59,7 +59,7 @@ class PromotionService
     public function update($request, $promotion)
     {
         if (sizeof($request->product) == 0) {
-            throw new CustomException('Add some products first', 'warning');
+            throw new NoProductsAddedException();
         }
         $this->promotion->query()->where('id', $promotion->id)->update([
             'name' => $request->name,

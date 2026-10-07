@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\AccountSettingNotSetException;
+use App\Exceptions\AccountSettingNotFoundException;
 use App\Repositories\AccountSettingRepository;
 use App\Repositories\AccountLevel1Repository;
 use App\Repositories\AccountLevel2Repository;
@@ -118,11 +119,11 @@ class AccountSettingService
     {
         $setting = $this->setting->query()->where('company_id', auth()->user()->company_id)->where('short', $short)->first();
         if (!$setting) {
-            throw new CustomException("Account Setting (" . $short . ") not found.", "error");
+            throw new AccountSettingNotFoundException($short);
         }
         $account = $setting->account;
         if (!$account) {
-            throw new CustomException("Account Setting (" . $setting->name . ") not set.", "error");
+            throw new AccountSettingNotSetException($setting->name);
         }
         return $account;
     }

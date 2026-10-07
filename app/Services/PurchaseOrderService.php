@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\NoProductsSelectedException;
 use App\Models\PurchaseOrder;
 use App\Services\AccountSettingService;
 use App\Services\SupplierService;
@@ -81,7 +81,7 @@ class PurchaseOrderService
     public function placePurchaseOrder($params): PurchaseOrder
     {
         if ($params["product"] == false || sizeof($params["product"]) == 0) {
-            throw new CustomException('Select some products first', 'error');
+            throw new NoProductsSelectedException();
         }
         $total_amount = 0;
         $last_transaction_key = 0;

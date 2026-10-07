@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Core\Helper;
-use App\Exceptions\CustomException;
+use App\Exceptions\EmailAlreadyTakenException;
+use App\Exceptions\PasswordMismatchException;
+use App\Exceptions\RoleDoesNotExistException;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\UserRoleRepository;
@@ -39,7 +41,7 @@ class UserService
     {
         $role = $this->roles->query()->where('uid', $request->role)->first();
         if (!$role) {
-            throw new CustomException('Role does not exist', 'error');
+            throw new RoleDoesNotExistException();
         }
         $image = '';
         if ($request->file('image')) {
@@ -69,14 +71,14 @@ class UserService
     public function update($request, $user)
     {
         if ($request->password && $request->password != $request->co_password) {
-            throw new CustomException('Password mismatch', 'error');
+            throw new PasswordMismatchException();
         }
         $role = $this->roles->query()->where('uid', $request->role)->first();
         if (!$role) {
-            throw new CustomException('Role does not exist', 'error');
+            throw new RoleDoesNotExistException();
         }
         if ($this->users->query()->where('email', $request->email)->where('id', '!=', $user->id)->exists()) {
-            throw new CustomException('Email already has been taken', 'error');
+            throw new EmailAlreadyTakenException();
         }
         $image = $user->image;
         if ($request->file('image')) {

@@ -7,10 +7,11 @@ use Exception;
 class CustomException extends Exception
 {
     private $level;
-    public function __construct($message, $level)
+
+    public function __construct($message = '', $level = 'error')
     {
+        parent::__construct($message);
         $this->level = $level;
-        $this->message = $message;
     }
 
     public function getLevel()

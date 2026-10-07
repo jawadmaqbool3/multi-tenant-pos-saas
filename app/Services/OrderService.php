@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\InsufficientStockException;
+use App\Exceptions\NoProductsSelectedException;
 use App\Models\Order;
 use App\Repositories\AccountLevel4Repository;
 use App\Repositories\OrderProductRepository;
@@ -64,7 +65,7 @@ class OrderService
     public function placeSaleOrder($params): Order
     {
         if ($params["product"] == false || sizeof($params["product"]) == 0) {
-            throw new CustomException('Select some products first', 'error');
+            throw new NoProductsSelectedException();
         }
         $payment_method = null;
         if (isset($params['isPaid'])) {
@@ -110,7 +111,7 @@ class OrderService
             $amount = $quantity * $price;
             $amount_ = $quantity * $product->purchase_price;
             if ($quantity > $product->stock) {
-                throw new CustomException("Cannot order more than available stock", 'error');
+                throw new InsufficientStockException();
             }
             $this->transactions->create([
                 'transaction_no' => $voucher_no . '-' . $last_transaction_key,
