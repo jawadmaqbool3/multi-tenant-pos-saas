@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Featured;
+use App\Services\FeaturedService;
 use Illuminate\Http\Request;
 
 class FeaturedController extends Controller
 {
+    protected $service;
+
+    public function __construct(FeaturedService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *

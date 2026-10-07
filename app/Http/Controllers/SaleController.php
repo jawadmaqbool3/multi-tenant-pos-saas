@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
-use App\Models\Product;
+use App\Services\SaleService;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
+    protected $service;
+
+    public function __construct(SaleService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,14 +22,7 @@ class SaleController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $sales =  new Order();
-            if ($request->from) {
-                $sales =   $sales->filter()->whereDate('date', '>=', $request->from);
-            }
-            if ($request->to) {
-                $sales =   $sales->filter()->whereDate('date', '<=', $request->to);
-            }
-            return $sales->salesTable();
+            return $this->service->salesTable($request);
         }
         return view('reports.sales.index');
     }
@@ -96,9 +95,7 @@ class SaleController extends Controller
 
     public function print($from, $to)
     {
-        $orders = Order::filter()->whereDate('date', '>=', $from)->where('date', '<=', $to)->get();
+        $orders = $this->service->getOrdersForPrint($from, $to);
         return view('reports.sales.print', compact('from', 'to', 'orders'));
     }
-
-   
 }

@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceHistory;
-use App\Models\User;
+use App\Services\AttendanceHistoryService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AttendanceHistoryController extends Controller
 {
+    protected $service;
+
+    public function __construct(AttendanceHistoryService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -18,16 +25,14 @@ class AttendanceHistoryController extends Controller
     {
         if ($request->ajax()) {
             $month = $request->month ?? Carbon::now()->format('Y-m');
-            $user = User::where('uid', $request->id)->firstOrFail();
+            $user = $this->service->getUserByUid($request->id);
             $view = view('reports.employee._ajax_attendance', compact('user', 'month'))->render();
             return response([
                 'success' => true,
                 'view' => $view
             ]);
         }
-        $employees = User::whereHas('role', function ($query) {
-            $query->where('name', 'employee');
-        })->get();
+        $employees = $this->service->getEmployees();
         return view('reports.employee.index', compact('employees'));
     }
 
@@ -49,22 +54,7 @@ class AttendanceHistoryController extends Controller
      */
     public function store(Request $request)
     {
-        $current = Carbon::now()->format('Y-m-d H:i:s');
-        $lastAction = auth()->user()->lastAttendanceActivity;
-        if ($lastAction) {
-            if ($lastAction->type == 'clockin') {
-                $type = 'clockout';
-            } else {
-                $type = 'clockin';
-            }
-        } else {
-            $type = 'clockin';
-        }
-        AttendanceHistory::create([
-            'time' => $current,
-            'user_id' => auth()->user()->id,
-            'type' => $type
-        ]);
+        $type = $this->service->store($request);
         return response([
             'success' => true,
             'message' => 'You are clocked ' . ($type == 'clockin' ? ' in ' : ' out ') . ' successfuly',

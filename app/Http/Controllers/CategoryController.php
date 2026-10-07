@@ -2,35 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Core\Helper;
-use App\Exceptions\CustomException;
 use App\Models\Category;
-use App\Models\Feature;
+use App\Services\CategoryService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
+    protected $service;
+
+    public function __construct(CategoryService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-
-
-    private $thumbWidth;
-    private $thumbHeight;
-    public function __construct()
-    {
-        $this->thumbWidth = 200;
-        $this->thumbHeight = 200;
-    }
-
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            return Category::filter()->dataTable();
+            return $this->service->getCategories();
         }
         return view('categories.index');
     }
@@ -60,32 +55,7 @@ class CategoryController extends Controller
         ]);
         DB::beginTransaction();
         try {
-
-            $image = '';
-            $thumbnail = Helper::uploadfile([
-                'file' => $request->file('thumbnail'),
-                'path' => 'assets/media/categories/thumbs/',
-                'width' => $this->thumbWidth,
-                'height' => $this->thumbHeight,
-            ]);
-            $category = Category::create([
-                'name' => $request->name,
-                'thumbnail' => $thumbnail,
-                'description' => $request->description,
-                'meta_title' => $request->meta_title,
-                'meta_keywords' => $request->meta_keywords,
-                'meta_description' => $request->meta_description,
-                'slug' => Helper::hyphened($request->name),
-                'published_date' => $request->published_date,
-                'status' => $request->status,
-            ]);
-            $category->refresh();
-            if ($request->featured) {
-                Feature::updateOrCreate([
-                    'type' => 'category',
-                    'feature_id' => $category->id
-                ]);
-            }
+            $this->service->store($request);
             DB::commit();
             return response([
                 'success' => true,
@@ -138,42 +108,14 @@ class CategoryController extends Controller
             'name' => 'required',
             'status' => 'required'
         ]);
+        if ($request->thumbnail) {
+            $this->validate($request, [
+                "thumbnail" => "required|mimes:jpeg,jpg,bmp,png|max:2000",
+            ]);
+        }
         DB::beginTransaction();
         try {
-            $thumbnail = $category->thumbnail;
-            if ($request->thumbnail) {
-                $this->validate($request, [
-                    "thumbnail" => "required|mimes:jpeg,jpg,bmp,png|max:2000",
-                ]);
-                Helper::deleteExcept([
-                    'files' => [$category->thumbnail],
-                    'exceptions' => [],
-                    'path' => 'assets/media/categories/thumbs/'
-                ]);
-                $thumbnail = Helper::uploadfile([
-                    'file' => $request->file('thumbnail'),
-                    'path' => 'assets/media/categories/thumbs/',
-                    'width' => $this->thumbWidth,
-                    'height' => $this->thumbHeight,
-                ]);
-            }
-            Category::where('id', $category->id)->update([
-                'name' => $request->name,
-                'thumbnail' => $thumbnail,
-                'description' => $request->description,
-                'meta_title' => $request->meta_title,
-                'meta_keywords' => $request->meta_keywords,
-                'meta_description' => $request->meta_description,
-                'slug' => Helper::hyphened($request->name),
-                'published_date' => $request->published_date,
-                'status' => $request->status,
-            ]);
-            if ($request->featured) {
-                Feature::updateOrCreate([
-                    'type' => 'category',
-                    'feature_id' => $category->id
-                ]);
-            }
+            $this->service->update($request, $category);
             DB::commit();
             return response([
                 'success' => true,
@@ -199,12 +141,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        Helper::deleteExcept([
-            'files' => [$category->thumbnail],
-            'exceptions' => [],
-            'path' => 'assets/media/categories/thumbs/'
-        ]);
-        $category->delete();
+        $this->service->destroy($category);
         return response([
             'success' => true,
             'message' => 'Record Deleted',

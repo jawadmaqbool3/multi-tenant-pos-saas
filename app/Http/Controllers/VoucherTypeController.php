@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AccountLevel1;
 use App\Models\VoucherType;
+use App\Services\VoucherTypeService;
 use Illuminate\Http\Request;
 
 class VoucherTypeController extends Controller
 {
+    protected $service;
+
+    public function __construct(VoucherTypeService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +23,9 @@ class VoucherTypeController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            return VoucherType::filter()->dataTable();
+            return $this->service->getVoucherTypes();
         }
-        $accounts = AccountLevel1::filter()->get();
+        $accounts = $this->service->getAccounts();
         return view('voucher_types.index', compact('accounts'));
     }
 
@@ -44,11 +51,7 @@ class VoucherTypeController extends Controller
             'name' => 'required',
             'short' => 'required'
         ]);
-        VoucherType::create([
-            'name' => $request->name,
-            'short' => $request->short,
-            'company_id' => auth()->user()->company_id
-        ]);
+        $this->service->store($request);
         return response([
             'success' => true,
             'message' => 'New Voucher Type Added',
@@ -90,10 +93,7 @@ class VoucherTypeController extends Controller
         $this->validate($request,[
             'name' => 'required'
         ]);
-        VoucherType::where('id', $voucherType->id)->update([
-            'name' => $request->name,
-            'short' => $request->short
-        ]);
+        $this->service->update($request, $voucherType);
         return response([
             'success' => true,
             'message' => 'New Voucher Type Added',
@@ -109,7 +109,7 @@ class VoucherTypeController extends Controller
      */
     public function destroy(VoucherType $voucherType)
     {
-        $voucherType->delete();
+        $this->service->delete($voucherType);
         return response([
             'success' => true,
             'message' => 'Voucher Type Deleted',

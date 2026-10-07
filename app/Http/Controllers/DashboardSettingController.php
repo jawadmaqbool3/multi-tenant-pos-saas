@@ -2,55 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Core\Helper;
 use App\Exceptions\CustomException;
-use App\Models\Category;
 use App\Models\DashboardSetting;
-use App\Models\Feature;
-use App\Models\Product;
+use App\Services\DashboardSettingService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DashboardSettingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    private $sliderImageDimanensions;
-    private $sliderImagesDirectory;
-    public function __construct()
+    protected $service;
+
+    public function __construct(DashboardSettingService $service)
     {
-        $this->setSliderImageDimensions(1920, 300);
-        $this->sliderImagesDirectory = "assets/media/public_dashboard/slider/images/";
+        $this->service = $service;
     }
 
     public function index()
     {
-        $products = Product::with('feature')->filter()->get();
-        $categories = Category::with('feature')->filter()->get();
-        $sliderImagesDirectory = $this->sliderImagesDirectory;
-        $dashboardSetting = DashboardSetting::filter()->first();
-        $sliderImages = [];
-        if ($dashboardSetting) {
-            foreach (json_decode($dashboardSetting->slider_images) as $image) {
-                $sliderImages[] = $image->image;
-            }
-        }
-        return view('settings.publicDashboardSettings', compact('products', 'sliderImagesDirectory', 'categories', 'sliderImages'));
+        return view('settings.publicDashboardSettings', $this->service->getIndexData());
     }
 
-
-
-    public function setSliderImageDimensions($width, $height)
-    {
-        $this->sliderImageDimanensions = [
-            'width' => $width,
-            'height' => $height,
-        ];
-    }
     /**
      * Show the form for creating a new resource.
      *
@@ -105,86 +77,7 @@ class DashboardSettingController extends Controller
     {
 
         try {
-            $categories = Category::whereIn('uid', $request->featuredCategories ?? [])->filter()->get();
-            $products = Product::whereIn('uid', $request->featuredProducts ?? [])->filter()->get();
-            Feature::filter()->delete();
-            foreach ($categories as $category) {
-                Feature::filter()->updateOrCreate([
-                    'company_id' => auth()->user()->company_id,
-                    'type' => 'category',
-                    'feature_id' => $category->id
-                ]);
-            }
-            foreach ($products as $product) {
-                Feature::filter()->updateOrCreate([
-                    'company_id' => auth()->user()->company_id,
-                    'type' => 'product',
-                    'feature_id' => $product->id,
-                ]);
-            }
-            $images = [];
-            $settings = DashboardSetting::filter()->first();
-            if (is_array($request->images)) {
-                foreach ($request->images as $key => $image) {
-                    $images[] = Helper::uploadfile([
-                        'file' => $image,
-                        'path' => $this->sliderImagesDirectory,
-                        'width' => $this->sliderImageDimanensions["width"],
-                        'height' => $this->sliderImageDimanensions["height"],
-                    ]);
-                }
-            }
-
-            $json = [];
-
-            if ($settings) {
-                $imagesToBeDeleted = [];
-                $oldImages = json_decode($settings->slider_images);
-
-
-                foreach ($oldImages as $key => $image) {
-                    $imagesToBeDeleted[] = $image->image;
-                    if ($request->old_images) {
-                        foreach ($request->old_images as $key => $_image) {
-                            if ($image->image == $_image) {
-                                $json[] = $image;
-                            }
-                        }
-                    }
-                }
-
-
-                Helper::deleteExcept([
-                    'files' => $imagesToBeDeleted,
-                    'exceptions' => $request->old_images ?? [],
-                    'path' => $this->sliderImagesDirectory,
-                ]);
-
-                foreach ($images as $key => $image) {
-                    $json[] = [
-                        "image" => $image,
-                        "title" => "Some title",
-                        "tagline" => "Some tagline",
-                        "url" => "/home"
-                    ];
-                }
-                $settings = DashboardSetting::filter()->update([
-                    'slider_images' => json_encode($json)
-                ]);
-            } else {
-                foreach ($images as $key => $image) {
-                    $json[] = [
-                        "image" => $image,
-                        "title" => "Some title",
-                        "tagline" => "Some tagline",
-                        "url" => "/home"
-                    ];
-                }
-                $settings = DashboardSetting::create([
-                    'company_id' => auth()->user()->company_id,
-                    'slider_images' => json_encode($json)
-                ]);
-            }
+            $this->service->update($request);
             DB::commit();
             return response([
                 'success' => true,
@@ -215,10 +108,6 @@ class DashboardSettingController extends Controller
      */
     public function destroy(DashboardSetting $dashboardSetting)
     {
-        Helper::deleteExcept([
-            'files' => json_decode($dashboardSetting->slider_images),
-            'exceptions' => [],
-            'path' => $this->sliderImagesDirectory,
-        ]);
+        $this->service->destroy($dashboardSetting);
     }
 }

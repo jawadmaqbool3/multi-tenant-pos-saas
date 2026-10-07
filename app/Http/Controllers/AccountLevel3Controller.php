@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountLevel3;
+use App\Services\AccountLevel3Service;
 use Illuminate\Http\Request;
 
 class AccountLevel3Controller extends Controller
 {
+
+    protected $service;
+
+    public function __construct(AccountLevel3Service $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *

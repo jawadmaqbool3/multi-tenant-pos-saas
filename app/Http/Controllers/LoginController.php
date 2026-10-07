@@ -2,47 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
+use App\Services\LoginService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
+    protected $service;
+
+    public function __construct(LoginService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index(Request $request)
     {
         if (auth()->check()) {
             return redirect()->route('dashboard');
         }
         if ($request->email && $request->password) {
-            $response = null;
-            if (Auth::attempt([
-                'email' => $request->email,
-                'password' => $request->password,
-                'status' => 'active',
-            ])) {
-                $setting = Setting::where('company_id', auth()->user()->company_id)->first();
-                Session::put('setting', $setting);
+            if ($this->service->login($request->email, $request->password)) {
                 if ($request->ajax()) {
-                    $response = response(['success' => true, 'reload' => true, 'message' => "Login Success"]);
-                } else {
-                    $response = redirect()->back()->with('message', "Login Success");
+                    return response(['success' => true, 'reload' => true, 'message' => "Login Success"]);
                 }
-            } else {
-                if ($request->ajax()) {
-                    $response = response(['error' => true, 'reload' => false, 'message' => "Credentials Mismatch"]);
-                } else {
-                    $response = redirect()->back()->with('message', "Credentials Mismatch");
-                }
+                return redirect()->back()->with('message', "Login Success");
             }
-            return $response;
+            if ($request->ajax()) {
+                return response(['error' => true, 'reload' => false, 'message' => "Credentials Mismatch"]);
+            }
+            return redirect()->back()->with('message', "Credentials Mismatch");
         }
         return view('auth.login');
     }
 
     public function logout(Request $request)
     {
-        auth()->logout();
+        $this->service->logout();
         return redirect()->route('login');
     }
 }

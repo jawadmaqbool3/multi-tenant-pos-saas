@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
+use App\Services\PermissionService;
 use Illuminate\Http\Request;
 
 class PermissionController extends Controller
 {
+    protected $service;
+
+    public function __construct(PermissionService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +23,7 @@ class PermissionController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            return Permission::filter()->dataTable();
+            return $this->service->getPermissions();
         }
         return view('permissions.index');
     }
@@ -42,11 +50,7 @@ class PermissionController extends Controller
             'name' => 'required',
             'module' => 'required'
         ]);
-        Permission::create([
-            'name' => $request->name,
-            'module_id' => $request->module,
-            'company_id' => auth()->user()->company_id
-        ]);
+        $this->service->store($request);
         return response([
             'success' => true,
             'message' => 'New Record Added',
@@ -89,10 +93,7 @@ class PermissionController extends Controller
             'name' => 'required',
             'module' => 'required'
         ]);
-        Permission::where('name', $permission->name)->update([
-            'name' => $request->name,
-            'module_id' => $request->module
-        ]);
+        $this->service->update($request, $permission);
         return response([
             'success' => true,
             'message' => 'New Record Added',
@@ -108,7 +109,7 @@ class PermissionController extends Controller
      */
     public function destroy(Permission $permission)
     {
-        $permission->delete();
+        $this->service->delete($permission);
         return response([
             'success' => true,
             'message' => 'Record Deleted',

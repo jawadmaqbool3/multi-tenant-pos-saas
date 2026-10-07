@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\StockHistory;
+use App\Services\StockHistoryService;
 use Illuminate\Http\Request;
 
 class StockHistoryController extends Controller
 {
+
+    protected $service;
+
+    public function __construct(StockHistoryService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *

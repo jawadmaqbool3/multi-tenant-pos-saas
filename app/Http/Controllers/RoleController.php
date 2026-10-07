@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
-use App\Models\PermissionRole;
 use App\Models\Role;
+use App\Services\RoleService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
+    protected $service;
+
+    public function __construct(RoleService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +25,7 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            return Role::filter()->dataTable();
+            return $this->service->getRoles();
         }
         return view('roles.index');
     }
@@ -49,25 +55,8 @@ class RoleController extends Controller
                 'name' => 'required'
             ]);
 
+            $this->service->store($request);
 
-            $role = Role::create([
-                'name' => $request->name,
-                'status' => $request->status,
-                'company_id' => auth()->user()->compny_id
-            ]);
-
-
-            $role->refresh();
-
-            if (is_array($request->permissions)) {
-                $permissions = Permission::whereIn('uid', $request->permissions)->get();
-                foreach ($permissions as $permission) {
-                    PermissionRole::create([
-                        'permission_id' => $permission->id,
-                        'role_id' => $role->id
-                    ]);
-                }
-            }
             DB::commit();
             return response([
                 'success' => true,
@@ -123,21 +112,8 @@ class RoleController extends Controller
                 'name' => 'required'
             ]);
 
+            $this->service->update($request, $role);
 
-            Role::where('id', $role->id)->update([
-                'name' => $request->name,
-                'status' => $request->status
-            ]);
-            PermissionRole::where('role_id', $role->id)->delete();
-            if (is_array($request->permissions)) {
-                $permissions = Permission::whereIn('uid', $request->permissions)->get();
-                foreach ($permissions as $permission) {
-                    PermissionRole::create([
-                        'permission_id' => $permission->id,
-                        'role_id' => $role->id
-                    ]);
-                }
-            }
             DB::commit();
             return response([
                 'success' => true,
@@ -163,7 +139,7 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        $role->delete();
+        $this->service->delete($role);
         return response([
             'success' => true,
             'message' => 'Record Deleted',

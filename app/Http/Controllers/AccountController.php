@@ -3,21 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CustomException;
-use App\Models\AccountLevel1;
-use App\Models\AccountLevel2;
-use App\Models\AccountLevel3;
-use App\Models\AccountLevel4;
+use App\Services\ChatOfAccountService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
+    protected $service;
+
+    public function __construct(ChatOfAccountService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index(Request $request)
     {
-        $accounts = AccountLevel1::with('level2.level3.level4')->filter()->get();
+        $accounts = $this->service->getAccounts();
         if ($request->ajax()) {
-            $tree =  view('accounts.tree', compact('accounts'))->render();
+            $tree = view('accounts.tree', compact('accounts'))->render();
             return response([
                 'success' => true,
                 'tree' => $tree
@@ -35,78 +39,7 @@ class AccountController extends Controller
         ]);
         DB::beginTransaction();
         try {
-
-            switch ($request->level) {
-                case 'level1':
-                    $parentAccount = AccountLevel1::where('uid', $request->account)->first();
-                    $code = AccountLevel2::where('parent_id', $parentAccount->id)->max('code');
-                    if ($code) {
-                        $code = str_pad($code + 1, 3, 0, STR_PAD_LEFT);
-                    } else {
-                        $code = $parentAccount->code + 1;
-                    }
-                    AccountLevel2::create([
-                        'name' => $request->name,
-                        'code' => $code,
-                        'parent_id' => $parentAccount->id,
-                        'company_id' => auth()->user()->company_id,
-                        'status' => $request->status ?? 'active',
-                    ]);
-                    break;
-                case 'level2':
-                    $parentAccount = AccountLevel2::where('uid', $request->account)->first();
-                    $code = AccountLevel3::where('parent_id', $parentAccount->id)->max('code');
-                    if ($code) {
-                        $code = str_replace($parentAccount->code . '-', '', $code);
-                    } else {
-                        $code = 0;
-                    }
-                    $code = str_pad($code + 1, 3, 0, STR_PAD_LEFT);
-                    $code = $parentAccount->code . '-' . $code;
-                    AccountLevel3::create([
-                        'name' => $request->name,
-                        'code' => $code,
-                        'parent_id' => $parentAccount->id,
-                        'company_id' => auth()->user()->company_id,
-                        'status' => $request->status ?? 'active',
-                    ]);
-                    break;
-                case 'level3':
-                    $parentAccount = AccountLevel3::where('uid', $request->account)->first();
-                    $code = AccountLevel4::where('parent_id', $parentAccount->id)->max('code');
-                    if ($code) {
-                        $code = str_replace($parentAccount->code . '-', '', $code);
-                    } else {
-                        $code = 0;
-                    }
-                    $code = str_pad($code + 1, 3, 0, STR_PAD_LEFT);
-                    $code = $parentAccount->code . '-' . $code;
-                    AccountLevel4::create([
-                        'name' => $request->name,
-                        'code' => $code,
-                        'parent_id' => $parentAccount->id,
-                        'company_id' => auth()->user()->company_id,
-                        'status' => $request->status ?? 'active',
-                    ]);
-                    break;
-                default:
-                    $code = AccountLevel1::filter()->max('code');
-                    if ($code) {
-                        $code = str_pad($code + 1, 3, 0, STR_PAD_LEFT);
-                    } else {
-                        $code = 0;
-                    }
-                    $endCode = $code + 99;
-                    $code = str_pad($code, 3, 0, STR_PAD_LEFT);
-                    $endCode = str_pad($endCode, 3, 0, STR_PAD_LEFT);
-                    AccountLevel2::create([
-                        'name' => $request->name,
-                        'start_code' => $code,
-                        'end_code' => $endCode,
-                        'company_id' => auth()->user()->company_id,
-                        'status' => $request->status ?? 'active',
-                    ]);
-            }
+            $this->service->store($request);
 
             DB::commit();
             return response([
@@ -121,7 +54,6 @@ class AccountController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (Exception $e) {
-
             DB::rollBack();
             return response([
                 'error' => true,
@@ -140,26 +72,7 @@ class AccountController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            $model  = null;
-            switch ($request->level) {
-                case 'level1':
-                    $model = new AccountLevel1();
-                    break;
-                case 'level2':
-                    $model = new AccountLevel2();
-                    break;
-                case 'level3':
-                    $model = new AccountLevel3();
-                    break;
-                case 'level4':
-                    $model = new AccountLevel4();
-                    break;
-            }
-
-            $model->where('uid', $account)->update([
-                'name' => $request->name,
-                'status' => $request->status ?? 'active',
-            ]);
+            $this->service->update($request, $account);
 
             DB::commit();
             return response([
@@ -174,7 +87,6 @@ class AccountController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (Exception $e) {
-
             DB::rollBack();
             return response([
                 'error' => true,
@@ -188,23 +100,7 @@ class AccountController extends Controller
     {
         DB::beginTransaction();
         try {
-
-            $model  = null;
-            switch ($request->level) {
-                case 'level1':
-                    $model = new AccountLevel1();
-                    break;
-                case 'level2':
-                    $model = new AccountLevel2();
-                    break;
-                case 'level3':
-                    $model = new AccountLevel3();
-                    break;
-                case 'level4':
-                    $model = new AccountLevel4();
-                    break;
-            }
-            $model->where('uid', $account)->delete();
+            $this->service->delete($request, $account);
             DB::commit();
             return response([
                 'success' => true,
@@ -218,7 +114,6 @@ class AccountController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (Exception $e) {
-
             DB::rollBack();
             return response([
                 'error' => true,

@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\PermissionModule;
+use App\Services\PermissionModuleService;
 use Illuminate\Http\Request;
 
 class PermissionModuleController extends Controller
 {
+
+    protected $service;
+
+    public function __construct(PermissionModuleService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *

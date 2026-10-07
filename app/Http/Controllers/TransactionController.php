@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+
+    protected $service;
+
+    public function __construct(TransactionService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *

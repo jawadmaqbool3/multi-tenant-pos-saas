@@ -3,63 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CustomException;
-use App\Models\AccountLevel1;
-use App\Models\AccountLevel2;
-use App\Models\AccountLevel3;
-use App\Models\AccountLevel4;
-use App\Models\AccountSetting;
 use App\Models\Company;
+use App\Services\AccountSettingService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AccountSettingController extends Controller
 {
+    protected $service;
 
+    public function __construct(AccountSettingService $service)
+    {
+        $this->service = $service;
+    }
 
     public function index(Company $company = null)
     {
-        if ($company) {
-            $accountSetting = AccountSetting::where('company_id', $company->id)->get();
-        } else {
-            $accountSetting = AccountSetting::filter()->get();
-        }
-        $accounts = AccountLevel1::filter()->get();
+        $accountSetting = $this->service->getAccountSettings($company);
+        $accounts = $this->service->getAccounts();
         return view('settings.accountSettings', compact('accountSetting', 'accounts'));
     }
 
-
     public function update(Request $request, Company $company = null)
     {
-
         DB::beginTransaction();
         try {
-            foreach ($request->settings as $key => $setting) {
-
-                $_setting = AccountSetting::where('uid', $setting["setting"])->first();
-
-                $level = $setting["level"];
-                $account = null;
-                switch ($level) {
-                    case 'level1':
-                        $account = AccountLevel1::where('uid', $setting['account'])->first();
-                        break;
-                    case 'level2':
-                        $account = AccountLevel2::where('uid', $setting['account'])->first();
-                        break;
-                    case 'level3':
-                        $account = AccountLevel3::where('uid', $setting['account'])->first();
-                        break;
-                    case 'level4':
-                        $account = AccountLevel4::where('uid', $setting['account'])->first();
-                        break;
-                }
-                AccountSetting::where('id', $_setting->id)->update([
-                    "level" => $setting["level"],
-                    "account_id" => $account ? $account->id : null
-                ]);
-            }
-
+            $this->service->update($request);
 
             DB::commit();
             return response([
@@ -82,18 +52,8 @@ class AccountSettingController extends Controller
         }
     }
 
-
-
     public function getAccount($short)
     {
-        $setting = AccountSetting::where('company_id', auth()->user()->company_id)->where('short', $short)->first();
-        if (!$setting) {
-            throw new CustomException("Account Setting (" . $short . ") not found.", "error");
-        }
-        $account = $setting->account;
-        if (!$account) {
-            throw new CustomException("Account Setting (" . $setting->name . ") not set.", "error");
-        }
-        return $account;
+        return $this->service->getAccount($short);
     }
 }

@@ -3,15 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CustomException;
-use App\Models\Product;
 use App\Models\Promotion;
-use App\Models\PromotionProducts;
+use App\Services\PromotionService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PromotionController extends Controller
 {
+    protected $service;
+
+    public function __construct(PromotionService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,7 +26,7 @@ class PromotionController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            return Promotion::filter()->dataTable();
+            return $this->service->getPromotions();
         }
         return view('promotions.index');
     }
@@ -32,7 +38,7 @@ class PromotionController extends Controller
      */
     public function create()
     {
-        $products = Product::filter()->get();
+        $products = $this->service->getProducts();
         return view('promotions.create', compact('products'));
     }
 
@@ -44,32 +50,14 @@ class PromotionController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request,[
+            'name' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required'
+        ]);
         DB::beginTransaction();
         try {
-            $this->validate($request,[
-                'name' => 'required',
-                'start_date' => 'required',
-                'end_date' => 'required'
-            ]);
-            if (sizeof($request->product) == 0) {
-                throw new CustomException('Add some products first', 'warning');
-            }
-            $promotion = Promotion::create([
-                'name' => $request->name,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'company_id' => auth()->user()->company_id
-            ]);
-            $promotion->refresh();
-            foreach ($request->product as $key => $product) {
-                $product = Product::where('uid', $product)->first();
-                PromotionProducts::create([
-                    'promotion_id' => $promotion->id,
-                    'product_id' => $product->id,
-                    'amount' => $request->amount[$key],
-                    'percentage' => $request->percentage[$key],
-                ]);
-            }
+            $this->service->store($request);
             DB::commit();
             return response([
                 'success' => true,
@@ -112,7 +100,7 @@ class PromotionController extends Controller
      */
     public function edit(Promotion $promotion)
     {
-        $products = Product::filter()->get();
+        $products = $this->service->getProducts();
         return view('promotions.edit', compact('promotion', 'products'));
     }
 
@@ -125,31 +113,14 @@ class PromotionController extends Controller
      */
     public function update(Request $request, Promotion $promotion)
     {
+        $this->validate($request,[
+            'name' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required'
+        ]);
         DB::beginTransaction();
         try {
-            $this->validate($request,[
-                'name' => 'required',
-                'start_date' => 'required',
-                'end_date' => 'required'
-            ]);
-            if (sizeof($request->product) == 0) {
-                throw new CustomException('Add some products first', 'warning');
-            }
-            Promotion::where('id', $promotion->id)->update([
-                'name' => $request->name,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-            ]);
-            PromotionProducts::where('promotion_id', $promotion->id)->delete();
-            foreach ($request->product as $key => $product) {
-                $product = Product::where('uid', $product)->first();
-                PromotionProducts::create([
-                    'promotion_id' => $promotion->id,
-                    'product_id' => $product->id,
-                    'amount' => $request->amount[$key],
-                    'percentage' => $request->percentage[$key],
-                ]);
-            }
+            $this->service->update($request, $promotion);
             DB::commit();
             return response([
                 'success' => true,
@@ -181,7 +152,7 @@ class PromotionController extends Controller
      */
     public function destroy(Promotion $promotion)
     {
-        $promotion->delete();
+        $this->service->destroy($promotion);
         return response([
             'success' => true,
             'message' => 'Record Deleted',

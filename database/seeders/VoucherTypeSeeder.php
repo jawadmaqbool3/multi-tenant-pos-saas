@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Http\Controllers\DefaultController;
+use App\Services\DefaultService;
 use App\Models\VoucherType;
 use Illuminate\Database\Seeder;
 
@@ -15,7 +15,7 @@ class VoucherTypeSeeder extends Seeder
      */
     public function run()
     {
-        $defaultController = new DefaultController();
-        $defaultController->initiateVouchers();
+        $defaultService = app(DefaultService::class);
+        $defaultService->initiateVouchers();
     }
 }
