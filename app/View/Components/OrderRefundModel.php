@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class order-refund-modal extends Component
+class OrderRefundModel extends Component
 {
     /**
      * Create a new component instance.
