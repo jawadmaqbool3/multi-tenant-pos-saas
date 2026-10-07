@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Permission;
-use App\Models\PermissionModule;
-use App\Models\PermissionRole;
-use App\Models\Role;
-use App\Models\UserRole;
+use Modules\RBAC\Models\Permission;
+use Modules\RBAC\Models\PermissionModule;
+use Modules\RBAC\Models\PermissionRole;
+use Modules\RBAC\Models\Role;
+use Modules\RBAC\Models\UserRole;
 use Illuminate\Database\Seeder;
 
 class RolePermissionSeeder extends Seeder

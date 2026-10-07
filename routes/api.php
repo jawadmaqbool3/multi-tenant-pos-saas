@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::resource('categories', App\Http\Controllers\API\CategoryAPIController::class);
+// Route::resource('categories', App\Http\Controllers\API\CategoryAPIController::class);
 
 
-Route::resource('somes', App\Http\Controllers\API\SomeAPIController::class);
+// Route::resource('somes', App\Http\Controllers\API\SomeAPIController::class);

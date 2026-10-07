@@ -1,0 +1,8 @@
+{
+    "ChartOfAccounts": true,
+    "Employee": true,
+    "Inventory": true,
+    "Order": true,
+    "RBAC": true,
+    "Supplier": true
+}

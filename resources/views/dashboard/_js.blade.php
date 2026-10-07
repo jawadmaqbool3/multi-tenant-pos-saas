@@ -438,7 +438,7 @@
         });
 
         @can('dashboard employee mark attendance')
-            @include('reports.employee.attendance_js')
+            @include('employee::reports.employee.attendance_js')
 
             getAttendance("{{ @$user->uid ?? auth()->user()->uid }}");
             $(document).on('change', '#attendance_month', function() {

@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Repositories\OrderRepository;
-use App\Repositories\ProductRepository;
-use App\Repositories\TransactionRepository;
-use App\Repositories\UserRepository;
+use Modules\Order\Repositories\OrderRepository;
+use Modules\Inventory\Repositories\ProductRepository;
+use Modules\ChartOfAccounts\Repositories\TransactionRepository;
+use Modules\Employee\Repositories\UserRepository;
 use Carbon\Carbon;
 
 class HomeService

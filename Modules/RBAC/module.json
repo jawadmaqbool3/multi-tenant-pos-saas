@@ -1,0 +1,14 @@
+{
+    "name": "RBAC",
+    "alias": "rbac",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\RBAC\\Providers\\RBACServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "autoload": []
+}

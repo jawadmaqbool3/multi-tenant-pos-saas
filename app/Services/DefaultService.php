@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use Modules\ChartOfAccounts\Services\AccountSettingService;
+use Modules\ChartOfAccounts\Services\DefaultAccountService;
+use Modules\ChartOfAccounts\Services\DefaultVoucherTypeService;
+
 class DefaultService
 {
     protected $accounts;

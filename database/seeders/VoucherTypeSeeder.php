@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Services\DefaultService;
-use App\Models\VoucherType;
+use Modules\ChartOfAccounts\Models\VoucherType;
 use Illuminate\Database\Seeder;
 
 class VoucherTypeSeeder extends Seeder

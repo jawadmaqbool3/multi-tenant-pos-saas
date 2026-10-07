@@ -23,11 +23,6 @@ class AsideSettingService
                         'permission' => 'view company',
                         'link' => route('companies.index'),
                     ],
-                    [
-                        'title' => 'Managers',
-                        'permission' => 'view manager',
-                        'link' => route('managers.index'),
-                    ],
                 ],
             ],
             [

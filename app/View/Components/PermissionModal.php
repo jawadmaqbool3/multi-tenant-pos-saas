@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\PermissionModule;
+use Modules\RBAC\Models\PermissionModule;
 use Illuminate\View\Component;
 
 class PermissionModal extends Component

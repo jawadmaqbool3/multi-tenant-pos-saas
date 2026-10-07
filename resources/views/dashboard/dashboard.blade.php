@@ -288,6 +288,6 @@
 @section('jsSection')
     @include('dashboard._js')   
     @can('dashboard stock report')
-        @include('reports.stocks._js')
+        @include('inventory::reports.stocks._js')
     @endcan
 @endsection

@@ -4,16 +4,17 @@ namespace App\Services;
 
 use App\Core\Helper;
 use App\Services\DefaultService;
-use App\Services\UserService;
-use App\Services\ProductService;
+use Modules\Employee\Services\UserService;
+use Modules\Inventory\Services\ProductService;
+use Modules\Inventory\Services\CategoryService;
 use App\Services\AsideSettingService;
 use App\Repositories\CompanyRepository;
-use App\Repositories\PermissionRepository;
-use App\Repositories\PermissionRoleRepository;
-use App\Repositories\RoleRepository;
+use Modules\RBAC\Repositories\PermissionRepository;
+use Modules\RBAC\Repositories\PermissionRoleRepository;
+use Modules\RBAC\Repositories\RoleRepository;
 use App\Repositories\SettingRepository;
-use App\Repositories\UserRepository;
-use App\Repositories\UserRoleRepository;
+use Modules\Employee\Repositories\UserRepository;
+use Modules\RBAC\Repositories\UserRoleRepository;
 use Illuminate\Support\Facades\Hash;
 
 class CompanyService

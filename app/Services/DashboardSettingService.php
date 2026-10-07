@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Core\Helper;
-use App\Repositories\CategoryRepository;
+use Modules\Inventory\Repositories\CategoryRepository;
 use App\Repositories\DashboardSettingRepository;
-use App\Repositories\FeatureRepository;
-use App\Repositories\ProductRepository;
+use Modules\Inventory\Repositories\FeatureRepository;
+use Modules\Inventory\Repositories\ProductRepository;
 
 class DashboardSettingService
 {

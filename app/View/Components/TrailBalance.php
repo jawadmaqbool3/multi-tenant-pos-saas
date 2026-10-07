@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\Transaction;
+use Modules\ChartOfAccounts\Models\Transaction;
 use Illuminate\View\Component;
 
 class TrailBalance extends Component

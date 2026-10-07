@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\Supplier;
+use Modules\Supplier\Models\Supplier;
 use Illuminate\View\Component;
 
 class AddStockModal extends Component

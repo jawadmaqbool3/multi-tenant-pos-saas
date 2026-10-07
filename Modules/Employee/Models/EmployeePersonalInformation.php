@@ -1,0 +1,12 @@
+<?php
+
+namespace Modules\Employee\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class EmployeePersonalInformation extends Model
+{
+    use HasFactory;
+    protected $guarded = ['id'];
+}

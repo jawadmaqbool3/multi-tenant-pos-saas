@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Models\Role;
+use Modules\RBAC\Models\Role;
 use Illuminate\View\Component;
 
 class RoleSelector extends Component

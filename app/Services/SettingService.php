@@ -7,8 +7,8 @@ use App\Exceptions\ImageUploadFailedException;
 use App\Exceptions\SettingNotFoundException;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Setting;
-use App\Repositories\PermissionRepository;
-use App\Repositories\RoleRepository;
+use Modules\RBAC\Repositories\PermissionRepository;
+use Modules\RBAC\Repositories\RoleRepository;
 use App\Repositories\SettingRepository;
 use Illuminate\Support\Facades\Session;
 
