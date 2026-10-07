@@ -21,14 +21,10 @@ class SupplierController extends Controller
 
 
     protected $service;
-    private $thumbWidth;
-    private $thumbHeight;
     private $supplierThumbDirectory;
     public function __construct(SupplierService $service = null)
     {
         $this->service = $service ?: app(SupplierService::class);
-        $this->thumbWidth = 200;
-        $this->thumbHeight = 200;
         $this->supplierThumbDirectory = 'assets/media/suppliers/thumbs/';
     }
 
@@ -46,7 +42,6 @@ class SupplierController extends Controller
             return $this->service->getLedger($supplier);
         }
         throw new HttpException(404);
-        // return view('suppliers.index');
 
     }
 

@@ -2,9 +2,6 @@
 
 namespace App\View\Components;
 
-use App\Models\AccountaccountLevel1;
-use App\Models\AccountSetting;
-use App\Models\Company;
 use Illuminate\View\Component;
 
 class AccountSelector extends Component

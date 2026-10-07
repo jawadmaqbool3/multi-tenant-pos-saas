@@ -97,6 +97,11 @@ class VoucherController extends Controller
     }
 
 
+    public function print(Voucher $voucher)
+    {
+        return view('vouchers.print', compact('voucher'));
+    }
+
     public function voidVoucher()
     {
         return $this->service->voidVoucher($this->voucher);

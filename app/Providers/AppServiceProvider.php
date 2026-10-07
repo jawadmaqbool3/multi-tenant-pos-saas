@@ -2,10 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Setting;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
 
 

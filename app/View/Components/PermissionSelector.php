@@ -2,7 +2,6 @@
 
 namespace App\View\Components;
 
-use App\Models\Company;
 use App\Models\Permission;
 use Illuminate\View\Component;
 
