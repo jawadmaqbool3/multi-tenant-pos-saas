@@ -17,8 +17,8 @@ class CreateOrderUsersTable extends Migration
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->unsignedInteger('user_id');
+            $table->string('user_type')->default('user');
             $table->foreign('order_id')->on('orders')->references('id')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

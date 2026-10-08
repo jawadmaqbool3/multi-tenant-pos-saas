@@ -26,8 +26,8 @@ class CreateVouchersTable extends Migration
             ])->default('single');
             $table->text('description')->nullable();
             $table->unsignedInteger('created_by');
+            $table->string('creator_type')->default('user');
             $table->foreign('voucher_type_id')->references('id')->on('voucher_types')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
             $table->uuid('uid');
         });

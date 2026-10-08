@@ -17,7 +17,9 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->string('order_no', 25);
             $table->unsignedBigInteger('inv_voucher_id');
+            $table->string('inv_voucher_type')->default('voucher');
             $table->unsignedBigInteger('pay_voucher_id')->nullable();
+            $table->string('pay_voucher_type')->nullable()->default('voucher');
             $table->enum('status', [
                 'generated',
                 'cancelled',
@@ -35,16 +37,6 @@ class CreateOrdersTable extends Migration
             $table->uuid('uid');
             $table->timestamps();
             $table->string('reference')->nullable();
-            $table->foreign('inv_voucher_id')
-                ->references('id')
-                ->on('vouchers')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-            $table->foreign('pay_voucher_id')
-                ->references('id')
-                ->on('vouchers')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');
         });
     }

@@ -15,8 +15,8 @@ class CreateVoucherSuppliersTable extends Migration
     {
         Schema::create('voucher_suppliers', function (Blueprint $table) {
             $table->unsignedBigInteger('voucher_id');
+            $table->string('voucher_type')->default('voucher');
             $table->unsignedInteger('supplier_id');
-            $table->foreign('voucher_id')->on('vouchers')->references('id')->onDelete('cascade')->onDelete('cascade');
             $table->foreign('supplier_id')->on('suppliers')->references('id')->onDelete('cascade')->onDelete('cascade');
         });
     }

@@ -20,15 +20,15 @@ class CreatePurchaseOrdersTable extends Migration
             $table->unsignedDouble('amount')->default(0);
             $table->unsignedInteger('supplier_id');
             $table->unsignedBigInteger('voucher_id');
+            $table->string('voucher_type')->default('voucher');
             $table->unsignedInteger('user_id');
+            $table->string('user_type')->default('user');
             $table->enum('status', [
                 'generated',
                 'refunded'
             ])->default('generated');
             $table->string('reference')->nullable();
             $table->foreign('supplier_id')->on('suppliers')->references('id')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('voucher_id')->on('vouchers')->references('id')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade')->onUpdate('cascade');
             $table->uuid('uid');
             $table->timestamps();
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade')->onUpdate('cascade');

@@ -17,10 +17,10 @@ class CreateOrderProductsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->unsignedInteger('product_id');
+            $table->string('product_type')->default('product');
             $table->double('price')->default(0);
             $table->integer('quantity')->default(0);
             $table->foreign('order_id')->on('orders')->references('id')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('product_id')->on('products')->references('id')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

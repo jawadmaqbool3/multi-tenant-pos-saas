@@ -17,11 +17,11 @@ class CreateStockHistoriesTable extends Migration
             $table->id();
             $table->unsignedInteger('product_id');
             $table->unsignedBigInteger('purchase_order_id');
+            $table->string('purchase_order_type')->default('purchase_order');
             $table->unsignedInteger('quantity')->default(0);
             $table->unsignedInteger('purchase')->default(0);
             $table->unsignedInteger('retail')->default(0);
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
