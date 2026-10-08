@@ -61,11 +61,12 @@ class ProductService
     public function getProducts($request)
     {
         if ($request->supplier) {
-            return $this->products->query()->filter()->whereHas('purchaseOrders.supplier', function ($query) use ($request) {
-                $query->where('uid', $request->supplier);
-            })->with('purchaseOrders.supplier')->dataTable();
+            $purchaseOrderIds = app(\Modules\Supplier\Services\PurchaseOrderService::class)->getIdsBySupplierUid($request->supplier);
+            return $this->products->dataTable($this->products->query()->filter()->whereHas('stockHistories', function ($query) use ($purchaseOrderIds) {
+                $query->whereIn('purchase_order_id', $purchaseOrderIds);
+            }));
         }
-        return $this->products->query()->filter()->dataTable();
+        return $this->products->dataTable($this->products->query()->filter());
     }
 
     public function getCategories()

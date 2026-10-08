@@ -48,11 +48,11 @@ class PurchaseOrderService
     public function getPurchaseOrders($request)
     {
         if ($request->supplier) {
-            return $this->purchaseOrders->query()->filter()->whereHas('supplier', function ($query) use ($request) {
+            return $this->purchaseOrders->dataTable($this->purchaseOrders->query()->filter()->whereHas('supplier', function ($query) use ($request) {
                 $query->where('uid', $request->supplier);
-            })->with('supplier')->dataTable();
+            })->with('supplier'));
         }
-        return $this->purchaseOrders->query()->filter()->with('supplier')->dataTable();
+        return $this->purchaseOrders->dataTable($this->purchaseOrders->query()->filter()->with('supplier'));
     }
 
     public function getActiveSuppliers()
@@ -158,6 +158,13 @@ class PurchaseOrderService
             'amount' => $total_amount
         ]);
         return $purchase_order->refresh();
+    }
+
+    public function getIdsBySupplierUid($supplierUid)
+    {
+        return $this->purchaseOrders->query()->whereHas('supplier', function ($query) use ($supplierUid) {
+            $query->where('uid', $supplierUid);
+        })->pluck('id');
     }
 
     public function getStockHistories($purchaseOrder)

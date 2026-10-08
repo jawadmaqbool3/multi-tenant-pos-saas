@@ -26,7 +26,7 @@ class UserService
 
     public function getUsers()
     {
-        return $this->users->query()->filter()->dataTable();
+        return $this->users->dataTable($this->users->query()->filter());
     }
 
     public function getRoles()

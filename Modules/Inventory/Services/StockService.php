@@ -29,7 +29,7 @@ class StockService
                     break;
             }
         }
-        return $table->filter()->stockTable();
+        return $this->products->stockTable($table->filter());
     }
 
     public function getPrintProducts($type)

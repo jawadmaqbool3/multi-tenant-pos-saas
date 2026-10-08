@@ -3,13 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Http\Traits\CompanyDataTableTrait;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Company extends UIDModel
 {
-    use HasFactory, CompanyDataTableTrait;
+    use HasFactory;
 
     protected $guarded = ['id'];
     public function scopeFilter($query)

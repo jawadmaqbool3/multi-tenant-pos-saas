@@ -55,7 +55,7 @@ class RoleService
 
     public function getRoles()
     {
-        return $this->roles->query()->filter()->dataTable();
+        return $this->roles->dataTable($this->roles->query()->filter());
     }
 
     public function store($request)

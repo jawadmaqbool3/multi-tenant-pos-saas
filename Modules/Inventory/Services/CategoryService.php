@@ -25,7 +25,7 @@ class CategoryService
 
     public function getCategories()
     {
-        return $this->category->query()->filter()->dataTable();
+        return $this->category->dataTable($this->category->query()->filter());
     }
 
     public function store($request)

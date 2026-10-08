@@ -42,9 +42,9 @@ class EmployeeService
 
     public function getEmployees()
     {
-        return $this->users->query()->filter()->whereHas('role', function ($query) {
+        return $this->users->employeeTable($this->users->query()->filter()->whereHas('role', function ($query) {
             $query->where('id', $this->role()->id);
-        })->employeeTable();
+        }));
     }
 
     public function store($request)

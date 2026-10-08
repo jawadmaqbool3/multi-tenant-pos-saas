@@ -65,7 +65,7 @@ class CompanyService
 
     public function getCompanies()
     {
-        return $this->company->query()->filter()->datatable();
+        return $this->company->dataTable($this->company->query()->filter());
     }
 
     public function store($request)

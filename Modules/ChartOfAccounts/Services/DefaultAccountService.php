@@ -31,6 +31,12 @@ class DefaultAccountService
 
     public function initiateAccounts($company = null)
     {
+        $companyId = $company ? $company->id : null;
+        $alreadySeeded = $this->level1->query()->where('company_id', $companyId)->exists();
+        if ($alreadySeeded) {
+            return;
+        }
+
         foreach ($this->defaultAccounts as $key => $account) {
             $level1 = $this->level1->create([
                 "name" => $account['name'],

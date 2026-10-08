@@ -18,8 +18,16 @@ class DefaultVoucherTypeService
 
     public function initiateVouchers($company = null)
     {
+        $companyId = $company ? $company->id : null;
         foreach ($this->defaultVoucherTypes as $key => $voucherType) {
-            $voucherType['company_id'] = $company ? $company->id : null;
+            $exists = $this->voucherTypes->query()
+                ->where('company_id', $companyId)
+                ->where('short', $voucherType['short'])
+                ->exists();
+            if ($exists) {
+                continue;
+            }
+            $voucherType['company_id'] = $companyId;
             $this->voucherTypes->create($voucherType);
         }
     }

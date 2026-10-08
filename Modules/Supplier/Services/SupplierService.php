@@ -43,7 +43,7 @@ class SupplierService
 
     public function getSuppliers()
     {
-        return $this->suppliers->query()->filter()->dataTable();
+        return $this->suppliers->dataTable($this->suppliers->query()->filter());
     }
 
     public function getLedger($supplier)

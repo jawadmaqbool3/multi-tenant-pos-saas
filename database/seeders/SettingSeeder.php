@@ -14,7 +14,9 @@ class SettingSeeder extends Seeder
      */
     public function run()
     {
-        Setting::create([
+        Setting::firstOrCreate(
+            ['company_id' => null],
+            [
             'logo' => 'logo.svg',
             'name' => 'POS',
             'address' => 'Some address lorem ipsum',

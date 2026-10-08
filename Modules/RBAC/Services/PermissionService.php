@@ -15,7 +15,7 @@ class PermissionService
 
     public function getPermissions()
     {
-        return $this->permissions->query()->filter()->dataTable();
+        return $this->permissions->dataTable($this->permissions->query()->filter());
     }
 
     public function getPermissionsList()

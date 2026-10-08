@@ -40,7 +40,7 @@ class OrderService
 
     public function getOrders($request)
     {
-        return $this->orders->query()->filter()->where('status', '!=', 'cancelled')->dataTable();
+        return $this->orders->dataTable($this->orders->query()->filter()->where('status', '!=', 'cancelled'));
     }
 
     public function store($request)

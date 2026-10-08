@@ -6,7 +6,6 @@ use App\Core\Helper;
 use App\Models\Setting;
 use App\Http\Traits\RoleTrait;
 use Modules\Employee\Http\Traits\EmployeeTrait;
-use Modules\Employee\Http\Traits\UserDataTableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,7 +16,6 @@ class User extends Authenticatable
     use HasApiTokens,
         HasFactory,
         Notifiable,
-        UserDataTableTrait,
         EmployeeTrait,
         RoleTrait;
     protected $primaryKey = 'uid';

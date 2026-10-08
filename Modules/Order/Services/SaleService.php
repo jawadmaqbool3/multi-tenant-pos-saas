@@ -22,7 +22,7 @@ class SaleService
         if ($request->to) {
             $sales = $sales->filter()->whereDate('date', '<=', $request->to);
         }
-        return $sales->salesTable();
+        return $this->order->salesTable($sales);
     }
 
     public function getOrdersForPrint($from, $to)

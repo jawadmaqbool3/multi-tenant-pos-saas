@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Modules\Employee\Models\User;
 use Modules\RBAC\Models\Permission;
 use Modules\RBAC\Models\PermissionModule;
 use Modules\RBAC\Models\PermissionRole;
@@ -168,38 +169,45 @@ class RolePermissionSeeder extends Seeder
             'manager',
             'customer',
         ];
-        foreach ($modules  as $key => $module) {
-            $_module = PermissionModule::create([
-                "name" => $key
-            ]);
-            foreach ($module as $key => $permission) {
-                Permission::create([
+        foreach ($modules as $key => $module) {
+            $_module = PermissionModule::firstOrCreate(['name' => $key]);
+            $_module->refresh();
+            foreach ($module as $permission) {
+                Permission::firstOrCreate([
                     'name' => $permission,
-                    'module_id' => $_module->id
+                    'module_id' => $_module->id,
+                    'company_id' => null,
                 ]);
             }
         }
+
+        $superAdminRole = null;
         foreach ($roles as $key => $role) {
-            Role::create([
-                'name' => $role
+            $roleModel = Role::firstOrCreate([
+                'name' => $role,
+                'company_id' => null,
             ]);
+            $roleModel->refresh();
             if ($key == 0) {
-                $permissions = Permission::get();
-                foreach ($permissions as $permission) {
-                    PermissionRole::create([
-                        'role_id' => 1,
-                        'permission_id' => $permission->id
-                    ]);
-                }
+                $superAdminRole = $roleModel;
             }
         }
-        UserRole::create([
-            'user_id' => 1,
-            'role_id' => 1
-        ]);
-        UserRole::create([
-            'user_id' => 2,
-            'role_id' => 2
-        ]);
+
+        if ($superAdminRole) {
+            foreach (Permission::where('company_id', null)->get() as $permission) {
+                PermissionRole::firstOrCreate([
+                    'role_id' => $superAdminRole->id,
+                    'permission_id' => $permission->id,
+                ]);
+            }
+        }
+
+        $admin = User::where('email', 'admin@gmail.com')->first();
+        if ($admin && $superAdminRole) {
+            UserRole::firstOrCreate([
+                'user_id' => $admin->id,
+                'role_id' => $superAdminRole->id,
+            ]);
+        }
     }
 }

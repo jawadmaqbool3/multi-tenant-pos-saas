@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             UserTableSeeder::class,
             SettingSeeder::class,
             RolePermissionSeeder::class,
+            CompanySeeder::class,
             AccountsSeeder::class,
             VoucherTypeSeeder::class,
         ]);

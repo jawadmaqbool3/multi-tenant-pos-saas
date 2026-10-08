@@ -76,7 +76,15 @@ class AccountSettingService
 
     public function initiateAccountSettings($company = null)
     {
+        $companyId = $company ? $company->id : null;
         foreach ($this->getDefaultAccountSettings() as $setting) {
+            $exists = $this->setting->query()
+                ->where('company_id', $companyId)
+                ->where('short', $setting['short'])
+                ->exists();
+            if ($exists) {
+                continue;
+            }
             $account = null;
             switch ($setting["level"]) {
                 case 'level1':
@@ -94,7 +102,7 @@ class AccountSettingService
             }
             $this->setting->create([
                 "name" => $setting["name"],
-                "company_id" => $company ? $company->id : null,
+                "company_id" => $companyId,
                 "short" => $setting["short"],
                 "account_id" => $account ? $account->id : null,
                 "level" => $setting["level"],

@@ -18,7 +18,7 @@ class VoucherTypeService
 
     public function getVoucherTypes()
     {
-        return $this->voucherTypes->query()->filter()->dataTable();
+        return $this->voucherTypes->dataTable($this->voucherTypes->query()->filter());
     }
 
     public function getAccounts()

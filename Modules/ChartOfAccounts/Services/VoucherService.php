@@ -65,8 +65,8 @@ class VoucherService
 
     public function getVouchersByIds($voucherIds)
     {
-        return $this->vouchers->query()->whereIn('id', $voucherIds)
-            ->where('type', '!=', 'void')->supplierLedgerDataTable();
+        return $this->vouchers->supplierLedgerDataTable($this->vouchers->query()->whereIn('id', $voucherIds)
+            ->where('type', '!=', 'void'));
     }
 
     public function getOperation($account, $type)
@@ -76,7 +76,7 @@ class VoucherService
 
     public function getVouchers()
     {
-        return $this->vouchers->query()->filter()->dataTable();
+        return $this->vouchers->dataTable($this->vouchers->query()->filter());
     }
 
     public function voidVoucher($voucher)

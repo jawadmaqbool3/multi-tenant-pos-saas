@@ -13,9 +13,12 @@ class Transaction extends Model
 
     public function scopeFilter($query)
     {
-            return $query->whereHas('voucher.voucherType', function ($query) {
-                $query->where('company_id', auth()->user()->company_id);
-            });
+        if (auth()->user()->hasRole('superadmin')) {
+            return $query;
+        }
+        return $query->whereHas('voucher.voucherType', function ($query) {
+            $query->where('company_id', auth()->user()->company_id);
+        });
     }
 
     public function voucher()

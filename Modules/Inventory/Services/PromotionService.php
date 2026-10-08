@@ -25,7 +25,7 @@ class PromotionService
 
     public function getPromotions()
     {
-        return $this->promotion->query()->filter()->dataTable();
+        return $this->promotion->dataTable($this->promotion->query()->filter());
     }
 
     public function getProducts()
