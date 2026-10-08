@@ -3,6 +3,7 @@
 namespace Modules\Employee\Models;
 
 use App\Core\Helper;
+use App\Models\Setting;
 use Modules\Employee\Http\Traits\EmployeeTrait;
 use Modules\RBAC\Http\Traits\RoleTrait;
 use Modules\Employee\Http\Traits\UserDataTableTrait;
