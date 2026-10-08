@@ -16,7 +16,7 @@ class CategoryRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'thumbnail' => function ($category) {
-                return $this->thumbnail('assets/media/categories/thumbs', $category->thumbnail);
+                return $this->dt->thumbnail('assets/media/categories/thumbs', $category->thumbnail);
             },
             'status' => function ($category) {
                 if ($category->status == 'published') {
@@ -29,19 +29,19 @@ class CategoryRepository extends BaseRepository
                     $color = 'btn-danger';
                     $text = $category->status . ' (' . date('d M, Y h:i A', strtotime($category->published_date)) . ')';
                 }
-                return $this->statusButton($text, $color);
+                return $this->dt->statusButton($text, $color);
             },
         ];
         $this->dataTableAddColumns = [
             'action' => function ($category) {
                 $btns = [];
                 if (auth()->user()->hasPermission('edit category')) {
-                    $btns[] = $this->editButton(route('categories.edit', $category->uid));
+                    $btns[] = $this->dt->editButton(route('categories.edit', $category->uid));
                 }
                 if (auth()->user()->hasPermission('delete category')) {
-                    $btns[] = $this->deleteButton($category->uid, $category->name);
+                    $btns[] = $this->dt->deleteButton($category->uid, $category->name);
                 }
-                return $this->actionButtons($btns);
+                return $this->dt->actionButtons($btns);
             },
         ];
     }

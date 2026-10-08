@@ -16,27 +16,27 @@ class ProductRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'thumbnail' => function ($product) {
-                return $this->thumbnail('assets/media/products/thumbs', $product->thumbnail);
+                return $this->dt->thumbnail('assets/media/products/thumbs', $product->thumbnail);
             },
             'status' => function ($product) {
-                return $this->statusButton(...$this->productStatus($product));
+                return $this->dt->statusButton(...$this->productStatus($product));
             },
         ];
         $this->dataTableAddColumns = [
             'action' => function ($product) {
                 $btns = [];
                 if (auth()->user()->hasPermission('edit product')) {
-                    $btns[] = $this->editButton(route('products.edit', $product->uid), 'edit product');
+                    $btns[] = $this->dt->editButton(route('products.edit', $product->uid), 'edit product');
                 }
                 if (auth()->user()->hasPermission('delete product') && $product->stockHistories()->count() == 0) {
-                    $btns[] = $this->deleteButton($product->uid, $product->name, 'delete product');
+                    $btns[] = $this->dt->deleteButton($product->uid, $product->name, 'delete product');
                 }
                 if (auth()->user()->hasPermission('print barcode')) {
                     $btns[] = '<a title="generate bar-code" target="_blank" href="' . route('print.barcode', $product->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">
                         <span class="svg-icon svg-icon-3"><span class="bi bi-qr-code"></span></span>
                     </a>';
                 }
-                return $this->actionButtons($btns);
+                return $this->dt->actionButtons($btns);
             },
         ];
     }

@@ -17,10 +17,10 @@ class UserRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'image' => function ($user) {
-                return $this->thumbnail('assets/media/users/profile', $user->image);
+                return $this->dt->thumbnail('assets/media/users/profile', $user->image);
             },
             'status' => function ($user) {
-                return $this->statusButton($user->status, $user->status == 'active' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusButton($user->status, $user->status == 'active' ? 'btn-success' : 'btn-danger');
             },
             'role' => function ($user) {
                 return ucwords($user->role->name);
@@ -30,12 +30,12 @@ class UserRepository extends BaseRepository
             'action' => function ($user) {
                 $btns = [];
                 if (auth()->user()->hasPermission('edit user')) {
-                    $btns[] = $this->editButton(route('users.edit', $user->uid));
+                    $btns[] = $this->dt->editButton(route('users.edit', $user->uid));
                 }
                 if (auth()->user()->hasPermission('delete user')) {
-                    $btns[] = $this->deleteButton($user->uid, $user->name);
+                    $btns[] = $this->dt->deleteButton($user->uid, $user->name);
                 }
-                return $this->actionButtons($btns);
+                return $this->dt->actionButtons($btns);
             },
         ];
     }
@@ -47,12 +47,12 @@ class UserRepository extends BaseRepository
                 'action' => function ($user) {
                     $btns = [];
                     if (auth()->user()->hasPermission('edit employee')) {
-                        $btns[] = $this->editButton(route('employees.edit', $user->uid));
+                        $btns[] = $this->dt->editButton(route('employees.edit', $user->uid));
                     }
                     if (auth()->user()->hasPermission('delete employee')) {
-                        $btns[] = $this->deleteButton($user->uid, $user->name);
+                        $btns[] = $this->dt->deleteButton($user->uid, $user->name);
                     }
-                    return $this->actionButtons($btns);
+                    return $this->dt->actionButtons($btns);
                 },
             ],
         ]);

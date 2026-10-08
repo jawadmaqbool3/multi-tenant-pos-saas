@@ -17,7 +17,7 @@ class RoleRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'status' => function ($role) {
-                return $this->statusButton($role->status, $role->status == 'active' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusButton($role->status, $role->status == 'active' ? 'btn-success' : 'btn-danger');
             },
             'company.setting.name' => function ($role) {
                 return @$role->company->setting->name;
@@ -27,12 +27,12 @@ class RoleRepository extends BaseRepository
             'action' => function ($role) {
                 $btns = [];
                 if (auth()->user()->hasPermission('edit role')) {
-                    $btns[] = $this->editButton(route('roles.edit', $role->uid));
+                    $btns[] = $this->dt->editButton(route('roles.edit', $role->uid));
                 }
                 if (auth()->user()->hasPermission('delete role')) {
-                    $btns[] = $this->deleteButton($role->uid, $role->name);
+                    $btns[] = $this->dt->deleteButton($role->uid, $role->name);
                 }
-                return $this->actionButtons($btns);
+                return $this->dt->actionButtons($btns);
             },
         ];
     }

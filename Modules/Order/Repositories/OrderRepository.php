@@ -24,7 +24,7 @@ class OrderRepository extends BaseRepository
                 } else {
                     $color = 'btn-danger';
                 }
-                return $this->statusButton($order->status, $color);
+                return $this->dt->statusButton($order->status, $color);
             },
             'created_at' => function ($order) {
                 return (new Carbon($order->created_at))->format('d M, Y h:m A');
@@ -43,7 +43,7 @@ class OrderRepository extends BaseRepository
                 if (auth()->user()->hasPermission('order refund') && $order->status == 'paid') {
                     $btns[] = $this->orderActionButton('refund_order_modal', 'Order Refund', route('order.refund', $order->uid), 'bi bi-box-arrow-left', $order);
                 }
-                return $this->actionButtons($btns);
+                return $this->dt->actionButtons($btns);
             },
         ];
     }

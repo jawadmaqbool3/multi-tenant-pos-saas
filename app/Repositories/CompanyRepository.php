@@ -15,10 +15,10 @@ class CompanyRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'status' => function ($company) {
-                return $this->statusButton($company->status, $company->status == 'active' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusButton($company->status, $company->status == 'active' ? 'btn-success' : 'btn-danger');
             },
             'setting.logo' => function ($company) {
-                return $this->thumbnail('assets/media/small/logo', @$company->setting->logo);
+                return $this->dt->thumbnail('assets/media/small/logo', @$company->setting->logo);
             },
             'setting.name' => function ($company) {
                 return $company->setting->name ?? null;
@@ -28,12 +28,12 @@ class CompanyRepository extends BaseRepository
             'action' => function ($company) {
                 $btns = [];
                 if (auth()->user()->hasPermission('edit company')) {
-                    $btns[] = $this->editButton(route('general.settings', $company->setting->uid));
+                    $btns[] = $this->dt->editButton(route('general.settings', $company->setting->uid));
                 }
                 if (auth()->user()->hasPermission('delete company')) {
-                    $btns[] = $this->deleteButton($company->uid, $company->setting->name);
+                    $btns[] = $this->dt->deleteButton($company->uid, $company->setting->name);
                 }
-                return $this->actionButtons($btns);
+                return $this->dt->actionButtons($btns);
             },
         ];
     }
