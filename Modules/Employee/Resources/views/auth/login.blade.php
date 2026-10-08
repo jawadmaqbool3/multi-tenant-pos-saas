@@ -74,6 +74,13 @@
                                     class="form-control bg-transparent" />
                             </div>
 
+                            <div class="d-flex gap-3 mb-8">
+                                <button type="button" class="btn btn-light-primary flex-fill"
+                                    onclick="fillCredentials('admin@gmail.com', '12345678')">Admin Login</button>
+                                <button type="button" class="btn btn-light-success flex-fill"
+                                    onclick="fillCredentials('user@gmail.com', '12345678')">User Login</button>
+                            </div>
+
                             <div class="d-grid mb-10">
                                 <button type="submit" id="kt_sign_in_submit" class="btn btn-primary">
                                     <span class="indicator-label">Sign In</span>
@@ -108,6 +115,12 @@
     </div>
     @include('layouts.toast')
     @include('layouts.script')
+    <script>
+        function fillCredentials(email, password) {
+            document.querySelector('input[name="email"]').value = email;
+            document.querySelector('input[name="password"]').value = password;
+        }
+    </script>
 
 </body>
 

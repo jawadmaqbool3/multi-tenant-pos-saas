@@ -23,5 +23,13 @@ class UserTableSeeder extends Seeder
             'password' => Hash::make('12345678'),
         ]);
         $super_admin->save();
+
+        $employee = User::create([
+            'name' => 'Demo User',
+            'uid' => Helper::_uid(),
+            'email' => 'user@gmail.com',
+            'password' => Hash::make('12345678'),
+        ]);
+        $employee->save();
     }
 }
