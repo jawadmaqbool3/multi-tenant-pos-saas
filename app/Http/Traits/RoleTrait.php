@@ -1,18 +1,14 @@
 <?php
 
-namespace Modules\RBAC\Http\Traits;
+namespace App\Http\Traits;
 
-use Modules\RBAC\Models\Role;
-use Modules\RBAC\Models\UserRole;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
-/**
- * 
- */
 trait RoleTrait
 {
     public function hasPermission($permission)
     {
-        return Role::where('id', $this->role->id)
+        return $this->morphClassName('role')::where('id', $this->role->id)
             ->whereHas('permissions', function ($query) use ($permission) {
                 $query->where('name', $permission)->where('company_id', auth()->user()->company_id);
             })->exists();
@@ -24,14 +20,18 @@ trait RoleTrait
 
     public function role()
     {
-        $company_id = $this->company_id;
         return $this->hasOneThrough(
-            Role::class,
-            UserRole::class,
+            $this->morphClassName('role'),
+            $this->morphClassName('user_role'),
             'user_id',
             'id',
             'id',
             'role_id',
         );
+    }
+
+    protected function morphClassName($alias)
+    {
+        return Relation::getMorphedModel($alias) ?? $alias;
     }
 }

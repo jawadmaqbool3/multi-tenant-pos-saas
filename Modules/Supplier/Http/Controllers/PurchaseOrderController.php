@@ -75,7 +75,8 @@ class PurchaseOrderController extends Controller
 
     public function print(PurchaseOrder $purchaseOrder)
     {
-        return view('supplier::purchase_orders.print', compact('purchaseOrder'));
+        $stockHistories = $this->service->getStockHistories($purchaseOrder);
+        return view('supplier::purchase_orders.print', compact('purchaseOrder', 'stockHistories'));
     }
 
     public function refund(PurchaseOrder $purchaseOrder, Request $request)

@@ -76,7 +76,7 @@
                         @php
                             $total = 0;
                         @endphp
-                        @foreach ($purchaseOrder->stockHistories as $purchaseOrderProduct)
+                        @foreach ($stockHistories as $purchaseOrderProduct)
                             <tr scope="row">
                                 <td scope="col" class="border px-3 border-dark ">{{ $loop->iteration }}</td>
                                 <td scope="col" class="border px-3 border-dark ">

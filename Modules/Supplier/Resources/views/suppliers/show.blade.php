@@ -90,7 +90,7 @@
                                 <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
                                     <div class="d-flex align-items-center">
                                         <div class="fs-2 fw-bold" data-kt-countup="true"
-                                            data-kt-countup-value="{{ $supplier->stockHistories->unique('product_id')->count() }}"
+                                            data-kt-countup-value="{{ $supplierStockHistory }}"
                                             data-kt-countup-prefix="">0</div>
                                     </div>
                                     <div class="fw-semibold fs-6 text-gray-400">Products</div>
@@ -98,7 +98,6 @@
 
 
                                 @php
-                                    $supplierStockHistory = $supplier->stockHistories->unique('product_id')->count();
                                     if ($supplierStockHistory) {
                                         $percentageShare = round(($totalStockProducts / $supplierStockHistory) * 100, 2);
                                     } else {

@@ -22,4 +22,15 @@ class StockHistoryService
     {
         return $this->stockHistories->query()->groupBy('product_id')->count();
     }
+
+    public function getByPurchaseOrder($purchaseOrderId)
+    {
+        return $this->stockHistories->query()->where('purchase_order_id', $purchaseOrderId)->get();
+    }
+
+    public function distinctProductCountForPurchaseOrders($purchaseOrderIds)
+    {
+        return $this->stockHistories->query()->whereIn('purchase_order_id', $purchaseOrderIds)
+            ->distinct()->count('product_id');
+    }
 }

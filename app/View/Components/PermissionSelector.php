@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use Modules\RBAC\Models\Permission;
+use Modules\RBAC\Services\PermissionService;
 use Illuminate\View\Component;
 
 class PermissionSelector extends Component
@@ -20,9 +20,9 @@ class PermissionSelector extends Component
         $this->company = $company;
         $this->role = $role;
         if ($role) {
-            $this->permissions = Permission::where('company_id', $role->company_id)->get();
+            $this->permissions = app(PermissionService::class)->getPermissionsByCompanyId($role->company_id);
         } else {
-            $this->permissions = Permission::filter()->get();
+            $this->permissions = app(PermissionService::class)->getPermissionsList();
         }
     }
 

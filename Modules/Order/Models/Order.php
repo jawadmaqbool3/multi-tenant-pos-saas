@@ -34,38 +34,12 @@ class Order extends UIDModel
 
     public function invVoucher()
     {
-        return $this->hasOne(Voucher::class, 'id', 'inv_voucher_id');
+        return $this->morphTo('invVoucher', 'inv_voucher_type', 'inv_voucher_id', 'id');
     }
 
     public function payVoucher()
     {
-        return $this->hasOne(Voucher::class, 'id', 'pay_voucher_id');
-    }
-
-
-
-    public function products()
-    {
-        return $this->hasManyThrough(
-            Product::class,
-            OrderProduct::class,
-            'order_id',
-            'id',
-            'id',
-            'product_id',
-        );
-    }
-
-    public function user()
-    {
-        return $this->hasOneThrough(
-            User::class,
-            OrderUser::class,
-            'order_id',
-            'id',
-            'id',
-            'user_id',
-        );
+        return $this->morphTo('payVoucher', 'pay_voucher_type', 'pay_voucher_id', 'id');
     }
 
     public function scopeGet($query)

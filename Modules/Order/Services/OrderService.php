@@ -88,6 +88,7 @@ class OrderService
             'date' => $date,
             'due_date' => $due,
             'inv_voucher_id' => $voucher->id,
+            'inv_voucher_type' => 'voucher',
             'payment_method' => $payment_method,
             'company_id' => auth()->user()->company_id,
             'reference' => @$params["reference"]
@@ -115,6 +116,7 @@ class OrderService
             $this->products->updateStockByUid($product->uid, $product->stock - $quantity);
             $this->orderProducts->create([
                 'product_id' => $product->id,
+                'product_type' => 'product',
                 'order_id' => $order->id,
                 'price' => $price,
                 'quantity' => $quantity,
@@ -238,7 +240,8 @@ class OrderService
             $this->accountSettings->setAccountBalance($office_account->id, $office_account->balance + $total_amount);
             $this->orders->query()->where('id', $order->id)->update([
                 'status' => 'paid',
-                'pay_voucher_id' => $voucher->id
+                'pay_voucher_id' => $voucher->id,
+                'pay_voucher_type' => 'voucher'
             ]);
             return $order->refresh();
         }

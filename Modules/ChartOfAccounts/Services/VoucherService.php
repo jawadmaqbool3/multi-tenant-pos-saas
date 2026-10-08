@@ -63,11 +63,10 @@ class VoucherService
         return $this->vouchers->query()->where('id', $id)->update($data);
     }
 
-    public function getVouchersForSupplier($supplier)
+    public function getVouchersByIds($voucherIds)
     {
-        return $this->vouchers->query()->whereHas('supplier', function ($query) use ($supplier) {
-            $query->where('supplier_id', $supplier->id);
-        })->where('type', '!=', 'void')->supplierLedgerDataTable();
+        return $this->vouchers->query()->whereIn('id', $voucherIds)
+            ->where('type', '!=', 'void')->supplierLedgerDataTable();
     }
 
     public function getOperation($account, $type)

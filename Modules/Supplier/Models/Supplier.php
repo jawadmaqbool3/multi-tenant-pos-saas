@@ -92,27 +92,8 @@ class Supplier extends UIDModel
         return $this->hasMany(PurchaseOrder::class, 'supplier_id', 'id');
     }
 
-    public function stockHistories()
+    public function voucherSuppliers(): HasMany
     {
-        return $this->hasManyThrough(
-            StockHistory::class,
-            PurchaseOrder::class,
-            'supplier_id',
-            'purchase_order_id',
-            'id',
-            'id',
-        );
-    }
-
-    public function vouchers()
-    {
-        return $this->hasManyThrough(
-            Voucher::class,
-            VoucherSupplier::class,
-            'supplier_id',
-            'id',
-            'id',
-            'voucher_id',
-        );
+        return $this->hasMany(VoucherSupplier::class, 'supplier_id', 'id');
     }
 }

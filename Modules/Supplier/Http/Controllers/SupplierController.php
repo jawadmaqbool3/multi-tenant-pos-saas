@@ -5,7 +5,6 @@ namespace Modules\Supplier\Http\Controllers;
 use App\Http\Controllers\Controller;
 
 use Modules\Supplier\Models\Supplier;
-use Modules\ChartOfAccounts\Models\Voucher;
 use Modules\Supplier\Http\Requests\StoreSupplierRequest;
 use Modules\Supplier\Http\Requests\PaySupplierRequest;
 use Modules\Supplier\Services\SupplierService;
@@ -91,7 +90,8 @@ class SupplierController extends Controller
     public function show(Supplier $supplier)
     {
         $totalStockProducts = $this->service->getTotalStockProducts();
-        return view('supplier::suppliers.show', compact('supplier', 'totalStockProducts'));
+        $supplierStockHistory = $this->service->getSupplierStockProductCount($supplier);
+        return view('supplier::suppliers.show', compact('supplier', 'totalStockProducts', 'supplierStockHistory'));
     }
 
     /**
@@ -147,7 +147,7 @@ class SupplierController extends Controller
         ]);
     }
 
-    public function payAmountToSupplier($params): Voucher
+    public function payAmountToSupplier($params)
     {
         return $this->service->payAmountToSupplier($params);
     }

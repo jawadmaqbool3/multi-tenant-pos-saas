@@ -215,6 +215,11 @@ class ProductService
         }
     }
 
+    public function getByCompanyId($companyId)
+    {
+        return $this->products->query()->where('company_id', $companyId)->get();
+    }
+
     public function delete($product)
     {
         Helper::deleteExcept([

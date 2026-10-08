@@ -4,6 +4,7 @@ namespace Modules\RBAC\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Company;
 use App\Models\UIDModel;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Yajra\DataTables\Facades\DataTables;

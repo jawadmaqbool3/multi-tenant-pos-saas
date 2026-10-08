@@ -150,13 +150,13 @@ class CompanyService
     {
         $productService = app(ProductService::class);
         $userService = app(UserService::class);
-        foreach ($company->products as $key => $product) {
+        foreach ($productService->getByCompanyId($company->id) as $key => $product) {
             $productService->delete($product);
         }
-        foreach ($company->categories as $key => $category) {
+        foreach ($this->categoryService->getByCompanyId($company->id) as $key => $category) {
             $this->categoryService->destroy($category);
         }
-        foreach ($company->users as $key => $user) {
+        foreach ($userService->getByCompanyId($company->id) as $key => $user) {
             $userService->delete($user);
         }
         if ($company->dashboardSetting) {

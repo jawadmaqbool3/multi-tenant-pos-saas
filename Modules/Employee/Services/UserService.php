@@ -104,6 +104,11 @@ class UserService
         $this->roles->assignUserRole($user->id, $role->id);
     }
 
+    public function getByCompanyId($companyId)
+    {
+        return $this->users->query()->where('company_id', $companyId)->get();
+    }
+
     public function delete($user)
     {
         Helper::deleteExcept([

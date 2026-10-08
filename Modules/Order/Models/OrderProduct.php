@@ -14,7 +14,7 @@ class OrderProduct extends Model
 
     public function product()
     {
-        return $this->hasOne(Product::class, 'id', 'product_id');
+        return $this->morphTo('product', 'product_type', 'product_id', 'id');
     }
     public function order()
     {

@@ -92,6 +92,11 @@ class CategoryService
         }
     }
 
+    public function getByCompanyId($companyId)
+    {
+        return $this->category->query()->where('company_id', $companyId)->get();
+    }
+
     public function destroy($category)
     {
         Helper::deleteExcept([

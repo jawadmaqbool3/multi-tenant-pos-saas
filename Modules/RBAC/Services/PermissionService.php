@@ -18,6 +18,16 @@ class PermissionService
         return $this->permissions->query()->filter()->dataTable();
     }
 
+    public function getPermissionsList()
+    {
+        return $this->permissions->query()->filter()->get();
+    }
+
+    public function getPermissionsByCompanyId($companyId)
+    {
+        return $this->permissions->query()->where('company_id', $companyId)->get();
+    }
+
     public function store($request)
     {
         return $this->permissions->create([

@@ -103,6 +103,7 @@ class PurchaseOrderService
         $purchase_order = $this->purchaseOrders->create([
             'supplier_id' => $supplier->id,
             'voucher_id' => $voucher->id,
+            'voucher_type' => 'voucher',
             'company_id' => auth()->user()->company_id,
             'reference' => @$params["reference"]
         ]);
@@ -159,11 +160,16 @@ class PurchaseOrderService
         return $purchase_order->refresh();
     }
 
+    public function getStockHistories($purchaseOrder)
+    {
+        return $this->stockHistories->getByPurchaseOrder($purchaseOrder->id);
+    }
+
     public function refundOrder($purchaseOrder)
     {
         $voucher = $purchaseOrder->voucher;
         $supplier = $purchaseOrder->supplier;
-        foreach ($purchaseOrder->stockHistories as $stock) {
+        foreach ($this->stockHistories->getByPurchaseOrder($purchaseOrder->id) as $stock) {
             $product = $this->products->getProductById($stock->product_id);
             $this->products->updateStock($product->id, $product->stock - $stock->quantity);
         }

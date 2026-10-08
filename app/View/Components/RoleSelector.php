@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use Modules\RBAC\Models\Role;
+use Modules\RBAC\Services\RoleService;
 use Illuminate\View\Component;
 
 class RoleSelector extends Component
@@ -17,7 +17,7 @@ class RoleSelector extends Component
     public function __construct($company = null)
     {
         $this->company = $company;
-        $this->roles = Role::filter()->get();
+        $this->roles = app(RoleService::class)->getRolesList();
     }
 
     /**

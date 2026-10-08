@@ -4,11 +4,11 @@ namespace Modules\Supplier\Services;
 
 use App\Core\Helper;
 use App\Exceptions\InsufficientSupplierBalanceException;
-use Modules\ChartOfAccounts\Models\Voucher;
 use Modules\ChartOfAccounts\Services\AccountSettingService;
 use Modules\ChartOfAccounts\Services\TransactionService;
 use Modules\ChartOfAccounts\Services\VoucherService;
 use Modules\Inventory\Services\StockHistoryService;
+use Modules\Supplier\Models\Supplier;
 use Modules\Supplier\Repositories\SupplierRepository;
 use Modules\Supplier\Repositories\VoucherSupplierRepository;
 use Carbon\Carbon;
@@ -48,12 +48,19 @@ class SupplierService
 
     public function getLedger($supplier)
     {
-        return $this->voucherService->getVouchersForSupplier($supplier);
+        $voucherIds = $this->voucherSuppliers->query()->where('supplier_id', $supplier->id)->pluck('voucher_id');
+        return $this->voucherService->getVouchersByIds($voucherIds);
     }
 
     public function getTotalStockProducts()
     {
         return $this->stockHistories->groupedProductCount();
+    }
+
+    public function getSupplierStockProductCount(Supplier $supplier)
+    {
+        $purchaseOrderIds = $supplier->purchaseOrders()->pluck('id');
+        return $this->stockHistories->distinctProductCountForPurchaseOrders($purchaseOrderIds);
     }
 
     public function store($request)
@@ -114,7 +121,7 @@ class SupplierService
         return $this->suppliers->delete($supplier->id);
     }
 
-    public function payAmountToSupplier($params): Voucher
+    public function payAmountToSupplier($params)
     {
         $asset_account = $this->accountSettings->getAccount("OSA");
         $liability_account = $this->accountSettings->getAccount("VPA");

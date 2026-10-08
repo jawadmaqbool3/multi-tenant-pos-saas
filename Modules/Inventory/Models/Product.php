@@ -75,7 +75,7 @@ class Product extends UIDModel
                     </span>
                 </a>';
                 }
-                if (auth()->user()->hasPermission('delete product') && $product->purchaseOrders()->count() == 0) {
+                if (auth()->user()->hasPermission('delete product') && $product->stockHistories()->count() == 0) {
                     $btns[] = '<a href="#" title="delete product" data-bs-target="#delete_modal" data-bs-toggle="modal" data-modal_id="' . $product->uid . '" data-modal_name="' . $product->name . '" data-modal_title="Delete ' . $product->name . '?" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">
                     <span class="svg-icon svg-icon-3">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -148,18 +148,6 @@ class Product extends UIDModel
         );
     }
 
-    public function orders()
-    {
-        return $this->hasManyThrough(
-            Order::class,
-            OrderProduct::class,
-            'product_id',
-            'id',
-            'id',
-            'order_id',
-        );
-    }
-
     public function feature()
     {
         return $this->hasOne(
@@ -169,15 +157,8 @@ class Product extends UIDModel
         )->where('type', 'product');
     }
 
-    public function purchaseOrders()
+    public function stockHistories()
     {
-        return $this->hasManyThrough(
-            PurchaseOrder::class,
-            StockHistory::class,
-            'product_id',
-            'id',
-            'id',
-            'purchase_order_id',
-        );
+        return $this->hasMany(StockHistory::class, 'product_id', 'id');
     }
 }

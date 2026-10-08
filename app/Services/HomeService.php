@@ -190,12 +190,15 @@ class HomeService
                 ->where('users.created_at', 'LIKE', $today->subMonth()->format('Y-m') . '%')
                 ->count();
             $today = Carbon::create()->now();
+            $todayHeroIds = $this->order->query()->filter()
+                ->where('orders.created_at', 'LIKE', $today->format('Y-m-d') . '%')
+                ->where('status', 'paid')
+                ->with('orderUser')
+                ->get()
+                ->pluck('orderUser')->flatten()->pluck('user_id')->unique();
             $todayHeroes = $this->user->query()->filter()->whereHas('role', function ($query) {
                 $query->where('name', 'customer');
-            })->whereHas('orders', function ($query) use ($today) {
-                $query->where('orders.created_at', 'LIKE', $today->format('Y-m-d') . '%')
-                    ->where('status', 'paid');
-            })
+            })->whereIn('users.id', $todayHeroIds)
                 ->get();
 
             $response["cutomers"]["thisMonthCustomers"] = $thisMonthCustomers;
@@ -204,7 +207,7 @@ class HomeService
         }
         //Recent Orders
         if (auth()->user()->hasPermission('dashboard recent orders')) {
-            $response["recentOrders"] = $this->order->query()->filter()->orderBy('date', 'DESC')->with('user')->limit(5)->get();
+            $response["recentOrders"] = $this->order->query()->filter()->orderBy('date', 'DESC')->with('orderUser.user')->limit(5)->get();
         }
         $response['success'] = true;
         return $response;

@@ -313,7 +313,7 @@
                         } else if (order.status == 'paid') {
                             color = 'primary';
                         }
-                        let user = order.user;
+                        let user = order.order_user && order.order_user.length ? order.order_user[0].user : null;
                         if (user) {
                             user =
                                 `To: <a href="#" class="text-gray-800 text-hover-primary fw-bold">${user.name}</a>`;

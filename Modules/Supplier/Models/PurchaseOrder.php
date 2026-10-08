@@ -79,11 +79,6 @@ class PurchaseOrder extends UIDModel
 
     public function voucher()
     {
-        return $this->hasOne(Voucher::class, 'id', 'voucher_id');
-    }
-
-    public function stockHistories(): HasMany
-    {
-        return $this->hasMany(StockHistory::class, 'purchase_order_id', 'id');
+        return $this->morphTo('voucher', 'voucher_type', 'voucher_id', 'id');
     }
 }

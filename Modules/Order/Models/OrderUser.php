@@ -14,6 +14,6 @@ class OrderUser extends Model
     }
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->morphTo('user', 'user_type', 'user_id', 'id');
     }
 }

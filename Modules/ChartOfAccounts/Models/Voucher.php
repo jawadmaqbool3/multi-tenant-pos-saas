@@ -19,7 +19,7 @@ class Voucher extends UIDModel
     }
     public function creator()
     {
-        return $this->hasOne(User::class, 'id', 'created_by');
+        return $this->morphTo('creator', 'creator_type', 'created_by', 'id');
     }
 
 
@@ -89,17 +89,5 @@ class Voucher extends UIDModel
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'voucher_id', 'id');
-    }
-
-    public function supplier()
-    {
-        return $this->hasOneThrough(
-            Supplier::class,
-            VoucherSupplier::class,
-            'voucher_id',
-            'id',
-            'id',
-            'supplier_id',
-        );
     }
 }

@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Http\Traits\CompanyDataTableTrait;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 class Company extends UIDModel
 {
@@ -25,35 +25,21 @@ class Company extends UIDModel
     {
         return $this->hasOne(Setting::class, 'company_id', 'id');
     }
-    public function manager(): HasOne
-    {
-        return $this->hasOne(User::class, 'id', 'created_by');
-    }
 
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class, 'company_id', 'id');
-    }
-    public function categories(): HasMany
-    {
-        return $this->hasMany(Category::class, 'company_id', 'id');
-    }
     public function dashboardSetting(): HasOne
     {
         return $this->hasOne(DashboardSetting::class, 'company_id', 'id');
     }
-    public function users(): HasMany
-    {
-        return $this->hasMany(User::class, 'company_id', 'id');
-    }
 
     public function hasRole($role)
     {
-        return Role::where('company_id', $this->id)->where('name', $role)->exists();
+        $roleClass = Relation::getMorphedModel('role');
+        return $roleClass::where('company_id', $this->id)->where('name', $role)->exists();
     }
-   
+
     public function hasPermission($permission)
     {
-        return Permission::where('company_id', $this->id)->where('name', $permission)->exists();
+        $permissionClass = Relation::getMorphedModel('permission');
+        return $permissionClass::where('company_id', $this->id)->where('name', $permission)->exists();
     }
 }
