@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="posGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#009EF7"/>
+      <stop offset="100%" stop-color="#0063B8"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="112" height="112" rx="24" fill="url(#posGrad)"/>
+  <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 36h60l-6 26H38z"/>
+    <path d="M38 62l-4 14h52"/>
+    <circle cx="46" cy="86" r="5"/>
+    <circle cx="78" cy="86" r="5"/>
+  </g>
+  <text x="60" y="52" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">POS</text>
+</svg>

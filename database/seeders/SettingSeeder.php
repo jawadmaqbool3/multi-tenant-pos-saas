@@ -15,12 +15,12 @@ class SettingSeeder extends Seeder
     public function run()
     {
         Setting::create([
-            'logo' => 'logo.jpeg',
-            'name' => 'AdorableKids',
+            'logo' => 'logo.svg',
+            'name' => 'POS',
             'address' => 'Some address lorem ipsum',
-            'url' => 'https://adorablekids.pk',
-            'facebook' => 'adorablekids.facebook.com',
-            'instagram' => '@adorablekids',
+            'url' => 'https://pos.local',
+            'facebook' => 'pos.facebook.com',
+            'instagram' => '@pos',
             'whatsapp' => '',
             'email' => 'jawadmaqbool32@gmail.com',
             'contact' => '03445909505',
