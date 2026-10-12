@@ -8,6 +8,10 @@ trait RoleTrait
 {
     public function hasPermission($permission)
     {
+        if (!$this->role) {
+            return false;
+        }
+
         return $this->morphClassName('role')::where('id', $this->role->id)
             ->whereHas('permissions', function ($query) use ($permission) {
                 $query->where('name', $permission)->where('company_id', auth()->user()->company_id);
@@ -15,7 +19,7 @@ trait RoleTrait
     }
     public function hasRole($role)
     {
-        return $this->role->name == $role;
+        return optional($this->role)->name == $role;
     }
 
     public function role()

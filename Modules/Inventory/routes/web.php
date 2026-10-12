@@ -7,10 +7,10 @@ use Modules\Inventory\Http\Controllers\StockController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('categories', CategoryController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('promotions', PromotionController::class);
-    Route::resource('stocks', StockController::class);
+    Route::resource('categories', CategoryController::class)->middleware('permission:view category');
+    Route::resource('products', ProductController::class)->middleware('permission:view product');
+    Route::resource('promotions', PromotionController::class)->middleware('permission:view promotion');
+    Route::resource('stocks', StockController::class)->middleware('permission:view stocks');
 });
 
 Route::group(['prefix' => 'print'], function () {

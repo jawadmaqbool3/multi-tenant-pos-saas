@@ -13,11 +13,11 @@ class Company extends UIDModel
     protected $guarded = ['id'];
     public function scopeFilter($query)
     {
-        if (auth()->user()->hasRole('superadmin')) {
+        if (!auth()->check() || auth()->user()->hasRole('superadmin')) {
             return $query;
-        } else {
-            return $query->where('created_by', auth()->user()->company_id);
         }
+
+        return $query->where('id', auth()->user()->company_id);
     }
 
     public function setting(): HasOne

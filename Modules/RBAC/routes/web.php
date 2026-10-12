@@ -5,6 +5,6 @@ use Modules\RBAC\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('roles', RoleController::class);
-    Route::resource('permissions', PermissionController::class);
+    Route::resource('roles', RoleController::class)->middleware('permission:view role');
+    Route::resource('permissions', PermissionController::class)->middleware('permission:view permission');
 });

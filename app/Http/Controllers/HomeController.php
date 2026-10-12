@@ -28,6 +28,13 @@ class HomeController extends Controller
                 ]);
             }
         }
+
+        if (auth()->user()->hasRole('superadmin')) {
+            return view('dashboard.superadmin', [
+                'stats' => $this->service->getSuperadminStats(),
+            ]);
+        }
+
         return view('dashboard.dashboard');
     }
 }

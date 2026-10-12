@@ -85,7 +85,7 @@ class CompanyService
             'status' => $request->status
         ]);
         $company->refresh();
-        $menuLinks = app(AsideSettingService::class)->getMenuLinks();
+        $menuLinks = app(AsideSettingService::class)->getTenantMenuLinks();
         $this->setting->create([
             'company_id' => $company->id,
             'name' => $request->company_name,
@@ -96,7 +96,8 @@ class CompanyService
         ]);
         $admin_role = $this->role->create([
             'name' => $request->isManager ? 'manager' : 'admin',
-            'company_id' => $company->id
+            'company_id' => $company->id,
+            'status' => $request->status,
         ]);
         $admin_role->refresh();
         $password = Hash::make($request->password);
@@ -115,22 +116,26 @@ class CompanyService
         ]);
         if ($request->roles) {
             $roles = $this->role->query()->whereIn('uid', $request->roles)->get();
-            $permissions = $this->permission->query()->whereIn('uid', $request->permissions)->get();
             foreach ($roles as $key => $role) {
                 $this->role->create([
                     'company_id' => $company->id,
-                    'name' => $role->name
+                    'name' => $role->name,
+                    'status' => $request->status,
                 ]);
             }
         }
 
         if ($request->permissions) {
-            $permissions = $this->permission->query()->whereIn('uid', $request->permissions)->get();
+            $permissions = $this->permission->query()
+                ->whereIn('uid', $request->permissions)
+                ->where('is_platform', false)
+                ->get();
             foreach ($permissions as $key => $permission) {
                 $permission = $this->permission->create([
                     'company_id' => $company->id,
                     'name' => $permission->name,
-                    'module_id' => $permission->module_id
+                    'module_id' => $permission->module_id,
+                    'is_platform' => false,
                 ]);
                 $permission->refresh();
                 $this->permissionRole->create([

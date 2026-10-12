@@ -28,6 +28,17 @@ class SettingSeeder extends Seeder
             'contact' => '03445909505',
             'asidebar' => '[
                 {
+                    "icon": "bi bi-share",
+                    "name": "SaaS",
+                    "links": [
+                        {
+                            "link": "http://127.0.0.1:8000/companies",
+                            "title": "Companies",
+                            "permission": "view company"
+                        }
+                    ]
+                },
+                {
                     "icon": "bi bi-shop",
                     "name": "Inventory",
                     "links": [

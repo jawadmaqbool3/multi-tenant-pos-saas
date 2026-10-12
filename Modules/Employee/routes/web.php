@@ -16,7 +16,7 @@ Route::post('logout', [
 ]);
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('users', UserController::class);
-    Route::resource('employees', EmployeeController::class);
-    Route::resource('attendance', AttendanceHistoryController::class);
+    Route::resource('users', UserController::class)->middleware('permission:view user');
+    Route::resource('employees', EmployeeController::class)->middleware('permission:view employee');
+    Route::resource('attendance', AttendanceHistoryController::class)->middleware('permission:view employee attendance report');
 });

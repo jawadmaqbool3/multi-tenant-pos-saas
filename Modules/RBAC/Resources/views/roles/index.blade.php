@@ -79,9 +79,9 @@
                         <tr class="border-0">
                             <th class="fw-bold p-0">SR#</th>
                             <th class="fw-bold p-0 min-w-150px text-start">Name</th>
-                            @can('create company')
+                            @role('superadmin')
                                 <th class="fw-bold p-0 min-w-150px text-start">Company</th>
-                            @endcan
+                            @endrole
                             <th class="fw-bold p-0 min-w-150px text-start">Status</th>
                             <th class="fw-bold p-0 min-w-100px text-end">Actions</th>
                         </tr>
@@ -112,11 +112,11 @@
                     {
                         "data": "name"
                     },
-                    @can('create company')
+                    @role('superadmin')
                         {
                             "data": "company.setting.name"
                         },
-                    @endcan {
+                    @endrole {
                         "data": "status"
                     },
                     {

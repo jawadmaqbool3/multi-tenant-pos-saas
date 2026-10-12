@@ -16,11 +16,13 @@ class AsideMenuLinks extends Component
 
     public function __construct()
     {
-        $setting = Setting::select('asidebar')->first();
+        $setting = auth()->check() ? auth()->user()->setting() : Setting::where('company_id', null)->first();
+        $categories = $setting ? json_decode($setting->asidebar, true) : [];
+
         $links =  [
             [
                 'title' => 'Pages',
-                'categories' => json_decode($setting->asidebar, true)
+                'categories' => is_array($categories) ? $categories : [],
             ],
         ];
         $this->links = $this->filterLinks($links);

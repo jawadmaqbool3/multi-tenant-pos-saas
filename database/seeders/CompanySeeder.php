@@ -21,7 +21,7 @@ class CompanySeeder extends Seeder
      */
     public function run()
     {
-        $superAdmin = User::where('email', 'admin@gmail.com')->first();
+        $superAdmin = User::where('email', 'superadmin@gmail.com')->first();
 
         $company = Company::firstOrCreate(
             ['created_by' => $superAdmin ? $superAdmin->id : 1],
@@ -42,21 +42,25 @@ class CompanySeeder extends Seeder
                 'instagram' => $global->instagram ?? null,
                 'whatsapp' => $global->whatsapp ?? null,
                 'contact' => $global->contact ?? null,
-                'asidebar' => $global->asidebar ?? '[]',
+                'asidebar' => json_encode(app(\App\Services\AsideSettingService::class)->getTenantMenuLinks()),
             ]
         );
 
         $adminRole = Role::firstOrCreate([
             'name' => 'admin',
             'company_id' => $company->id,
+        ], [
+            'status' => 'active',
         ]);
         $adminRole->refresh();
 
-        foreach (Permission::where('company_id', null)->get() as $permission) {
+        foreach (Permission::where('company_id', null)->where('is_platform', false)->get() as $permission) {
             $companyPermission = Permission::firstOrCreate([
                 'name' => $permission->name,
                 'module_id' => $permission->module_id,
                 'company_id' => $company->id,
+            ], [
+                'is_platform' => false,
             ]);
             $companyPermission->refresh();
             PermissionRole::firstOrCreate([
@@ -65,7 +69,7 @@ class CompanySeeder extends Seeder
             ]);
         }
 
-        $owner = User::where('email', 'user@gmail.com')->first();
+        $owner = User::where('email', 'admin@gmail.com')->first();
         if ($owner) {
             $owner->company_id = $company->id;
             $owner->save();

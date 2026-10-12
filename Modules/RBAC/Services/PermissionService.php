@@ -20,12 +20,15 @@ class PermissionService
 
     public function getPermissionsList()
     {
-        return $this->permissions->query()->filter()->get();
+        return $this->permissions->query()->filter()->where('is_platform', false)->get();
     }
 
     public function getPermissionsByCompanyId($companyId)
     {
-        return $this->permissions->query()->where('company_id', $companyId)->get();
+        return $this->permissions->query()
+            ->where('company_id', $companyId)
+            ->where('is_platform', false)
+            ->get();
     }
 
     public function store($request)

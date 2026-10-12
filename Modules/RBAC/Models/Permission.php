@@ -12,9 +12,23 @@ class Permission extends UIDModel
     use HasFactory;
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'is_platform' => 'boolean',
+    ];
+
     public function scopeFilter($query)
     {
         return $query->where('company_id', auth()->user()->company_id);
+    }
+
+    public function scopePlatform($query)
+    {
+        return $query->where('is_platform', true);
+    }
+
+    public function scopeTenant($query)
+    {
+        return $query->where('is_platform', false);
     }
     public function module(): HasOne
     {

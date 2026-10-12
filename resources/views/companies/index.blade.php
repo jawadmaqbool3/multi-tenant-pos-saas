@@ -65,7 +65,7 @@
                     </div>
                     <div class="separator mb-3 opacity-75"></div>
                     <div class="menu-item px-3 mb-3">
-                        @can('create user')
+                        @can('create company')
                             <a href="{{ route('companies.create') }}" class="menu-link px-3">New Company</a>
                         @endcan
                     </div>

@@ -17,20 +17,22 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         User::firstOrCreate(
-            ['email' => 'admin@gmail.com'],
+            ['email' => 'superadmin@gmail.com'],
             [
-                'name' => 'Jawad Maqbool',
+                'name' => 'SaaS Owner',
                 'uid' => Helper::_uid(),
                 'password' => Hash::make('12345678'),
+                'status' => 'active',
             ]
         );
 
         User::firstOrCreate(
-            ['email' => 'user@gmail.com'],
+            ['email' => 'admin@gmail.com'],
             [
-                'name' => 'Demo User',
+                'name' => 'Company Admin',
                 'uid' => Helper::_uid(),
                 'password' => Hash::make('12345678'),
+                'status' => 'active',
             ]
         );
     }

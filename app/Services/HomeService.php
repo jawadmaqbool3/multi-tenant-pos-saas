@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Company;
 use Modules\Order\Repositories\OrderRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 use Modules\ChartOfAccounts\Repositories\TransactionRepository;
 use Modules\Employee\Repositories\UserRepository;
+use Modules\Employee\Models\User;
 use Carbon\Carbon;
 
 class HomeService
@@ -216,5 +218,21 @@ class HomeService
     public function getProducts()
     {
         return $this->product->query()->filter()->select('uid', 'name', 'purchase_price', 'unit_price', 'stock', 'code')->get();
+    }
+
+    /**
+     * Platform statistics for the superadmin (SaaS owner) dashboard.
+     *
+     * @return array
+     */
+    public function getSuperadminStats()
+    {
+        return [
+            'companies' => Company::count(),
+            'activeCompanies' => Company::where('status', 'active')->count(),
+            'inactiveCompanies' => Company::where('status', 'inactive')->count(),
+            'users' => User::whereNotNull('company_id')->count(),
+            'recentCompanies' => Company::with('setting')->latest()->limit(5)->get(),
+        ];
     }
 }

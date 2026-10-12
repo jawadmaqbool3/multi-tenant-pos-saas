@@ -63,7 +63,7 @@ class RoleService
         $role = $this->roles->create([
             'name' => $request->name,
             'status' => $request->status,
-            'company_id' => auth()->user()->compny_id
+            'company_id' => auth()->user()->company_id
         ]);
         $role->refresh();
         if (is_array($request->permissions)) {

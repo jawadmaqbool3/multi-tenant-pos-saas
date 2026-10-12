@@ -178,6 +178,19 @@ class AsideSettingService
         return $this->menuLinks;
     }
 
+    /**
+     * Menu links that may be assigned to a tenant (company) setting.
+     * Platform-only sections such as SaaS are excluded.
+     *
+     * @return array
+     */
+    public function getTenantMenuLinks()
+    {
+        return array_values(array_filter($this->menuLinks, function ($menu) {
+            return ($menu['name'] ?? null) !== 'SaaS';
+        }));
+    }
+
     public function getSettings()
     {
         $settings = json_decode($this->settings->query()->select('asidebar')->filter()->first()->asidebar);

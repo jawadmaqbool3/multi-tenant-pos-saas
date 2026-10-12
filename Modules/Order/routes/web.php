@@ -5,13 +5,13 @@ use Modules\Order\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::resource('sales', SaleController::class);
-    Route::resource('orders', OrderController::class);
+    Route::resource('sales', SaleController::class)->middleware('permission:view sales');
+    Route::resource('orders', OrderController::class)->middleware('permission:view order');
 
     Route::group(['prefix' => 'order'], function () {
-        Route::post('cancel/{id}', 'Modules\Order\Http\Controllers\OrderController@cancel')->name('order.cancel');
-        Route::post('mark/paid/{order}', 'Modules\Order\Http\Controllers\OrderController@markPaid')->name('order.mark.paid');
-        Route::post('refund/{id}', 'Modules\Order\Http\Controllers\OrderController@refund')->name('order.refund');
+        Route::post('cancel/{id}', 'Modules\Order\Http\Controllers\OrderController@cancel')->name('order.cancel')->middleware('permission:cancel order');
+        Route::post('mark/paid/{order}', 'Modules\Order\Http\Controllers\OrderController@markPaid')->name('order.mark.paid')->middleware('permission:mark paid');
+        Route::post('refund/{id}', 'Modules\Order\Http\Controllers\OrderController@refund')->name('order.refund')->middleware('permission:order refund');
     });
 });
 
