@@ -507,7 +507,7 @@ middleware, and `webhook.php` with no `web` group.
   label; run tests.
 - [x] **Phase 2 — Scaffold** — Stripe SDK, `config/billing.php`, env keys, module
   registration, `BillingServiceProvider`, `StripeService` + exception.
-- [ ] **Phase 3 — Schema & models** — all migrations, `UIDModel`-based models,
+- [x] **Phase 3 — Schema & models** — all migrations, `UIDModel`-based models,
   repositories.
 - [ ] **Phase 4 — Plans (A)** — plan CRUD UI (details/prices/modules/permissions/
   limits) + `StripeSyncService`.
