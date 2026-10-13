@@ -1,4 +1,5 @@
 {
+    "Billing": true,
     "ChartOfAccounts": true,
     "Employee": true,
     "Inventory": true,
