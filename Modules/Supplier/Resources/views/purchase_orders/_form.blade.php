@@ -18,23 +18,23 @@
         </div>
     </div>
     <div class="col-sm-2">
-        <button type="button" class="mt-9 float-end btn  btn-primary btn-add-product"><i
-                class="bi bi-plus"></i></button>
+        <label class="form-label d-none d-sm-block">&nbsp;</label>
+        <button type="button" class="btn btn-light-primary w-100 btn-add-product">
+            <i class="bi bi-plus-lg me-1"></i> Add
+        </button>
     </div>
     <div class="col-md-12 fv-row" id="dropdown_parent">
-        <table class="table">
-            <tr>
-                <thead>
+        <table class="table align-middle">
+            <thead>
+                <tr>
                     <th>Product</th>
                     <th>Quantity</th>
                     <th>Purchase</th>
                     <th>Retail</th>
-                    <th></th>
-                </thead>
-                <tbody id="product_wrapper">
-
-                </tbody>
-            </tr>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody id="product_wrapper"></tbody>
         </table>
     </div>
     <div class="col-md-12">

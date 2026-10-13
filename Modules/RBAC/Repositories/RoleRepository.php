@@ -17,7 +17,7 @@ class RoleRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'status' => function ($role) {
-                return $this->dt->statusButton($role->status, $role->status == 'active' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusBadge($role->status, $role->status == 'active' ? 'btn-success' : 'btn-danger');
             },
             'company.setting.name' => function ($role) {
                 return @$role->company->setting->name;

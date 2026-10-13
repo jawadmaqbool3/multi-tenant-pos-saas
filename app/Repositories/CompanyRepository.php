@@ -15,7 +15,7 @@ class CompanyRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'status' => function ($company) {
-                return $this->dt->statusButton($company->status, $company->status == 'active' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusBadge($company->status, $company->status == 'active' ? 'btn-success' : 'btn-danger');
             },
             'setting.logo' => function ($company) {
                 return $this->dt->thumbnail('assets/media/small/logo', @$company->setting->logo);

@@ -20,7 +20,7 @@ class UserRepository extends BaseRepository
                 return $this->dt->thumbnail('assets/media/users/profile', $user->image);
             },
             'status' => function ($user) {
-                return $this->dt->statusButton($user->status, $user->status == 'active' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusBadge($user->status, $user->status == 'active' ? 'btn-success' : 'btn-danger');
             },
             'role' => function ($user) {
                 return ucwords($user->role->name);

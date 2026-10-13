@@ -16,7 +16,7 @@ class PlanRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'status' => function ($plan) {
-                return $this->dt->statusButton($plan->status, $plan->status == 'active' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusBadge($plan->status, $plan->status == 'active' ? 'btn-success' : 'btn-danger');
             },
             'price_summary' => function ($plan) {
                 return $plan->prices->reject(fn ($price) => !$price->active)

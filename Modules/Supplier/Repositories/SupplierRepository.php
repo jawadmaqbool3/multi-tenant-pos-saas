@@ -22,7 +22,7 @@ class SupplierRepository extends BaseRepository
                 return '<a href="' . route('suppliers.show', $supplier->uid) . '">' . ucwords($supplier->name) . '</button>';
             },
             'status' => function ($supplier) {
-                return $this->dt->statusButton($supplier->status, $supplier->status == 'active' ? 'btn-success' : 'btn-warning');
+                return $this->dt->statusBadge($supplier->status, $supplier->status == 'active' ? 'btn-success' : 'btn-warning');
             },
         ];
         $this->dataTableAddColumns = [

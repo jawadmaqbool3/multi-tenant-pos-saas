@@ -29,7 +29,7 @@ class CategoryRepository extends BaseRepository
                     $color = 'btn-danger';
                     $text = $category->status . ' (' . date('d M, Y h:i A', strtotime($category->published_date)) . ')';
                 }
-                return $this->dt->statusButton($text, $color);
+                return $this->dt->statusBadge($text, $color);
             },
         ];
         $this->dataTableAddColumns = [

@@ -29,31 +29,30 @@
                             </div>
                         </div>
                         <div class="col-sm-4">
-                            <button type="button" class="mt-9 float-end btn  btn-primary btn-add-product"><i
-                                    class="bi bi-plus"></i></button>
+                            <label class="form-label d-none d-sm-block">&nbsp;</label>
+                            <button type="button" class="btn btn-light-primary w-100 btn-add-product">
+                                <i class="bi bi-plus-lg me-1"></i> Add
+                            </button>
                         </div>
                         <div class="col-md-12 fv-row">
-                            <table class="table">
-                                <tr>
-                                    <thead>
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
                                         <th>Product</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
                                         <th>Total</th>
-                                    </thead>
-                                    <tbody id="product_wrapper">
-
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td><input disabled type="number" class="form-control form-control-solid"
-                                                    value="0" id="total"></td>
-                                        </tr>
-                                    </tfoot>
-                                </tr>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="product_wrapper"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">Grand Total</td>
+                                        <td colspan="2"><input disabled type="number"
+                                                class="form-control form-control-solid" value="0" id="total"></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <div class="col-md-12">

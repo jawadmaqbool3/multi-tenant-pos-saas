@@ -11,16 +11,17 @@
 
     $('#add_stock_modal #product_wrapper').append(
     `<tr>
-        <td width="40%" class="p-0"><select name="product[]" id=""
-                class="select2_ form-control product  rounded-0">${html}</select></td>
-        <td class="rounded-0 p-0"><input type="number" name="quantity[]" placeholder="Quantity" id=""
-                class="rounded-0 form-control  quantity"></td>
-        <td class="p-0"><input type="number" placeholder="Purchase" name="purchase[]" id=""
-                class="form-control rounded-0 purchase"></td>
-        <td class="p-0"><input type="number" placeholder="Retail" name="retail[]" id=""
-                class="form-control rounded-0 retail"></td>
-        <td class="p-0"><button type="button" class="btn-danger btn-delete btn px-1 rounded-0"><i
-                    class="bi bi-trash fs-2 fw-bolder"></i></button></td>
+        <td style="min-width: 220px;"><select name="product[]" id=""
+                class="select2_ form-control product">${html}</select></td>
+        <td><input type="number" name="quantity[]" placeholder="Quantity" id=""
+                class="form-control quantity"></td>
+        <td><input type="number" placeholder="Purchase" name="purchase[]" id=""
+                class="form-control purchase"></td>
+        <td><input type="number" placeholder="Retail" name="retail[]" id=""
+                class="form-control retail"></td>
+        <td class="text-end"><button type="button" title="Remove" id=""
+                class="btn btn-icon btn-sm btn-light-danger btn-delete"><i
+                    class="bi bi-trash"></i></button></td>
     </tr>`
     );
     $('#add_stock_modal #product_wrapper .product').each(function() {

@@ -29,9 +29,16 @@ class DataTableBuilder
         return $table->rawColumns(array_values(array_unique($rawColumns)))->make(true);
     }
 
-    public function statusButton($text, $color)
+    public function statusBadge($text, $color)
     {
-        return '<button class="btn btn-sm ' . $color . '">' . ucwords($text) . '</button>';
+        $tone = str_replace('btn-', '', $color);
+
+        if (!in_array($tone, ['success', 'danger', 'warning', 'primary', 'info', 'secondary', 'dark'], true)) {
+            $tone = 'secondary';
+        }
+
+        return '<span class="badge badge-light-' . $tone . ' badge-status">'
+            . '<span class="badge-status-dot"></span>' . ucwords($text) . '</span>';
     }
 
     public function thumbnail($directory, $file)

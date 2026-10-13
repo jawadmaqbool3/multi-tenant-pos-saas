@@ -17,7 +17,7 @@ class PurchaseOrderRepository extends BaseRepository
 
         $this->dataTableEditColumns = [
             'status' => function ($order) {
-                return $this->dt->statusButton($order->status, $order->status == 'generated' ? 'btn-success' : 'btn-danger');
+                return $this->dt->statusBadge($order->status, $order->status == 'generated' ? 'btn-success' : 'btn-danger');
             },
             'created_at' => function ($order) {
                 return Carbon::create($order->created_at)->format('d M, Y h:i A');

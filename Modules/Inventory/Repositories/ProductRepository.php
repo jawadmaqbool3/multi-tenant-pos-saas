@@ -19,7 +19,7 @@ class ProductRepository extends BaseRepository
                 return $this->dt->thumbnail('assets/media/products/thumbs', $product->thumbnail);
             },
             'status' => function ($product) {
-                return $this->dt->statusButton(...$this->productStatus($product));
+                return $this->dt->statusBadge(...$this->productStatus($product));
             },
         ];
         $this->dataTableAddColumns = [

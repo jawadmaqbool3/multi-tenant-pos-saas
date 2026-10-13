@@ -24,7 +24,7 @@ class OrderRepository extends BaseRepository
                 } else {
                     $color = 'btn-danger';
                 }
-                return $this->dt->statusButton($order->status, $color);
+                return $this->dt->statusBadge($order->status, $color);
             },
             'created_at' => function ($order) {
                 return (new Carbon($order->created_at))->format('d M, Y h:m A');
