@@ -14,7 +14,7 @@ Route::group(['middleware' => ['auth']], function () {
         'as' => 'dashboard',
     ]);
 
-    Route::group(['middleware' => ['role:superadmin']], function () {
+    Route::group(['middleware' => ['role:admin']], function () {
         Route::resource('companies', CompanyController::class);
     });
 

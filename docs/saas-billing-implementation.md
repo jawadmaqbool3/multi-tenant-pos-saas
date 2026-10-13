@@ -503,7 +503,7 @@ middleware, and `webhook.php` with no `web` group.
 > Each phase is implemented on its own branch (`phase/<n>-<slug>`) and merged
 > into `main` when complete. Check the box when merged.
 
-- [ ] **Phase 1 — Role rename (C)** — code refs, seeders, data migration, login
+- [x] **Phase 1 — Role rename (C)** — code refs, seeders, data migration, login
   label; run tests.
 - [ ] **Phase 2 — Scaffold** — Stripe SDK, `config/billing.php`, env keys, module
   registration, `BillingServiceProvider`, `StripeService` + exception.

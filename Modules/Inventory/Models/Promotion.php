@@ -14,7 +14,7 @@ class Promotion extends UIDModel
 
     public function scopeFilter($query)
     {
-        if (auth()->user()->hasRole('superadmin')) {
+        if (auth()->user()->hasRole('admin')) {
             return $query;
         } else {
             return $query->where('company_id', auth()->user()->company_id);

@@ -184,14 +184,14 @@ class RolePermissionSeeder extends Seeder
         $this->seedPermissions($this->platformModules, true);
 
         $roles = [
-            'superadmin',
-            'employee',
             'admin',
+            'company',
             'manager',
+            'employee',
             'customer',
         ];
 
-        $superAdminRole = null;
+        $platformRole = null;
         foreach ($roles as $key => $role) {
             $roleModel = Role::firstOrCreate([
                 'name' => $role,
@@ -201,24 +201,24 @@ class RolePermissionSeeder extends Seeder
             ]);
             $roleModel->refresh();
             if ($key == 0) {
-                $superAdminRole = $roleModel;
+                $platformRole = $roleModel;
             }
         }
 
-        if ($superAdminRole) {
+        if ($platformRole) {
             foreach (Permission::where('company_id', null)->get() as $permission) {
                 PermissionRole::firstOrCreate([
-                    'role_id' => $superAdminRole->id,
+                    'role_id' => $platformRole->id,
                     'permission_id' => $permission->id,
                 ]);
             }
         }
 
         $superAdmin = User::where('email', 'superadmin@gmail.com')->first();
-        if ($superAdmin && $superAdminRole) {
+        if ($superAdmin && $platformRole) {
             UserRole::firstOrCreate([
                 'user_id' => $superAdmin->id,
-                'role_id' => $superAdminRole->id,
+                'role_id' => $platformRole->id,
             ]);
         }
     }

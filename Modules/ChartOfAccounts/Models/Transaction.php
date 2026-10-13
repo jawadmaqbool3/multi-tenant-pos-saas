@@ -13,7 +13,7 @@ class Transaction extends Model
 
     public function scopeFilter($query)
     {
-        if (auth()->user()->hasRole('superadmin')) {
+        if (auth()->user()->hasRole('admin')) {
             return $query;
         }
         return $query->whereHas('voucher.voucherType', function ($query) {

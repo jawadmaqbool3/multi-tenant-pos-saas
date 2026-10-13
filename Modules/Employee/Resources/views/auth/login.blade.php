@@ -76,9 +76,9 @@
 
                             <div class="d-flex gap-3 mb-8">
                                 <button type="button" class="btn btn-light-primary flex-fill"
-                                    onclick="fillCredentials('superadmin@gmail.com', '12345678')">Superadmin Login</button>
+                                    onclick="fillCredentials('superadmin@gmail.com', '12345678')">Admin Login</button>
                                 <button type="button" class="btn btn-light-success flex-fill"
-                                    onclick="fillCredentials('admin@gmail.com', '12345678')">Admin Login</button>
+                                    onclick="fillCredentials('admin@gmail.com', '12345678')">Company Login</button>
                             </div>
 
                             <div class="d-grid mb-10">

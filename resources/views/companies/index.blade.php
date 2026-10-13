@@ -81,7 +81,7 @@
                             <th class="fw-bold p-0">SR#</th>
                             <th class="fw-bold p-0">Logo</th>
                             <th class="fw-bold p-0 min-w-150px text-start">Name</th>
-                            @if (auth()->user()->hasRole('superadmin'))
+                            @if (auth()->user()->hasRole('admin'))
                                 <th class="fw-bold p-0">Manager</th>
                             @endif
                             <th class="fw-bold p-0">Status</th>
@@ -119,7 +119,7 @@
                     {
                         "data": "setting.name"
                     },
-                    @if (auth()->user()->hasRole('superadmin'))
+                    @if (auth()->user()->hasRole('admin'))
                         {
                             "data": "manager.name",
                         },

@@ -29,8 +29,8 @@ class HomeController extends Controller
             }
         }
 
-        if (auth()->user()->hasRole('superadmin')) {
-            return view('dashboard.superadmin', [
+        if (auth()->user()->hasRole('admin')) {
+            return view('dashboard.admin', [
                 'stats' => $this->service->getSuperadminStats(),
             ]);
         }

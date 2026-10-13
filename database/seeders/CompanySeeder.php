@@ -46,13 +46,13 @@ class CompanySeeder extends Seeder
             ]
         );
 
-        $adminRole = Role::firstOrCreate([
-            'name' => 'admin',
+        $companyRole = Role::firstOrCreate([
+            'name' => 'company',
             'company_id' => $company->id,
         ], [
             'status' => 'active',
         ]);
-        $adminRole->refresh();
+        $companyRole->refresh();
 
         foreach (Permission::where('company_id', null)->where('is_platform', false)->get() as $permission) {
             $companyPermission = Permission::firstOrCreate([
@@ -64,7 +64,7 @@ class CompanySeeder extends Seeder
             ]);
             $companyPermission->refresh();
             PermissionRole::firstOrCreate([
-                'role_id' => $adminRole->id,
+                'role_id' => $companyRole->id,
                 'permission_id' => $companyPermission->id,
             ]);
         }
@@ -76,7 +76,7 @@ class CompanySeeder extends Seeder
 
             UserRole::firstOrCreate([
                 'user_id' => $owner->id,
-                'role_id' => $adminRole->id,
+                'role_id' => $companyRole->id,
             ]);
         }
 
