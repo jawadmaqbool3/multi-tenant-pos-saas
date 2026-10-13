@@ -11,6 +11,7 @@ return [
         'config' => 'Config',
     ],
     'enabled' => [
+        'Billing',
         'ChartOfAccounts',
         'Employee',
         'Inventory',

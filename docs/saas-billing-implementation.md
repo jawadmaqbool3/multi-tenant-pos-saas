@@ -505,7 +505,7 @@ middleware, and `webhook.php` with no `web` group.
 
 - [x] **Phase 1 — Role rename (C)** — code refs, seeders, data migration, login
   label; run tests.
-- [ ] **Phase 2 — Scaffold** — Stripe SDK, `config/billing.php`, env keys, module
+- [x] **Phase 2 — Scaffold** — Stripe SDK, `config/billing.php`, env keys, module
   registration, `BillingServiceProvider`, `StripeService` + exception.
 - [ ] **Phase 3 — Schema & models** — all migrations, `UIDModel`-based models,
   repositories.
