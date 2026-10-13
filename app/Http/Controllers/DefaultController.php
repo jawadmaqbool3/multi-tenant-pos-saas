@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
 use App\Services\DefaultService;
 
 class DefaultController extends Controller
@@ -14,17 +13,17 @@ class DefaultController extends Controller
         $this->service = $service ?: app(DefaultService::class);
     }
 
-    public function initiateAccounts(Company $company = null)
+    public function initiateAccounts($company = null)
     {
         return $this->service->initiateAccounts($company);
     }
 
-    public function initiateVouchers(Company $company = null)
+    public function initiateVouchers($company = null)
     {
         return $this->service->initiateVouchers($company);
     }
 
-    public function initiateAccountSettings(Company $company = null)
+    public function initiateAccountSettings($company = null)
     {
         return $this->service->initiateAccountSettings($company);
     }

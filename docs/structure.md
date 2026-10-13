@@ -295,9 +295,11 @@ Request → Route (middlewares allowed)
 ```
 
 **Strict Constraints:**
-- **Controllers** MUST NOT directly import or instantiate Models or Repositories. All data access must go through Services.
-- **Services** MUST NOT directly import Models. Data access must go through Repositories. Services may work with model instances returned by repositories, but should not `use` Model classes for queries.
+- **Controllers** may import Models for type hints and route model binding only. They MUST NOT perform direct database queries using Models (no `Model::find()`, `Model::where()`, etc.) and MUST NOT call Repositories directly. All data access must go through Services.
+- **Services** may import/use Models for type hints and return types only. They MUST NOT perform direct database queries using Models. All data access must go through Repositories.
 - **Repositories** are the only layer permitted to directly interact with Eloquent Models and perform database queries.
+
+> See [architecture-constraints.md](./architecture-constraints.md) for detailed rules and examples.
 - **Routes** may import/apply middleware only.
 - Helpers and utility classes may be imported across layers as needed.
 

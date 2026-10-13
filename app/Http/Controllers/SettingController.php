@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Services\SettingService;
 use Illuminate\Http\Request;
@@ -17,13 +16,13 @@ class SettingController extends Controller
         $this->service = $service;
     }
 
-    public function index(Setting $setting = null)
+    public function index($setting = null)
     {
         $setting = $this->service->getSetting($setting);
         return view('settings.generalSettings', compact('setting'));
     }
 
-    public function update(UpdateSettingRequest $request, Setting $setting = null)
+    public function update(UpdateSettingRequest $request, $setting = null)
     {
         DB::beginTransaction();
         try {

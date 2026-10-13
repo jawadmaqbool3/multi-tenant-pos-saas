@@ -8,7 +8,6 @@ use Modules\ChartOfAccounts\Services\AccountSettingService;
 use Modules\ChartOfAccounts\Services\TransactionService;
 use Modules\ChartOfAccounts\Services\VoucherService;
 use Modules\Inventory\Services\StockHistoryService;
-use Modules\Supplier\Models\Supplier;
 use Modules\Supplier\Repositories\SupplierRepository;
 use Modules\Supplier\Repositories\VoucherSupplierRepository;
 use Carbon\Carbon;

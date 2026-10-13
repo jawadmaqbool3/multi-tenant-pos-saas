@@ -4,7 +4,6 @@ namespace Modules\Order\Services;
 
 use App\Exceptions\InsufficientStockException;
 use App\Exceptions\NoProductsSelectedException;
-use Modules\Order\Models\Order;
 use Modules\ChartOfAccounts\Services\AccountSettingService;
 use Modules\ChartOfAccounts\Services\TransactionService;
 use Modules\Order\Repositories\OrderProductRepository;

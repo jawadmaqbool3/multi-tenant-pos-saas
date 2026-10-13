@@ -21,15 +21,15 @@ Request → Route (middlewares)
 | Layer | Can Import | Cannot Import |
 |---|---|---|
 | **Routes** | Middlewares | Controllers, Services, Repositories, Models |
-| **Controllers** | Helpers, Error Handlers, Services, Form Requests | Repositories, Models (Eloquent models) |
-| **Services** | Helpers, Other Services, Repositories | Models (Eloquent models). Note: Services may receive/return model instances from repositories, but must not `use` Model classes directly for database operations. |
+| **Controllers** | Helpers, Error Handlers, Services, Form Requests, Models (for type hints/route model binding only) | Repositories. Controllers should not perform database queries using Models. |
+| **Services** | Helpers, Other Services, Repositories, Models (for type hints/return types only) | Services may use Models for type hints, but must not perform database queries directly on Model classes. All DB operations go through Repositories. |
 | **Repositories** | Models (Eloquent models), Helpers | Controllers, Services, Routes |
 
 ## Enforcement Guidelines
 
-1. **Controllers**: If you need data access, create or call a Service method. Never do `Product::find()`, `ProductRepository::find()`, or import `Product` model in a controller.
-2. **Services**: All database queries must go through Repositories. If a repository doesn't exist for an operation, create one. Avoid direct model usage.
-3. **Repositories**: This is the data access layer - it's the only place where Eloquent ORM should be used directly.
+1. **Controllers**: If you need data access, create or call a Service method. Controllers may use Models for route model binding/type hints, but must NOT perform database queries (no `Product::find()`, `Product::where()`, etc.). Also must not call Repositories directly.
+2. **Services**: All database queries must go through Repositories. If a repository doesn't exist for an operation, create one. Services may use Models for type hints/return types, but must NOT call Model query methods directly (no `Model::query()`, `Model::find()`, static calls).
+3. **Repositories**: This is the data access layer - it's the only place where Eloquent ORM/Model static/instance query methods should be used directly.
 4. **Transactions**: Controllers typically manage DB transactions and call services within them (as seen in existing codebase patterns).
 
 ## Current Violations
@@ -37,34 +37,14 @@ Request → Route (middlewares)
 The codebase currently has some violations of these rules. See the analysis below for what needs to be refactored.
 
 ### Controller Violations (Must Fix)
-Controllers importing Models or Repositories directly:
-- `app/Http/Controllers/DashboardSettingController.php` - imports `DashboardSetting` model
-- `app/Http/Controllers/SettingController.php` - imports `Setting` model  
-- `app/Http/Controllers/CompanyController.php` - imports `Company` model
-- `app/Http/Controllers/AsideSettingController.php` - imports `AsideSetting` model
-- `app/Http/Controllers/DefaultController.php` - imports `Company` model
-- `Modules/ChartOfAccounts/Http/Controllers/AccountSettingController.php` - imports `Company` model
-- `Modules/ChartOfAccounts/Http/Controllers/VoucherTypeController.php` - imports `VoucherType` model
-- `Modules/ChartOfAccounts/Http/Controllers/VoucherController.php` - imports `Voucher` model
-- `Modules/RBAC/Http/Controllers/RoleController.php` - imports `Role` model
-- `Modules/RBAC/Http/Controllers/PermissionController.php` - imports `Permission` model
-- `Modules/Order/Http/Controllers/OrderController.php` - imports `Order` model
-- `Modules/Supplier/Http/Controllers/PurchaseOrderController.php` - imports `PurchaseOrder` model
-- `Modules/Supplier/Http/Controllers/SupplierController.php` - imports `Supplier` model
-- `Modules/Inventory/Http/Controllers/ProductController.php` - imports `Product` model
-- `Modules/Inventory/Http/Controllers/CategoryController.php` - imports `Category` model
-- `Modules/Inventory/Http/Controllers/PromotionController.php` - imports `Promotion` model
-- `Modules/Employee/Http/Controllers/UserController.php` - imports `User` model
-- `Modules/Employee/Http/Controllers/AttendanceHistoryController.php` - imports `AttendanceHistory` model
-- `Modules/Employee/Http/Controllers/EmployeeController.php` - imports `User` model
+Controllers importing Models or Repositories directly for non-type-hint purposes (or doing direct queries):
+- Many controllers import Models for route model binding - this is now allowed if only used as type hints. However, no direct DB queries using Models.
+- Controllers must not import Repositories. If they do, that needs to be fixed to go through Services.
 
 ### Service Violations (Should Fix)
-Services importing Models directly instead of going through Repositories:
-- `app/Services/HomeService.php` - imports `Company`, `User` models
-- `app/Services/SettingService.php` - imports `Setting` model
-- `Modules/Order/Services/OrderService.php` - imports `Order` model
-- `Modules/Supplier/Services/PurchaseOrderService.php` - imports `PurchaseOrder` model
-- `Modules/Supplier/Services/SupplierService.php` - imports `Supplier` model
-- `Modules/Inventory/Services/CategoryService.php` - imports `Category` model
+Services performing direct Model queries or importing Models for query operations (type hints are fine, but direct DB access via Models is not):
+- `app/Services/HomeService.php` - uses `Company::count()`, `Company::where()`, `User::whereNotNull()` (direct model queries)
+- `app/Services/SettingService.php` - may be fine with type hints; check for direct model queries
+- Other services importing Models for query operations need to use Repositories instead
 
 *Note: ServiceProviders importing models for morphMap configuration is acceptable as this is registration/config code, not business logic.*

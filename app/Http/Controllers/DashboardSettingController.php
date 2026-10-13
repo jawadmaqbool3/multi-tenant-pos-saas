@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DashboardSetting;
 use App\Services\DashboardSettingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +47,7 @@ class DashboardSettingController extends Controller
      * @param  \App\Models\DashboardSetting  $dashboardSetting
      * @return \Illuminate\Http\Response
      */
-    public function show(DashboardSetting $dashboardSetting)
+    public function show($id = null)
     {
         //
     }
@@ -56,10 +55,9 @@ class DashboardSettingController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\DashboardSetting  $dashboardSetting
      * @return \Illuminate\Http\Response
      */
-    public function edit(DashboardSetting $dashboardSetting)
+    public function edit($id = null)
     {
         //
     }
@@ -94,7 +92,7 @@ class DashboardSettingController extends Controller
      * @param  \App\Models\DashboardSetting  $dashboardSetting
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DashboardSetting $dashboardSetting)
+    public function destroy($dashboardSetting = null)
     {
         $this->service->destroy($dashboardSetting);
     }

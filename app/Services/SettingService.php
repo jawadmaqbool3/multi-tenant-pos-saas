@@ -6,7 +6,6 @@ use App\Core\Helper;
 use App\Exceptions\ImageUploadFailedException;
 use App\Exceptions\SettingNotFoundException;
 use Illuminate\Support\Facades\Artisan;
-use App\Models\Setting;
 use Modules\RBAC\Repositories\PermissionRepository;
 use Modules\RBAC\Repositories\RoleRepository;
 use App\Repositories\SettingRepository;
@@ -69,9 +68,9 @@ class SettingService
         $this->logoDirectories = $directories;
     }
 
-    public function getSetting(Setting $setting = null)
+    public function getSetting($setting = null)
     {
-        if ($setting == false) {
+        if ($setting == false || $setting == null) {
             $setting = $this->setting->query()->filter()->first();
         }
         return $setting;
@@ -79,12 +78,12 @@ class SettingService
 
     public function update($request, $setting)
     {
-        if ($setting == false) {
+        if ($setting == false || $setting == null) {
             $setting = $this->setting->query()->filter()->first();
         }
         $filename = $setting->logo;
         if ($request->file('logo')) {
-            if ($setting == false) {
+            if ($setting == false || $setting == null) {
                 throw new SettingNotFoundException();
             }
             $filename = $this->logoUpload($request->file('logo'), $setting->logo);

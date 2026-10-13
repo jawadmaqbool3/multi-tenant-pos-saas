@@ -4,7 +4,6 @@ namespace Modules\ChartOfAccounts\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 
-use App\Models\Company;
 use Modules\ChartOfAccounts\Services\AccountSettingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,14 +17,14 @@ class AccountSettingController extends Controller
         $this->service = $service;
     }
 
-    public function index(Company $company = null)
+    public function index($company = null)
     {
         $accountSetting = $this->service->getAccountSettings($company);
         $accounts = $this->service->getAccounts();
         return view('chartofaccounts::settings.accountSettings', compact('accountSetting', 'accounts'));
     }
 
-    public function update(Request $request, Company $company = null)
+    public function update(Request $request, $company = null)
     {
         DB::beginTransaction();
         try {

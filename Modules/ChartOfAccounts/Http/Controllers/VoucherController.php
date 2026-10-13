@@ -4,7 +4,6 @@ namespace Modules\ChartOfAccounts\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 
-use Modules\ChartOfAccounts\Models\Voucher;
 use Modules\ChartOfAccounts\Services\VoucherService;
 use Illuminate\Http\Request;
 
@@ -59,7 +58,7 @@ class VoucherController extends Controller
      * @param  \Modules\ChartOfAccounts\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function show(Voucher $voucher)
+    public function show($voucher = null)
     {
         //
     }
@@ -70,7 +69,7 @@ class VoucherController extends Controller
      * @param  \Modules\ChartOfAccounts\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function edit(Voucher $voucher)
+    public function edit($voucher = null)
     {
         //
     }
@@ -79,10 +78,9 @@ class VoucherController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Modules\ChartOfAccounts\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Voucher $voucher)
+    public function update(Request $request, $voucher = null)
     {
         //
     }
@@ -90,16 +88,15 @@ class VoucherController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Modules\ChartOfAccounts\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Voucher $voucher)
+    public function destroy($voucher = null)
     {
         //
     }
 
 
-    public function print(Voucher $voucher)
+    public function print($voucher = null)
     {
         return view('chartofaccounts::vouchers.print', compact('voucher'));
     }

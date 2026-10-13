@@ -4,7 +4,6 @@ namespace Modules\RBAC\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 
-use Modules\RBAC\Models\Role;
 use Modules\RBAC\Http\Requests\StoreRoleRequest;
 use Modules\RBAC\Http\Requests\UpdateRoleRequest;
 use Modules\RBAC\Services\RoleService;
@@ -75,7 +74,7 @@ class RoleController extends Controller
      * @param  \Modules\RBAC\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function show(Role $role)
+    public function show($role = null)
     {
         //
     }
@@ -83,10 +82,9 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Modules\RBAC\Models\Role  $role
      * @return \Illuminate\Http\Response
      */
-    public function edit(Role $role)
+    public function edit($role = null)
     {
         return view('rbac::roles.edit', compact('role'));
     }

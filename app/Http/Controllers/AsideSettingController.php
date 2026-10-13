@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AsideSetting;
 use App\Http\Requests\UpdateAsideSettingRequest;
 use App\Services\AsideSettingService;
 use Illuminate\Http\Request;
@@ -36,12 +35,12 @@ class AsideSettingController extends Controller
         //
     }
 
-    public function show(AsideSetting $asideSetting)
+    public function show($id = null)
     {
         //
     }
 
-    public function edit(AsideSetting $asideSetting)
+    public function edit($id = null)
     {
         //
     }
@@ -64,7 +63,7 @@ class AsideSettingController extends Controller
         }
     }
 
-    public function destroy(AsideSetting $asideSetting)
+    public function destroy($id = null)
     {
         //
     }

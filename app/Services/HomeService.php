@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Company;
 use Modules\Order\Repositories\OrderRepository;
 use Modules\Inventory\Repositories\ProductRepository;
 use Modules\ChartOfAccounts\Repositories\TransactionRepository;
 use Modules\Employee\Repositories\UserRepository;
-use Modules\Employee\Models\User;
+use App\Repositories\CompanyRepository;
 use Carbon\Carbon;
 
 class HomeService
@@ -21,12 +20,14 @@ class HomeService
         OrderRepository $order,
         ProductRepository $product,
         TransactionRepository $transaction,
-        UserRepository $user
+        UserRepository $user,
+        CompanyRepository $company
     ) {
         $this->order = $order;
         $this->product = $product;
         $this->transaction = $transaction;
         $this->user = $user;
+        $this->company = $company;
     }
 
     public function getCharts()
@@ -228,11 +229,11 @@ class HomeService
     public function getSuperadminStats()
     {
         return [
-            'companies' => Company::count(),
-            'activeCompanies' => Company::where('status', 'active')->count(),
-            'inactiveCompanies' => Company::where('status', 'inactive')->count(),
-            'users' => User::whereNotNull('company_id')->count(),
-            'recentCompanies' => Company::with('setting')->latest()->limit(5)->get(),
+            'companies' => $this->company->query()->count(),
+            'activeCompanies' => $this->company->query()->where('status', 'active')->count(),
+            'inactiveCompanies' => $this->company->query()->where('status', 'inactive')->count(),
+            'users' => $this->user->query()->whereNotNull('company_id')->count(),
+            'recentCompanies' => $this->company->query()->with('setting')->latest()->limit(5)->get(),
         ];
     }
 }
