@@ -30,6 +30,23 @@ class RolePermissionSeeder extends Seeder
             'view tenant',
             'manage subscription',
         ],
+
+        "Billing" => [
+            'view billing plan',
+            'create billing plan',
+            'edit billing plan',
+            'delete billing plan',
+            'view subscription',
+            'view billing invoice',
+            'view coupon',
+            'create coupon',
+            'edit coupon',
+            'delete coupon',
+            'assign plan',
+            'suspend company',
+            'view company billing',
+            'view billing report',
+        ],
     ];
 
     /**

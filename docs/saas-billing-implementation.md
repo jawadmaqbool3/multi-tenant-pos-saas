@@ -509,7 +509,7 @@ middleware, and `webhook.php` with no `web` group.
   registration, `BillingServiceProvider`, `StripeService` + exception.
 - [x] **Phase 3 — Schema & models** — all migrations, `UIDModel`-based models,
   repositories.
-- [ ] **Phase 4 — Plans (A)** — plan CRUD UI (details/prices/modules/permissions/
+- [x] **Phase 4 — Plans (A)** — plan CRUD UI (details/prices/modules/permissions/
   limits) + `StripeSyncService`.
 - [ ] **Phase 5 — Public pricing** — pricing page + plan feature/limit summary.
 - [ ] **Phase 6 — Self-signup (B)** — signup request, pre-checkout account,

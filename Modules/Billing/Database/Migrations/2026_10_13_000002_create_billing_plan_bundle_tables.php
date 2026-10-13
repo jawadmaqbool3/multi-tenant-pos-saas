@@ -47,7 +47,7 @@ class CreateBillingPlanBundleTables extends Migration
             $table->uuid('uid');
             $table->unsignedInteger('plan_id');
             $table->string('resource_key');
-            $table->unsignedInteger('limit_value')->nullable();
+            $table->integer('limit_value')->nullable();
             $table->timestamps();
 
             $table->unique(['plan_id', 'resource_key'], 'billing_plan_limits_unique');
