@@ -62,16 +62,18 @@
                             <div class="text-center mb-11">
 
                                 <h1 class="text-dark fw-bolder mb-3">Sign In</h1>
-                                <div class="text-gray-500 fw-semibold fs-6">Your Own Managment</div>
+                                <div class="text-gray-500 fw-semibold fs-6">Your own management</div>
                             </div>
 
-                            <div class="fv-row mb-8">
-                                <input type="text" placeholder="Email" name="email" autocomplete="off"
-                                    class="form-control bg-transparent" />
+                            <div class="fv-row mb-5">
+                                <label class="form-label fw-semibold text-gray-700">Email</label>
+                                <input type="text" placeholder="name@company.com" name="email" autocomplete="off"
+                                    class="form-control form-control-solid" />
                             </div>
                             <div class="fv-row mb-8">
-                                <input type="password" placeholder="Password" name="password" autocomplete="off"
-                                    class="form-control bg-transparent" />
+                                <label class="form-label fw-semibold text-gray-700">Password</label>
+                                <input type="password" placeholder="Your password" name="password" autocomplete="off"
+                                    class="form-control form-control-solid" />
                             </div>
 
                             <div class="d-flex gap-3 mb-8">
@@ -88,27 +90,21 @@
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                                 </button>
                             </div>
-                            <h1 class=" text-dark fs-2qx fw-bolder text-center mb-7">Fast,
-                                Efficient
-                                and
-                                Productive</h1>
+                            <div class="text-center text-muted fw-semibold fs-6 mt-4">Fast, efficient and
+                                productive.</div>
                         </form>
                     </div>
                 </div>
 
             </div>
-            @php
-                $rand = rand(1, 4);
-            @endphp
-            <div class="d-flex flex-lg-row-fluid w-lg-50 bgi-size-cover bgi-position-center order-1 order-lg-2"
-                style="background-image: url({{ asset('assets/media/misc/auth-bg' . $rand . '.jpg') }})">
+            <div class="d-none d-lg-flex flex-lg-row-fluid w-lg-50 order-1 order-lg-2"
+                style="background-image: linear-gradient(135deg, #4f46e5 0%, #312e81 60%, #0f172a 100%);">
                 <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
-                    <img alt="Logo" class="rounded" src="{{ asset('assets/media/small/logo/' . $setting->logo) }}"
-                        class="h-60px h-lg-75px" />
-                    <img class="d-none d-lg-block mx-auto w-275px w-md-50 w-xl-500px mb-10 mb-lg-20"
-                        src="{{ asset('assets/media/misc/auth-screens.png') }}" alt="" />
-
-
+                    <img alt="Logo" src="{{ asset('assets/media/small/logo/' . $setting->logo) }}"
+                        class="h-60px h-lg-75px rounded mb-10" />
+                    <h2 class="text-white fw-bolder text-center mb-4">{{ $setting->name }}</h2>
+                    <div class="fw-semibold text-center" style="color: rgba(255,255,255,.7); max-width: 350px;">Point
+                        of sale, inventory and reporting in one place.</div>
                 </div>
             </div>
         </div>

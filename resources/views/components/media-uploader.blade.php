@@ -14,7 +14,7 @@
                                     @foreach ($images as $image)
                                         <div class="col-sm-6 col-md-4 file-upload-box mt-1 position-relative ">
 
-                                            <div class="text-white text-center image-box _image-box">
+                                            <div class="text-dark text-center image-box _image-box">
                                                 <button class="btn-remove-image text-danger"><i
                                                         class="fa fa-times"></i></button>
                                                 <img src="{{ asset($directory) . '/' . $image }}"
@@ -26,8 +26,8 @@
                                     @endforeach
                                 @endif
                                 <div class="col-sm-6 col-md-4 file-upload-box mt-1  position-relative">
-                                    <div class="text-white text-center upload-box _image-box">
-                                        <i class="fa fa-upload fs-1 mt-5"></i>
+                                    <div class="text-primary text-center upload-box _image-box">
+                                        <i class="fa fa-upload fs-1"></i>
                                     </div>
                                     <input type="file" name="images[]" class="file-selector" style="display:none"
                                         id="">

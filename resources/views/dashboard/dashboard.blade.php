@@ -8,7 +8,6 @@
 
                         <div class="page-title ">
                             <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
-                                eCommerce
                                 Dashboard</h1>
                             <x-breadcrums :links="[
                                 'Home' => route('dashboard'),
@@ -30,7 +29,7 @@
                             @endcan
                             @can('place order')
                                 <a data-bs-target="#place_order_modal" data-bs-toggle="modal"
-                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold bg-body btn-color-gray-700 btn-active-color-primary btn-place-order">Create
+                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold btn-light-primary btn-place-order">Create
                                     Sale Order</a>
                             @endcan
                         </div>

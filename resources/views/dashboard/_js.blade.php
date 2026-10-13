@@ -113,6 +113,7 @@
         }
         @can('dashboard daily average sales')
             function averageSalesChart(series) {
+                const C = UiTheme.palette();
                 $('#average_sale_wrapper').text(convertToAbbreviation(series.averageSalePerDay));
                 if (series.direction == 'positive') {
                     $('#average_sale_direction').html(directionPostive)
@@ -143,7 +144,7 @@
                         offsetY: -20,
                         style: {
                             fontSize: '12px',
-                            colors: ["#304758"]
+                            colors: [C.label]
                         }
                     },
 
@@ -160,11 +161,11 @@
                             fill: {
                                 type: 'gradient',
                                 gradient: {
-                                    colorFrom: '#D8E3F0',
-                                    colorTo: '#BED1E6',
+                                    colorFrom: C.primary,
+                                    colorTo: C.primary,
                                     stops: [0, 100],
-                                    opacityFrom: 0.4,
-                                    opacityTo: 0.5,
+                                    opacityFrom: 0.18,
+                                    opacityTo: 0.04,
                                 }
                             }
                         },
@@ -195,6 +196,7 @@
         @endcan
         @can('dashboard profit loss report')
             function profitChart(profit) {
+                const C = UiTheme.palette();
                 let revenueWrapper = profit.revenue;
                 let expenseWrapper = profit.expense;
                 let direction = profit.direction;
@@ -220,7 +222,7 @@
                     legend: {
                         show: false
                     },
-                    colors: ['#009ef7', '#f1416c'],
+                    colors: [C.primary, C.danger],
                     dataLabels: {
                         enabled: false
                     },
@@ -270,7 +272,8 @@
                     for (let index = 0; index < customers.todayHeroes.length && index < 7; index++) {
                         const hero = customers.todayHeroes[index];
                         let avatar = null;
-                        let color = ['warning', 'danger', 'success', 'dark'][Math.floor(Math.random() * 4)]
+                        const palette = ['primary', 'success', 'warning', 'info'];
+                        let color = palette[(hero.name || '?').charCodeAt(0) % palette.length];
                         if (hero.image != false) {
                             avatar = `<div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip"
                                         title="${hero.name}">
