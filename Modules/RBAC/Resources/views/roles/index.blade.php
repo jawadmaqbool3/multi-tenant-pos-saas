@@ -79,7 +79,7 @@
                         <tr class="border-0">
                             <th class="fw-bold p-0">SR#</th>
                             <th class="fw-bold p-0 min-w-150px text-start">Name</th>
-                            @role('superadmin')
+                            @role('admin')
                                 <th class="fw-bold p-0 min-w-150px text-start">Company</th>
                             @endrole
                             <th class="fw-bold p-0 min-w-150px text-start">Status</th>
@@ -112,7 +112,7 @@
                     {
                         "data": "name"
                     },
-                    @role('superadmin')
+                    @role('admin')
                         {
                             "data": "company.setting.name"
                         },

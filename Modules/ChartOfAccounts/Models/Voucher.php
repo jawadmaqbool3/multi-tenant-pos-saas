@@ -24,7 +24,7 @@ class Voucher extends UIDModel
 
     public function scopeFilter($query)
     {
-        if (auth()->user()->hasRole('superadmin')) {
+        if (auth()->user()->hasRole('admin')) {
             return $query;
         }
         return $query->whereHas('voucherType', function ($query) {

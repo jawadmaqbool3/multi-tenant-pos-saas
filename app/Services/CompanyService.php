@@ -94,12 +94,12 @@ class CompanyService
             'asidebar' => json_encode($menuLinks),
             'logo' => $companyImage
         ]);
-        $admin_role = $this->role->create([
-            'name' => $request->isManager ? 'manager' : 'admin',
+        $companyRole = $this->role->create([
+            'name' => $request->isManager ? 'manager' : 'company',
             'company_id' => $company->id,
             'status' => $request->status,
         ]);
-        $admin_role->refresh();
+        $companyRole->refresh();
         $password = Hash::make($request->password);
         $user = $this->user->create([
             'name' => $request->name,
@@ -111,7 +111,7 @@ class CompanyService
         ]);
         $user->refresh();
         $this->userRole->create([
-            'role_id' => $admin_role->id,
+            'role_id' => $companyRole->id,
             'user_id' => $user->id
         ]);
         if ($request->roles) {
@@ -139,7 +139,7 @@ class CompanyService
                 ]);
                 $permission->refresh();
                 $this->permissionRole->create([
-                    'role_id' => $admin_role->id,
+                    'role_id' => $companyRole->id,
                     'permission_id' =>  $permission->id
                 ]);
             }

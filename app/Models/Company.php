@@ -13,7 +13,7 @@ class Company extends UIDModel
     protected $guarded = ['id'];
     public function scopeFilter($query)
     {
-        if (!auth()->check() || auth()->user()->hasRole('superadmin')) {
+        if (!auth()->check() || auth()->user()->hasRole('admin')) {
             return $query;
         }
 
