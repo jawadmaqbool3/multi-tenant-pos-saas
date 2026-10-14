@@ -1255,6 +1255,20 @@ body::-webkit-scrollbar-thumb,
     background: linear-gradient(to bottom, var(--ui-brand), var(--ui-mint));
 }
 
+/* Hover — the sidebar is dark in BOTH themes, so never rely on the
+   theme-dependent --kt-menu-link-bg-color-hover (near-white in light theme,
+   which made the label unreadable). Use a neutral overlay instead. */
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link:not(.active):hover {
+    background-color: rgba(255, 255, 255, 0.045);
+    color: #c3c9da !important;
+}
+
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link:not(.active):hover .menu-title,
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link:not(.active):hover .menu-icon,
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link:not(.active):hover .menu-icon i {
+    color: #c3c9da !important;
+}
+
 /* Brand lockup tile */
 .ui-logo-tile {
     display: inline-flex;
