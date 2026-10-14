@@ -191,6 +191,25 @@ class AsideSettingService
         }));
     }
 
+    /**
+     * Menu links that may be assigned to the given (or current) account.
+     * Platform accounts may use every section; company accounts may not use
+     * platform-only sections such as SaaS.
+     *
+     * @param  mixed  $user
+     * @return array
+     */
+    public function menuLinksFor($user = null)
+    {
+        $user = $user ?: auth()->user();
+
+        if ($user && method_exists($user, 'isPlatformAdmin') && $user->isPlatformAdmin()) {
+            return $this->menuLinks;
+        }
+
+        return $this->getTenantMenuLinks();
+    }
+
     public function getSettings()
     {
         $settings = json_decode($this->settings->query()->select('asidebar')->filter()->first()->asidebar);
@@ -210,7 +229,7 @@ class AsideSettingService
 
     public function reset()
     {
-        $menu = $this->menuLinks;
+        $menu = $this->menuLinksFor();
         $setting = $this->settings->query()->filter()->first();
         $this->settings->query()->where('id', $setting->id)->update([
             'asidebar' => json_encode($menu)

@@ -84,4 +84,14 @@ class User extends Authenticatable
             return Setting::where('company_id', null)->first();
         }
     }
+
+    /**
+     * A platform (SaaS owner) account is not bound to any company.
+     *
+     * @return bool
+     */
+    public function isPlatformAdmin()
+    {
+        return is_null($this->company_id);
+    }
 }

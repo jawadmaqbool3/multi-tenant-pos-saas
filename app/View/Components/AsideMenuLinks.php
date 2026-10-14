@@ -8,24 +8,108 @@ use Illuminate\View\Component;
 class AsideMenuLinks extends Component
 {
     /**
-     * Create a new component instance.
-     *
-     * @return void
+     * @var array
      */
     public $links;
 
+    /**
+     * When true links render as top-level menu items instead of accordions.
+     *
+     * @var bool
+     */
+    public $flat = false;
+
     public function __construct()
     {
-        $setting = auth()->check() ? auth()->user()->setting() : Setting::where('company_id', null)->first();
-        $categories = $setting ? json_decode($setting->asidebar, true) : [];
+        $this->links = $this->buildLinks();
+    }
 
-        $links =  [
+    /**
+     * Platform (SaaS owner) accounts get a hardcoded menu. Company accounts get
+     * the permission-filtered, database-driven menu that they can customize.
+     *
+     * @return array
+     */
+    protected function buildLinks()
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return [];
+        }
+
+        if (method_exists($user, 'isPlatformAdmin') && $user->isPlatformAdmin()) {
+            $this->flat = true;
+
+            return [
+                [
+                    'title' => 'Pages',
+                    'categories' => $this->platformCategories(),
+                ],
+            ];
+        }
+
+        return $this->filterLinks([
             [
                 'title' => 'Pages',
-                'categories' => is_array($categories) ? $categories : [],
+                'categories' => $this->tenantCategories($user),
+            ],
+        ]);
+    }
+
+    /**
+     * Hardcoded modules available to the super admin.
+     *
+     * @return array
+     */
+    protected function platformCategories()
+    {
+        return [
+            [
+                'name' => 'SaaS',
+                'icon' => 'bi bi-share',
+                'links' => [
+                    [
+                        'title' => 'Companies',
+                        'permission' => 'view company',
+                        'link' => route('companies.index'),
+                        'icon' => 'bi bi-building',
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Billing',
+                'icon' => 'bi bi-bank',
+                'links' => [
+                    [
+                        'title' => 'Plans',
+                        'permission' => 'view billing plan',
+                        'link' => route('billing.plans.index'),
+                        'icon' => 'bi bi-credit-card',
+                    ],
+                    [
+                        'title' => 'Payment Invoices',
+                        'permission' => 'view billing invoice',
+                        'link' => route('billing.invoices.index'),
+                        'icon' => 'bi bi-receipt',
+                    ],
+                ],
             ],
         ];
-        $this->links = $this->filterLinks($links);
+    }
+
+    /**
+     * Database-driven menu assigned to a company (and inherited by its users).
+     *
+     * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+     * @return array
+     */
+    protected function tenantCategories($user)
+    {
+        $setting = $user->setting();
+        $categories = $setting ? json_decode($setting->asidebar, true) : [];
+
+        return is_array($categories) ? $categories : [];
     }
 
     public function filterLinks($links)

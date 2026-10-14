@@ -21,7 +21,7 @@ class AsideSettingController extends Controller
     public function index()
     {
         $settings = $this->service->getSettings()['settings'];
-        $menuLinks = $this->service->getMenuLinks();
+        $menuLinks = $this->service->menuLinksFor();
         return view('settings.asideSettings', compact('settings', 'menuLinks'));
     }
 
