@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSignupRequest;
 use App\Services\SignupService;
 use Illuminate\Support\Facades\DB;
-use Modules\Billing\Models\Plan;
+use Modules\Employee\Models\User;
 
 class SignupController extends Controller
 {
@@ -27,24 +27,12 @@ class SignupController extends Controller
             return redirect()->route('dashboard');
         }
 
-        $plans = Plan::query()
-            ->where('status', 'active')
-            ->where('is_public', true)
-            ->whereHas('prices', function ($query) {
-                $query->where('active', true)->where('unit_amount', '>', 0);
-            })
-            ->with(['prices' => function ($query) {
-                $query->where('active', true)->orderBy('unit_amount');
-            }])
-            ->orderBy('sort')
-            ->orderBy('name')
-            ->get();
-
-        return view('signup.index', compact('plans'));
+        return view('signup.index');
     }
 
     /**
-     * Provision the company + admin account from a self-signup.
+     * Provision the company + admin account from a self-signup, sign the
+     * owner in and send them to the plans/pricing page.
      *
      * @param  \App\Http\Requests\StoreSignupRequest  $request
      * @return \Illuminate\Http\Response
@@ -53,18 +41,28 @@ class SignupController extends Controller
     {
         DB::beginTransaction();
         try {
-            $this->service->register($request);
+            $company = $this->service->register($request);
             DB::commit();
-
-            return response([
-                'success' => true,
-                'message' => 'Your company has been registered. Please sign in to continue.',
-                'redirect' => true,
-                'url' => route('login'),
-            ]);
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
         }
+
+        $user = User::query()
+            ->where('email', $request->email)
+            ->where('company_id', $company->id)
+            ->first();
+
+        if ($user) {
+            auth()->login($user);
+            $request->session()->regenerate();
+        }
+
+        return response([
+            'success' => true,
+            'message' => 'Your workspace is ready. Choose a plan to get started.',
+            'redirect' => true,
+            'url' => route('billing.pricing'),
+        ]);
     }
 }

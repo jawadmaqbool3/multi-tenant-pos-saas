@@ -5,9 +5,7 @@
 @section('content')
     @php
         $setting = App\Models\Setting::where('company_id', null)->first();
-        $hasPlans = $plans->isNotEmpty();
         $steps = [];
-        $steps[] = ['key' => 'plan', 'label' => 'Plan'];
         $steps[] = ['key' => 'company', 'label' => 'Company'];
         $steps[] = ['key' => 'account', 'label' => 'Account'];
         $steps[] = ['key' => 'review', 'label' => 'Review'];
@@ -101,43 +99,6 @@
             }
         }
 
-        .signup-plan {
-            position: relative;
-            display: block;
-            height: 100%;
-            padding: 1.25rem;
-            border: 1px solid #e4e6ef;
-            border-radius: .75rem;
-            cursor: pointer;
-            transition: all .2s ease;
-        }
-
-        .signup-plan:hover {
-            border-color: #b5b5c3;
-        }
-
-        .signup-plan.selected {
-            border-color: #3699ff;
-            box-shadow: 0 0 0 3px rgba(54, 153, 255, .12);
-        }
-
-        .signup-plan-input {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .signup-plan-check {
-            opacity: 0;
-            color: #3699ff;
-            font-weight: 700;
-            transition: opacity .2s ease;
-        }
-
-        .signup-plan.selected .signup-plan-check {
-            opacity: 1;
-        }
-
         .signup-review-row {
             display: flex;
             justify-content: space-between;
@@ -173,57 +134,6 @@
                     <form id="signupForm" data-ajax="true" method="POST" action="{{ route('signup.store') }}"
                         enctype="multipart/form-data" novalidate="novalidate">
                         @csrf
-
-                        @if ($hasPlans)
-                            <div class="signup-pane" data-pane="plan">
-                                <h3 class="fs-4 fw-bold text-dark mb-4">Choose a plan</h3>
-                                <p class="text-muted fw-semibold mb-5">A paid plan is required to use the workspace.</p>
-                                <div class="row g-4">
-                                    @foreach ($plans as $plan)
-                                        <div class="col-md-6">
-                                            <label class="signup-plan">
-                                                <input type="radio" name="plan" value="{{ $plan->uid }}"
-                                                    class="signup-plan-input" {{ $loop->first ? 'checked' : '' }} required>
-                                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                                    <span class="fw-bold text-dark fs-5"
-                                                        data-plan-name>{{ $plan->name }}</span>
-                                                    <span class="signup-plan-check">
-                                                        <x-icon name="check" size="16" />
-                                                    </span>
-                                                </div>
-                                                @if ($plan->description)
-                                                    <p class="text-muted fs-7 mb-3">{{ $plan->description }}</p>
-                                                @endif
-                                                <div class="d-flex flex-wrap align-items-end gap-3">
-                                                    @forelse ($plan->prices as $price)
-                                                        <div>
-                                                            <span
-                                                                class="fs-3 fw-bolder text-dark">{{ number_format($price->unit_amount / 100, 2) }}</span>
-                                                            <span
-                                                                class="text-muted fw-semibold">{{ strtoupper($price->currency) }}</span>
-                                                            <span class="text-muted fs-7">/{{ $price->interval_count > 1 ? $price->interval_count . ' ' : '' }}{{ $price->interval }}</span>
-                                                        </div>
-                                                    @empty
-                                                        <span class="badge badge-light-primary">Free</span>
-                                                    @endforelse
-                                                </div>
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @else
-                            <div class="signup-pane" data-pane="plan">
-                                <h3 class="fs-4 fw-bold text-dark mb-4">Choose a plan</h3>
-                                <div class="alert alert-warning d-flex align-items-center mb-0">
-                                    <span class="svg-icon svg-icon-2 svg-icon-warning me-3">
-                                        <x-icon name="alert-triangle" :size="20" />
-                                    </span>
-                                    <span class="fw-semibold">No plans are available yet. Please contact support to get
-                                        started.</span>
-                                </div>
-                            </div>
-                        @endif
 
                         <div class="signup-pane" data-pane="company">
                             <h3 class="fs-4 fw-bold text-dark mb-4">Company details</h3>
@@ -414,13 +324,6 @@
                 var container = document.getElementById('signupReview');
                 container.innerHTML = '';
 
-                var selectedPlan = form.querySelector('input[name="plan"]:checked');
-                if (selectedPlan) {
-                    var card = selectedPlan.closest('.signup-plan');
-                    var name = card ? card.querySelector('[data-plan-name]') : null;
-                    container.appendChild(reviewRow('Plan', name ? name.textContent.trim() : selectedPlan.value));
-                }
-
                 var data = new FormData(form);
                 var rows = [
                     ['Company', 'company_name'],
@@ -481,15 +384,6 @@
                 }
             });
 
-            form.querySelectorAll('.signup-plan-input').forEach(function(input) {
-                input.addEventListener('change', function() {
-                    form.querySelectorAll('.signup-plan').forEach(function(card) {
-                        card.classList.toggle('selected', card
-                            .contains(input) && input.checked);
-                    });
-                });
-            });
-
             document.addEventListener('fieldValidationError', function(e) {
                 var field = e.detail.field;
                 var el = form.querySelector('[name="' + field + '"]');
@@ -514,18 +408,6 @@
             });
 
             render();
-            var checkedPlan = form.querySelector('.signup-plan-input:checked');
-            if (checkedPlan) {
-                var label = checkedPlan.closest('.signup-plan');
-                if (label) {
-                    label.classList.add('selected');
-                }
-            }
-
-            if (form.querySelectorAll('.signup-plan-input').length === 0) {
-                submitBtn.setAttribute('disabled', 'disabled');
-                nextBtn.setAttribute('disabled', 'disabled');
-            }
         });
     </script>
 @endsection

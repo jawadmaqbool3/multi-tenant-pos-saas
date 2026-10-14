@@ -8,7 +8,6 @@ use App\Exceptions\MissingFieldException;
 use App\Exceptions\PasswordMismatchException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Modules\Billing\Models\Plan;
 
 class StoreSignupRequest extends FormRequest
 {
@@ -27,23 +26,6 @@ class StoreSignupRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            'plan' => ['required', 'exists:billing_plans,uid', function ($attribute, $value, $fail) {
-                $plan = Plan::where('uid', $value)->where('status', 'active')->first();
-
-                if (!$plan) {
-                    $fail('The selected plan is not available.');
-                    return;
-                }
-
-                $hasPaidPrice = $plan->prices()
-                    ->where('active', true)
-                    ->where('unit_amount', '>', 0)
-                    ->exists();
-
-                if (!$hasPaidPrice) {
-                    $fail('The selected plan does not have an active paid price.');
-                }
-            }],
         ];
     }
 
