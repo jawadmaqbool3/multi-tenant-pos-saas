@@ -61,6 +61,7 @@
                         <form data-ajax="true" class="form w-100" novalidate="novalidate" method="POST" action="#">
                             <div class="text-center mb-11">
 
+                                <div class="eyebrow d-inline-flex mb-2">Point of Sale</div>
                                 <h1 class="text-dark fw-bolder mb-3">Sign In</h1>
                                 <div class="text-gray-500 fw-semibold fs-6">Your own management</div>
                             </div>
@@ -102,7 +103,7 @@
 
             </div>
             <div class="d-none d-lg-flex flex-lg-row-fluid w-lg-50 order-1 order-lg-2"
-                style="background-image: linear-gradient(135deg, #4f46e5 0%, #312e81 60%, #0f172a 100%);">
+                style="background-image: linear-gradient(135deg, #6c63ff 0%, #4a41e0 55%, #07080f 100%);">
                 <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
                     <img alt="Logo" src="{{ asset('assets/media/small/logo/' . $setting->logo) }}"
                         class="h-60px h-lg-75px rounded mb-10" />

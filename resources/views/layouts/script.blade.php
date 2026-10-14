@@ -170,5 +170,40 @@
                 }
             }
         });
+
+        /* Scroll progress bar + scroll-to-top */
+        (function() {
+            var progress = document.getElementById('ui_scroll_progress');
+            var scrollTop = document.getElementById('ui_scroll_top');
+
+            function update() {
+                var doc = document.documentElement;
+                var max = doc.scrollHeight - doc.clientHeight;
+                var top = window.pageYOffset || doc.scrollTop || 0;
+                var pct = max > 0 ? (top / max) * 100 : 0;
+
+                if (progress) {
+                    progress.style.width = pct + '%';
+                }
+                if (scrollTop) {
+                    scrollTop.classList.toggle('visible', top > 320);
+                }
+            }
+
+            window.addEventListener('scroll', update, {
+                passive: true
+            });
+            window.addEventListener('resize', update);
+            update();
+
+            if (scrollTop) {
+                scrollTop.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+        })();
     });
 </script>

@@ -24,7 +24,7 @@
                                     class="form-control form-control-solid amount">
                             </td>
                             <td class="text-end">
-                                <button class="btn btn-danger btn-delete"><i class="fs-3 bi bi-x"></i></button>
+                                <button class="btn btn-danger btn-delete"><x-icon name="x" size="16" /></button>
                             </td>
                         </tr>
             `);

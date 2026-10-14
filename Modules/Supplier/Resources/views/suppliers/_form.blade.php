@@ -22,17 +22,17 @@
                 </div>
                 <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                     data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
-                    <i class="bi bi-pencil-fill fs-7"></i>
+                    <x-icon name="pencil" size="14" />
                     <input type="file" name="thumbnail" accept=".png, .jpg, .jpeg" />
                     <input type="hidden" name="avatar_remove" />
                 </label>
                 <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                     data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel avatar">
-                    <i class="bi bi-x fs-2"></i>
+                    <x-icon name="x" size="16" />
                 </span>
                 <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                     data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
-                    <i class="bi bi-x fs-2"></i>
+                    <x-icon name="x" size="16" />
                 </span>
             </div>
             <div class="text-muted fs-7">Set the category thumbnail image. Only *.png, *.jpg and *.jpeg

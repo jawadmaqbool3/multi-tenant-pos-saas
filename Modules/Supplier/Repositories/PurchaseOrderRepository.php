@@ -3,6 +3,7 @@
 namespace Modules\Supplier\Repositories;
 
 use App\Repositories\BaseRepository;
+use App\Support\Icon;
 use Carbon\Carbon;
 
 use Modules\Supplier\Models\PurchaseOrder;
@@ -27,14 +28,14 @@ class PurchaseOrderRepository extends BaseRepository
             'action' => function ($order) {
                 $btns = [];
                 if (auth()->user()->hasPermission('print purchase orders')) {
-                    $btns[] = '<a title="print" target="_blank" href="' . route('purchase.order.print', $order->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">
-                        <span class="svg-icon svg-icon-3"><i class="fonticon-printer fs-3"></i></span>
-                    </a>';
+                    $btns[] = '<a title="print" target="_blank" href="' . route('purchase.order.print', $order->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">'
+                        . Icon::svg('printer', 16) .
+                        '</a>';
                 }
                 if (auth()->user()->hasPermission('refund purchase orders') && $order->status == "generated") {
-                    $btns[] = '<a href="#" data-modal_id="' . $order->id . '" data-modal_name="' . $order->order_no . '" data-bs-toggle="modal" data-bs-target="#refund_order_modal" tabindex="0" title="Order Refund" data-base-url="' . route('purchase.order.refund', $order->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">
-                        <span class="svg-icon svg-icon-3"><i class="bi bi-box-arrow-left"></i></span>
-                    </a>';
+                    $btns[] = '<a href="#" data-modal_id="' . $order->id . '" data-modal_name="' . $order->order_no . '" data-bs-toggle="modal" data-bs-target="#refund_order_modal" tabindex="0" title="Order Refund" data-base-url="' . route('purchase.order.refund', $order->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">'
+                        . Icon::svg('box-arrow-left', 16) .
+                        '</a>';
                 }
                 return $this->dt->actionButtons($btns);
             },

@@ -76,13 +76,13 @@
                                                 id="dragable{{ $loop->iteration }}" data-index="{{ $loop->iteration }}"
                                                 data-link="{{ $link['link'] }}"
                                                 data-permission="{{ $link['permission'] }}"
-                                                class="col-12 p-3 fs-5 fw-bolder text-dark mt-3 border link"><i
-                                                    class="bi bi-justify-right  fs-5 fw-bolder text-dark"></i>
+                                                class="col-12 p-3 fs-5 fw-bolder text-dark mt-3 border link"><x-icon
+                                                    name="align-right" size="18" class="fw-bolder text-dark" />
                                                 <input type="text" name="" value="{{ $link['title'] }}"
                                                     id="" class="form-control form-control-solid">
                                                 <span class="title">{{ $link['title'] }}</span>
-                                                <span><i
-                                                        class="bi bi-x float-end fs-1 fw-bolder text-dark mt-1 btn-reverse"></i></span>
+                                                <span><x-icon name="x" size="20"
+                                                        class="float-end fw-bolder text-dark mt-1 btn-reverse" /></span>
                                             </div>
                                         @endif
                                     @endforeach
@@ -113,14 +113,12 @@
                                                         <div class="mb-3">
                                                             <label for="" class="form-label">Icon</label>
                                                             <div class="d-flex">
-                                                                <select data-selected="{{ $category->icon }}" name=""
+                                                                <select data-selected="{{ Str::replaceFirst('bi bi-', '', $category->icon) }}" name=""
                                                                     id=""
                                                                     class="form-control form-control-solid icon _select2 rounded-end-0"
                                                                     placeholder="">
                                                                 </select>
-                                                                <button disabled=""
-                                                                    class="icon-check btn btn-secondary rounded-start-0"><i
-                                                                        class="{{ $category->icon }}"></i></button>
+                                                                <button disabled class="icon-check btn btn-secondary rounded-start-0"><span class="icon-placeholder"><x-icon name="{{ Str::replaceFirst('bi bi-', '', $category->icon) }}" :size="16" /></span></button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -137,7 +135,7 @@
                                                         <div class="mb-3">
                                                             <button type="button"
                                                                 class="btn mt-8 btn-danger float-end btn-remove-category">
-                                                                <i class="bi bi-x"></i>
+                                                                <x-icon name="x" size="16" />
                                                             </button>
                                                         </div>
                                                     </div>
@@ -153,13 +151,13 @@
                                                             data-permission="{{ $link->permission }}"
                                                             data-title="{{ $link->title }}"
                                                             class="col-12 p-3 fs-5 fw-bolder text-dark mt-3 border link">
-                                                            <i class="bi bi-justify-right  fs-5 fw-bolder text-dark"></i>
+                                                            <x-icon name="align-right" size="18" class="fw-bolder text-dark" />
                                                             <input type="text" name=""
                                                                 value="{{ $link->title }}" id=""
                                                                 class="form-control form-control-solid">
                                                             <span class="title">{{ $link->title }}</span>
-                                                            <span><i
-                                                                    class="bi bi-x float-end fs-1 fw-bolder text-dark mt-1 btn-reverse"></i></span>
+                                                            <span><x-icon name="x" size="20"
+                                                                    class="float-end fw-bolder text-dark mt-1 btn-reverse" /></span>
                                                         </div>
                                                     @endforeach
                                                 </div>
@@ -193,7 +191,7 @@
         var iconsOptions = '';
         icons.forEach(icon => {
             iconsOptions +=
-                `<option value="${icon}">${(icon.replace("bi bi-", "").replace("-", " ").toUpperCase())}</option>`;
+                `<option value="${icon}">${(icon.replace(/bi\s+bi-/, "").replace(/-/g, " ").toUpperCase())}</option>`;
         });
 
         function allowDrop(ev) {
@@ -270,7 +268,7 @@
                                                     aria-describedby="helpId">
                                                     ${iconsOptions}
                                                 </select>
-                                                <button disabled class="icon-check btn btn-secondary rounded-start-0"><i class="bi bi-alarm-fill"></i></button>
+                                                <button disabled class="icon-check btn btn-secondary rounded-start-0"><span class="icon-placeholder"><x-icon name="clock" :size="16" /></span></button>
                                                     </div>
                                             </div>
                                         </div>
@@ -285,7 +283,7 @@
                                         <div class="col-2 pe-0">
                                             <div class="mb-3">
                                                 <button type="button" class="btn mt-8 btn-danger float-end btn-remove-category">
-                                                    <i class="bi bi-x"></i>
+                                                    <x-icon name="x" size="16" />
                                                 </button>
                                             </div>
                                         </div>
@@ -312,7 +310,7 @@
             });
 
             $(document).on('change', '.icon', function() {
-                $(this).siblings('.icon-check').find('i').removeAttr("class").addClass($(this).val());
+                let sel=$(this).val(); let name=sel.replace(/bi\s+bi-/,'').replace(/-/g,' '); $(this).siblings('.icon-check').find('.icon-placeholder').html(`<x-icon name="${sel.replace(/bi\s+bi-/,'')}" :size="16" />`);
             });
 
 

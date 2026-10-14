@@ -22,17 +22,17 @@
                 </div>
                 <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                     data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">
-                    <i class="bi bi-pencil-fill fs-7"></i>
+                    <x-icon name="pencil" size="14" />
                     <input type="file" name="thumbnail" accept=".png, .jpg, .jpeg" />
                     <input type="hidden" name="avatar_remove" />
                 </label>
                 <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                     data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="Cancel avatar">
-                    <i class="bi bi-x fs-2"></i>
+                    <x-icon name="x" size="16" />
                 </span>
                 <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                     data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="Remove avatar">
-                    <i class="bi bi-x fs-2"></i>
+                    <x-icon name="x" size="16" />
                 </span>
             </div>
             <div class="text-muted fs-7">Set the category thumbnail image. Only *.png, *.jpg and *.jpeg
@@ -107,13 +107,7 @@
             @can('create category')
                 <a href="{{ route('categories.create') }}" class="btn btn-light-primary btn-sm mb-10">
                     <span class="svg-icon svg-icon-2">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1"
-                                transform="rotate(-90 11 18)" fill="currentColor"></rect>
-                            <rect x="6" y="11" width="12" height="2" rx="1"
-                                fill="currentColor"></rect>
-                        </svg>
+                        <x-icon name="plus" :size="16" />
                     </span>
                     Create new category</a>
             @endcan

@@ -8,8 +8,8 @@
                 </div>
             </div>
             <div class="col-sm-4">
-                <button type="button" class="mt-9 float-end btn  btn-primary btn-add-product"><i
-                        class="bi bi-plus"></i></button>
+                <button type="button" class="mt-9 float-end btn  btn-primary btn-add-product"><x-icon
+                        name="plus" size="16" /></button>
             </div>
             <div class="col-md-12 fv-row" id="dropdown_parent">
                 <table class="table">

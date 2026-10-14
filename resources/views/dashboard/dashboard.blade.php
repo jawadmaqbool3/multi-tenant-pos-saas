@@ -7,6 +7,7 @@
                     <div class="col-lg-6">
 
                         <div class="page-title ">
+                            <div class="eyebrow">Overview</div>
                             <h1 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0">
                                 Dashboard</h1>
                             <x-breadcrums :links="[
@@ -19,17 +20,18 @@
                         <div class="">
                             @can('create product')
                                 <a href="{{ route('products.create') }}"
-                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold btn-primary">Create
+                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold btn-primary">
+                                    <x-icon name="plus" size="14" /> Create
                                     Product</a>
                             @endcan
                             @can('add stock')
                                 <a data-bs-target="#add_stock_modal" data-bs-toggle="modal"
-                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold btn-primary btn-add-stock">Create Purchase
+                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold btn-outline btn-add-stock">Create Purchase
                                     Order</a>
                             @endcan
                             @can('place order')
                                 <a data-bs-target="#place_order_modal" data-bs-toggle="modal"
-                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold btn-light-primary btn-place-order">Create
+                                    class="mt-2 ms-2 float-end btn btn-sm fw-bold btn-outline btn-place-order">Create
                                     Sale Order</a>
                             @endcan
                         </div>
@@ -215,7 +217,7 @@
                                             <option value="low_stock">Low Stock</option>
                                         </select>
                                         <button class="btn btn-secondary btn-sm" id="print_stock_btn">
-                                            <i class="bi bi-printer"></i>
+                                            <x-icon name="printer" size="16" />
                                         </button>
                                     </div>
                                     <div class="table-responsive mt-5">

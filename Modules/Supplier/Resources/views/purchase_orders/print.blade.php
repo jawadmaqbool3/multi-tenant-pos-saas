@@ -28,14 +28,14 @@
             <div class="row border-bottom border-bottom-2 border-dark">
                 @if ($purchaseOrder->supplier->phone_no)
                     <div class="col-4 text-start">
-                        <h4><i class="text-dark bi bi-telephone-fill fw-bold fs-3"></i>
+                        <h4><x-icon name="phone" size="18" class="text-dark fw-bold" />
                             {{ $purchaseOrder->supplier->phone_no }}
                         </h4>
                     </div>
                 @endif
                 @if ($purchaseOrder->supplier->whatsapp_no)
                     <div class="col-4 text-center">
-                        <h4><i class="text-dark bi bi-whatsapp fw-bold fs-3"></i>
+                        <h4><x-icon name="message-circle" size="18" class="text-dark fw-bold" />
                             {{ $purchaseOrder->supplier->whatsapp_no }}
                         </h4>
                     </div>
@@ -50,12 +50,12 @@
 
         <div class="row mt-2">
             <div class="col-12 text-end">
-                <h5><i class="text-dark bi bi-calendar-date fw-bold fs-3"></i>
+                <h5><x-icon name="calendar" size="18" class="text-dark fw-bold" />
                     {{ Carbon\Carbon::create($purchaseOrder->created_at)->format('d M, Y') }}
                 </h5>
             </div>
             <div class="col-12 text-end">
-                <h5><i class="text-dark bi bi-clock fw-bold fs-3"></i>
+                <h5><x-icon name="clock" size="18" class="text-dark fw-bold" />
                     {{ Carbon\Carbon::create($purchaseOrder->created_at)->format('h:i A') }}
                 </h5>
             </div>

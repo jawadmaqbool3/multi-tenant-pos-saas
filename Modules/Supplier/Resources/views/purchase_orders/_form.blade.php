@@ -20,7 +20,7 @@
     <div class="col-sm-2">
         <label class="form-label d-none d-sm-block">&nbsp;</label>
         <button type="button" class="btn btn-light-primary w-100 btn-add-product">
-            <i class="bi bi-plus-lg me-1"></i> Add
+            <x-icon name="plus" size="14" class="me-1" /> Add
         </button>
     </div>
     <div class="col-md-12 fv-row" id="dropdown_parent">

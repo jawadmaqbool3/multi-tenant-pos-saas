@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Repositories;
 
 use App\Repositories\BaseRepository;
+use App\Support\Icon;
 
 use Modules\Inventory\Models\Product;
 
@@ -32,9 +33,9 @@ class ProductRepository extends BaseRepository
                     $btns[] = $this->dt->deleteButton($product->uid, $product->name, 'delete product');
                 }
                 if (auth()->user()->hasPermission('print barcode')) {
-                    $btns[] = '<a title="generate bar-code" target="_blank" href="' . route('print.barcode', $product->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">
-                        <span class="svg-icon svg-icon-3"><span class="bi bi-qr-code"></span></span>
-                    </a>';
+                    $btns[] = '<a title="generate bar-code" target="_blank" href="' . route('print.barcode', $product->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">'
+                        . Icon::svg('qr-code', 16) .
+                        '</a>';
                 }
                 return $this->dt->actionButtons($btns);
             },

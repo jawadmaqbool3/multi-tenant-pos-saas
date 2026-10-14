@@ -56,6 +56,7 @@
             style="display:none;visibility:hidden"></iframe>
     </noscript>
 
+    <div class="scroll-progress" id="ui_scroll_progress" aria-hidden="true"></div>
 
     <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
         <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
@@ -92,6 +93,14 @@
             </div>
         </div>
     </div>
+
+    <button type="button" class="scroll-top" id="ui_scroll_top" aria-label="Scroll to top">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
     @include('layouts.script')
     @yield('jsSection')
 </body>

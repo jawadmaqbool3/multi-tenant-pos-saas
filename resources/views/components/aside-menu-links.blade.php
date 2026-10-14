@@ -1,3 +1,17 @@
+@php
+    $iconMap = [
+        'bi bi-share' => 'share-2',
+        'bi bi-bank' => 'landmark',
+        'bi bi-shop' => 'store',
+        'bi bi-cart' => 'shopping-cart',
+        'bi bi-award-fill' => 'award',
+        'bi bi-file-earmark-bar-graph' => 'bar-chart',
+        'bi bi-person-bounding-box' => 'user',
+        'bi bi-people' => 'users',
+        'bi bi-lock' => 'lock',
+        'bi bi-gear' => 'settings',
+    ];
+@endphp
 @if (count($links))
     @foreach ($links as $menu)
         <div class="menu-item pt-5">
@@ -10,7 +24,7 @@
                 <span class="menu-link">
                     <span class="menu-icon">
                         <span class="svg-icon svg-icon-2">
-                            <i class="{{ $category['icon'] }} fs-4"></i>
+                            <x-icon :name="$iconMap[$category['icon']] ?? 'circle'" :size="18" />
                         </span>
                     </span>
                     <span class="menu-title">{{ $category['name'] }}</span>

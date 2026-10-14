@@ -3,6 +3,7 @@
 namespace Modules\ChartOfAccounts\Repositories;
 
 use App\Repositories\BaseRepository;
+use App\Support\Icon;
 use Carbon\Carbon;
 
 use Modules\ChartOfAccounts\Models\Voucher;
@@ -24,9 +25,9 @@ class VoucherRepository extends BaseRepository
         $this->dataTableAddColumns = [
             'action' => function ($voucher) {
                 return $this->dt->actionButtons([
-                    '<a href="' . route('print.voucher', $voucher->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                        <span class="svg-icon svg-icon-3"><i class="bi bi-printer"></i></span>
-                    </a>'
+                    '<a href="' . route('print.voucher', $voucher->uid) . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">'
+                        . Icon::svg('printer', 16) .
+                    '</a>'
                 ]);
             },
         ];

@@ -3,6 +3,7 @@
 namespace Modules\Order\Repositories;
 
 use App\Repositories\BaseRepository;
+use App\Support\Icon;
 use Carbon\Carbon;
 
 use Modules\Order\Models\Order;
@@ -35,13 +36,13 @@ class OrderRepository extends BaseRepository
                 $btns = [];
                 $btns[] = $this->printButton(route('sales.order.print', $order->uid), 'Print Invoice');
                 if (auth()->user()->hasPermission('cancel order') && $order->status == 'generated') {
-                    $btns[] = $this->orderActionButton('cancel_order_modal', 'Cancel Order', route('order.cancel', $order->uid), 'bi bi-arrow-counterclockwise', $order);
+                    $btns[] = $this->orderActionButton('cancel_order_modal', 'Cancel Order', route('order.cancel', $order->uid), 'refresh', $order);
                 }
                 if (auth()->user()->hasPermission('mark paid') && $order->status == 'generated') {
-                    $btns[] = $this->orderActionButton('mark_paid_order_modal', 'Mark Paid', route('order.mark.paid', $order->uid), 'bi bi-check', $order);
+                    $btns[] = $this->orderActionButton('mark_paid_order_modal', 'Mark Paid', route('order.mark.paid', $order->uid), 'check', $order);
                 }
                 if (auth()->user()->hasPermission('order refund') && $order->status == 'paid') {
-                    $btns[] = $this->orderActionButton('refund_order_modal', 'Order Refund', route('order.refund', $order->uid), 'bi bi-box-arrow-left', $order);
+                    $btns[] = $this->orderActionButton('refund_order_modal', 'Order Refund', route('order.refund', $order->uid), 'box-arrow-left', $order);
                 }
                 return $this->dt->actionButtons($btns);
             },
@@ -66,15 +67,15 @@ class OrderRepository extends BaseRepository
 
     protected function printButton($url, $title)
     {
-        return '<a href="' . $url . '" data-bs-toggle="tooltip" tabindex="0" title="' . $title . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">
-            <span class="svg-icon svg-icon-3"><i class="fonticon-printer fs-3"></i></span>
-        </a>';
+        return '<a href="' . $url . '" data-bs-toggle="tooltip" tabindex="0" title="' . $title . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">'
+            . Icon::svg('printer', 16) .
+            '</a>';
     }
 
     protected function orderActionButton($modal, $title, $url, $icon, $order)
     {
-        return '<a href="#" data-modal_id="' . $order->id . '" data-modal_name="' . $order->order_no . '" data-bs-toggle="modal" data-bs-target="#' . $modal . '" tabindex="0" title="' . $title . '" data-base-url="' . $url . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">
-            <span class="svg-icon svg-icon-3"><i class="' . $icon . '"></i></span>
-        </a>';
+        return '<a href="#" data-modal_id="' . $order->id . '" data-modal_name="' . $order->order_no . '" data-bs-toggle="modal" data-bs-target="#' . $modal . '" tabindex="0" title="' . $title . '" data-base-url="' . $url . '" class="mx-1 float-end btn btn-icon btn-bg-light btn-active-color-primary btn-sm modal-button">'
+            . Icon::svg($icon, 16) .
+            '</a>';
     }
 }

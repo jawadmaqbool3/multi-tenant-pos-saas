@@ -21,8 +21,7 @@
             <td><input type="number" placeholder="Total" name="total[]" id=""
                     class="form-control total"></td>
             <td class="text-end"><button type="button" title="Remove" id=""
-                    class="btn btn-icon btn-sm btn-light-danger btn-delete"><i
-                        class="bi bi-trash"></i></button></td>
+                    class="btn btn-icon btn-sm btn-light-danger btn-delete"><x-icon name="trash" size="16" /></button></td>
         </tr>`
         );
         $('#place_order_modal #product_wrapper .product').each(function() {

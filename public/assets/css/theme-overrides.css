@@ -1,47 +1,63 @@
 /* ==========================================================================
-   POS UI Design System
-   Modern "niche intelligence" inspired theme: brand indigo/violet (#6c63ff),
-   mint accent (#00d4aa), near-black dark surfaces and a clean light mode.
+   POS UI Design System  —  "Niche Intelligence" language
+   Matches the reference app: brand indigo/violet (#6c63ff), brand-2 (#a89dff),
+   mint accent (#00d4aa), near-black surfaces (void #07080f / surface #0c0e1a /
+   raised #101220 / card #0f1121) and a fully derived light theme.
 
    Loaded AFTER assets/css/style.bundle.css so every --kt-* override wins.
    Do not edit style.bundle.css directly.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Typography + generic UI vars
+   1. Global type / geometry / motion tokens
    -------------------------------------------------------------------------- */
 :root {
     --ui-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --ui-font-display: 'Syne', 'Inter', sans-serif;
     --ui-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
+    /* radii — reference: sm 8 / md 14 / lg 20 / xl 28 */
+    --ui-radius-sm: 8px;
     --ui-radius: 14px;
-    --ui-radius-sm: 10px;
+    --ui-radius-lg: 20px;
+    --ui-radius-xl: 28px;
     --ui-radius-pill: 999px;
 
+    /* motion */
+    --ui-ease-spring: cubic-bezier(.175, .885, .32, 1.275);
+
+    /* brand (theme independent) */
     --ui-brand: #6c63ff;
-    --ui-brand-2: #a89dff;
+    --ui-brand-rgb: 108, 99, 255;
     --ui-mint: #00d4aa;
 }
 
 /* --------------------------------------------------------------------------
-   LIGHT THEME  (html without data-theme=dark)
+   2. LIGHT THEME  (html without data-theme=dark)
    -------------------------------------------------------------------------- */
 html:not([data-theme=dark]) {
-    --ui-page: #f6f7fb;
+    --ui-void: #f6f7fb;
     --ui-surface: #ffffff;
+    --ui-raised: #ffffff;
     --ui-card: #ffffff;
-    --ui-line: #e8eaf2;
-    --ui-line-strong: #dde1ec;
+    --ui-line: rgba(16, 19, 28, 0.08);
+    --ui-line-hi: rgba(16, 19, 28, 0.14);
     --ui-ink: #10131c;
     --ui-ink-2: #4b5568;
-    --ui-muted: #98a1b3;
-    --ui-brand-rgb: 91, 82, 240;
+    --ui-muted: #8b93a7;
+    --ui-brand-2: #5b52f0;
+    --ui-mint-ink: #00a082;
+
     --ui-card-shadow: 0 1px 2px rgba(16, 19, 28, 0.04), 0 10px 28px -18px rgba(16, 19, 28, 0.35);
+    --ui-shadow-md: 0 8px 32px -20px rgba(16, 19, 28, 0.45);
+    --ui-shadow-lg: 0 24px 64px -24px rgba(16, 19, 28, 0.5);
     --ui-table-hover: rgba(91, 82, 240, 0.045);
     --ui-glow: 0 0 0 1px rgba(91, 82, 240, 0.35), 0 8px 24px -10px rgba(91, 82, 240, 0.5);
+    --ui-focus-ring: 0 0 0 3px rgba(108, 99, 255, 0.22);
+    --ui-wash-a: rgba(108, 99, 255, 0.08);
+    --ui-wash-b: rgba(0, 212, 170, 0.06);
 
-    /* Core palette */
+    /* Core palette bridge */
     --kt-primary: #5b52f0;
     --kt-primary-active: #4a41e0;
     --kt-primary-light: #eceafe;
@@ -58,18 +74,18 @@ html:not([data-theme=dark]) {
     --kt-success-light: #e0f7f1;
     --kt-success-inverse: #ffffff;
 
-    --kt-danger: #ef4444;
+    --kt-danger: #e5484d;
     --kt-danger-active: #dc2626;
     --kt-danger-light: #fdecec;
     --kt-danger-inverse: #ffffff;
 
-    --kt-warning: #f59e0b;
-    --kt-warning-active: #d97706;
+    --kt-warning: #d97706;
+    --kt-warning-active: #b45309;
     --kt-warning-light: #fef3e2;
     --kt-warning-inverse: #ffffff;
 
-    --kt-info: #3b82f6;
-    --kt-info-active: #2563eb;
+    --kt-info: #2563eb;
+    --kt-info-active: #1d4ed8;
     --kt-info-light: #e7effe;
     --kt-info-inverse: #ffffff;
 
@@ -109,54 +125,55 @@ html:not([data-theme=dark]) {
     --kt-text-secondary: #3b4256;
     --kt-text-success: #00a082;
     --kt-text-danger: #dc2626;
-    --kt-text-warning: #d97706;
-    --kt-text-info: #2563eb;
+    --kt-text-warning: #b45309;
+    --kt-text-info: #1d4ed8;
     --kt-text-dark: #10131c;
     --kt-text-light: #f4f5fa;
     --kt-text-white: #ffffff;
-    --kt-text-muted: #98a1b3;
+    --kt-text-muted: #8b93a7;
     --kt-text-gray-100: #f6f7fb;
     --kt-text-gray-200: #eef0f6;
     --kt-text-gray-300: #e2e5ee;
     --kt-text-gray-400: #c7ccd9;
-    --kt-text-gray-500: #98a1b3;
+    --kt-text-gray-500: #8b93a7;
     --kt-text-gray-600: #6b7488;
     --kt-text-gray-700: #4b5568;
     --kt-text-gray-800: #2a3040;
     --kt-text-gray-900: #10131c;
 
-    --kt-body-bg: #ffffff;
+    --kt-body-bg: #f6f7fb;
     --kt-body-color: #10131c;
-    --kt-border-color: #e8eaf2;
+    --kt-border-color: rgba(16, 19, 28, 0.08);
+    --kt-border-dashed-color: rgba(16, 19, 28, 0.16);
 
     --kt-card-bg: #ffffff;
     --kt-card-color: #10131c;
-    --kt-card-border-color: #e8eaf2;
-    --kt-card-border-dashed-color: #d4d9e4;
+    --kt-card-border-color: rgba(16, 19, 28, 0.08);
+    --kt-card-border-dashed-color: rgba(16, 19, 28, 0.16);
     --kt-card-box-shadow: var(--ui-card-shadow);
 
     --kt-input-bg: #ffffff;
     --kt-input-focus-bg: #ffffff;
     --kt-input-disabled-bg: #f4f5fa;
-    --kt-input-solid-bg: #f4f5fa;
-    --kt-input-solid-bg-focus: #eef0f6;
-    --kt-input-border-color: #e2e5ee;
-    --kt-input-focus-border-color: #a9a3f7;
-    --kt-input-disabled-border-color: #e2e5ee;
+    --kt-input-solid-bg: #ffffff;
+    --kt-input-solid-bg-focus: #ffffff;
+    --kt-input-border-color: rgba(16, 19, 28, 0.14);
+    --kt-input-focus-border-color: #6c63ff;
+    --kt-input-disabled-border-color: rgba(16, 19, 28, 0.08);
     --kt-input-color: #2a3040;
     --kt-input-focus-color: #10131c;
     --kt-input-solid-color: #2a3040;
-    --kt-input-placeholder-color: #98a1b3;
-    --kt-input-solid-placeholder-color: #98a1b3;
+    --kt-input-placeholder-color: #8b93a7;
+    --kt-input-solid-placeholder-color: #8b93a7;
     --kt-input-group-addon-bg: #f4f5fa;
-    --kt-input-group-addon-border-color: #e2e5ee;
+    --kt-input-group-addon-border-color: rgba(16, 19, 28, 0.14);
     --kt-input-group-addon-color: #4b5568;
 
     --kt-input-btn-focus-color-opacity: 0.22;
     --kt-input-btn-focus-color: rgba(var(--kt-primary-rgb), 0.22);
-    --kt-input-btn-focus-box-shadow: 0 0 0 3px rgba(var(--kt-primary-rgb), 0.22);
+    --kt-input-btn-focus-box-shadow: var(--ui-focus-ring);
 
-    --kt-btn-focus-box-shadow: 0 0 0 3px rgba(var(--kt-primary-rgb), 0.22);
+    --kt-btn-focus-box-shadow: var(--ui-focus-ring);
     --kt-btn-link-color: #5b52f0;
     --kt-btn-link-hover-color: #4a41e0;
 
@@ -178,21 +195,29 @@ html:not([data-theme=dark]) {
 }
 
 /* --------------------------------------------------------------------------
-   DARK THEME
+   3. DARK THEME  (reference palette, exact)
    -------------------------------------------------------------------------- */
 [data-theme=dark] {
-    --ui-page: #07080f;
+    --ui-void: #07080f;
     --ui-surface: #0c0e1a;
+    --ui-raised: #101220;
     --ui-card: #0f1121;
-    --ui-line: rgba(255, 255, 255, 0.07);
-    --ui-line-strong: rgba(255, 255, 255, 0.12);
+    --ui-line: rgba(255, 255, 255, 0.06);
+    --ui-line-hi: rgba(255, 255, 255, 0.12);
     --ui-ink: #f0f2fa;
     --ui-ink-2: #a8b0cc;
     --ui-muted: #5a6380;
-    --ui-brand-rgb: 108, 99, 255;
-    --ui-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --ui-brand-2: #a89dff;
+    --ui-mint-ink: #22e0ba;
+
+    --ui-card-shadow: 0 8px 32px -18px rgba(0, 0, 0, 0.7);
+    --ui-shadow-md: 0 8px 32px -18px rgba(0, 0, 0, 0.7);
+    --ui-shadow-lg: 0 24px 64px -20px rgba(0, 0, 0, 0.75);
     --ui-table-hover: rgba(108, 99, 255, 0.07);
     --ui-glow: 0 0 0 1px rgba(108, 99, 255, 0.5), 0 8px 28px -6px rgba(108, 99, 255, 0.35);
+    --ui-focus-ring: 0 0 0 3px rgba(108, 99, 255, 0.3);
+    --ui-wash-a: rgba(108, 99, 255, 0.11);
+    --ui-wash-b: rgba(0, 212, 170, 0.08);
 
     --kt-primary: #6c63ff;
     --kt-primary-active: #7b73ff;
@@ -276,22 +301,23 @@ html:not([data-theme=dark]) {
     --kt-text-gray-800: #d7dbe8;
     --kt-text-gray-900: #f0f2fa;
 
-    --kt-body-bg: #0f1121;
+    --kt-body-bg: #07080f;
     --kt-body-color: #f0f2fa;
-    --kt-border-color: rgba(255, 255, 255, 0.07);
+    --kt-border-color: rgba(255, 255, 255, 0.06);
+    --kt-border-dashed-color: rgba(255, 255, 255, 0.14);
 
     --kt-card-bg: #0f1121;
     --kt-card-color: #f0f2fa;
     --kt-card-border-color: rgba(255, 255, 255, 0.08);
     --kt-card-border-dashed-color: rgba(255, 255, 255, 0.14);
-    --kt-card-box-shadow: none;
+    --kt-card-box-shadow: var(--ui-card-shadow);
 
-    --kt-input-bg: #0c0e1a;
-    --kt-input-focus-bg: #0c0e1a;
+    --kt-input-bg: #101220;
+    --kt-input-focus-bg: #101220;
     --kt-input-disabled-bg: #0c0e1a;
-    --kt-input-solid-bg: #0c0e1a;
-    --kt-input-solid-bg-focus: #10131f;
-    --kt-input-border-color: rgba(255, 255, 255, 0.09);
+    --kt-input-solid-bg: #101220;
+    --kt-input-solid-bg-focus: #101220;
+    --kt-input-border-color: rgba(255, 255, 255, 0.12);
     --kt-input-focus-border-color: #6c63ff;
     --kt-input-disabled-border-color: rgba(255, 255, 255, 0.06);
     --kt-input-color: #d7dbe8;
@@ -300,13 +326,13 @@ html:not([data-theme=dark]) {
     --kt-input-placeholder-color: #5a6380;
     --kt-input-solid-placeholder-color: #5a6380;
     --kt-input-group-addon-bg: #161a27;
-    --kt-input-group-addon-border-color: rgba(255, 255, 255, 0.09);
+    --kt-input-group-addon-border-color: rgba(255, 255, 255, 0.12);
     --kt-input-group-addon-color: #a8b0cc;
 
     --kt-input-btn-focus-color: rgba(var(--kt-primary-rgb), 0.3);
-    --kt-input-btn-focus-box-shadow: 0 0 0 3px rgba(var(--kt-primary-rgb), 0.3);
+    --kt-input-btn-focus-box-shadow: var(--ui-focus-ring);
 
-    --kt-btn-focus-box-shadow: 0 0 0 3px rgba(var(--kt-primary-rgb), 0.3);
+    --kt-btn-focus-box-shadow: var(--ui-focus-ring);
     --kt-btn-link-color: #a89dff;
     --kt-btn-link-hover-color: #c4bcff;
 
@@ -327,9 +353,9 @@ html:not([data-theme=dark]) {
     --kt-app-footer-bg-color-mobile: #0c0e1a;
 }
 
-/* ==========================================================================
-   BASE / TEXT
-   ========================================================================== */
+/* --------------------------------------------------------------------------
+   4. Base / text
+   -------------------------------------------------------------------------- */
 html,
 body {
     font-family: var(--ui-font-sans) !important;
@@ -337,22 +363,33 @@ body {
 
 body {
     color: var(--kt-body-color);
-    background-color: var(--kt-app-bg-color);
+    background-color: var(--ui-void);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
+/* Ambient radial wash (reference signature) */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(80% 60% at 10% 0, var(--ui-wash-a) 0%, transparent 55%),
+        radial-gradient(60% 50% at 90% 100%, var(--ui-wash-b) 0%, transparent 55%);
+}
+
+#kt_app_root {
+    position: relative;
+    z-index: 1;
+}
+
+h1, h2, h3, h4, h5, h6,
 .page-heading,
 .card-title,
 .card-label,
-.modal-title,
-h1.mb-3 {
+.modal-title {
     font-family: var(--ui-font-display);
     letter-spacing: -0.015em;
 }
@@ -365,12 +402,188 @@ a {
     text-decoration: none;
 }
 
-/* ==========================================================================
-   CARDS
-   ========================================================================== */
+::selection {
+    color: var(--ui-ink);
+    background: rgba(108, 99, 255, 0.35);
+}
+
+/* Scrollbars */
+* {
+    scrollbar-color: var(--ui-line-hi) transparent;
+    scrollbar-width: thin;
+}
+
+body::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar,
+.hover-scroll-overlay-y::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+body::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb,
+.hover-scroll-overlay-y::-webkit-scrollbar-thumb {
+    background-color: var(--ui-line-hi);
+    border-radius: 999px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Brand motifs
+   -------------------------------------------------------------------------- */
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.4rem;
+    font-family: var(--ui-font-mono);
+    font-size: 0.67rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ui-brand-2);
+}
+
+.eyebrow::before {
+    content: "";
+    flex-shrink: 0;
+    width: 22px;
+    height: 1px;
+    background: var(--ui-brand);
+}
+
+.grad-text {
+    background: linear-gradient(115deg, var(--ui-brand) 0%, var(--ui-brand-2) 45%, var(--ui-mint) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   6. Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+    border-radius: var(--ui-radius-sm);
+    font-weight: 600;
+    letter-spacing: 0.005em;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+        box-shadow 0.15s ease, transform 0.15s var(--ui-ease-spring);
+}
+
+.btn.btn-sm { border-radius: 8px; }
+.btn.btn-lg { border-radius: var(--ui-radius); }
+.btn.btn-icon { border-radius: var(--ui-radius-sm); }
+.btn.btn-circle { border-radius: 50%; }
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-focus-ring) !important;
+}
+
+/* Primary */
+.btn.btn-primary {
+    background-color: var(--kt-primary);
+    border-color: var(--kt-primary);
+    color: #ffffff;
+    box-shadow: var(--ui-glow) !important;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:not(:disabled):not(.disabled):active {
+    background-color: var(--kt-primary-active);
+    border-color: var(--kt-primary-active);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn.btn-primary:active { transform: translateY(0); }
+
+/* Outline (new tier) */
+.btn.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--ui-line-hi);
+    color: var(--ui-ink);
+}
+
+.btn.btn-outline:hover,
+.btn.btn-outline:focus {
+    background-color: rgba(108, 99, 255, 0.05);
+    border-color: var(--ui-brand);
+    color: var(--ui-brand-2);
+    transform: translateY(-1px);
+}
+
+[data-theme=dark] .btn.btn-outline:hover,
+[data-theme=dark] .btn.btn-outline:focus {
+    color: var(--ui-brand-2);
+}
+
+/* Neutral / light / secondary */
+.btn.btn-light,
+.btn.btn-secondary,
+.btn-loaded {
+    background-color: var(--ui-raised);
+    border-color: var(--ui-line-hi);
+    color: var(--ui-ink-2);
+}
+
+.btn.btn-light:hover,
+.btn.btn-secondary:hover,
+.btn.btn-light:focus,
+.btn.btn-secondary:focus {
+    background-color: var(--kt-light-active);
+    border-color: var(--ui-line-hi);
+    color: var(--ui-ink);
+}
+
+/* Light tints */
+.btn.btn-light-primary {
+    background-color: var(--kt-primary-light);
+    border-color: transparent;
+    color: var(--kt-text-primary);
+}
+
+.btn.btn-light-primary:hover,
+.btn.btn-light-primary:focus {
+    background-color: var(--kt-primary);
+    color: #ffffff;
+}
+
+.btn.btn-light-success {
+    background-color: var(--kt-success-light);
+    color: var(--kt-text-success);
+}
+
+.btn.btn-light-success:hover,
+.btn.btn-light-success:focus {
+    background-color: var(--kt-success);
+    color: var(--kt-success-inverse);
+}
+
+.btn.btn-light-danger {
+    background-color: var(--kt-danger-light);
+    color: var(--kt-text-danger);
+}
+
+.btn.btn-light-danger:hover,
+.btn.btn-light-danger:focus {
+    background-color: var(--kt-danger);
+    color: #ffffff;
+}
+
+/* Icon / ghost */
+.btn.btn-icon.btn-color-primary,
+.btn.btn-active-color-primary.btn-active-light:hover {
+    color: var(--ui-brand-2);
+}
+
+/* --------------------------------------------------------------------------
+   7. Cards
+   -------------------------------------------------------------------------- */
 .card {
     border: 1px solid var(--kt-card-border-color);
-    border-radius: var(--ui-radius);
+    border-radius: var(--ui-radius-lg);
     background-color: var(--kt-card-bg);
     box-shadow: var(--kt-card-box-shadow);
 }
@@ -378,24 +591,18 @@ a {
 /* Keep the card look even for "flush" cards so sections stay consistent */
 .card.card-flush {
     border: 1px solid var(--kt-card-border-color);
-    border-radius: var(--ui-radius);
+    border-radius: var(--ui-radius-lg);
     background-color: var(--kt-card-bg);
     box-shadow: var(--kt-card-box-shadow);
 }
 
-/* Tables/commerce sometimes opt-out of the chrome */
-.card.card-flush.border-0 {
-    border: 0 !important;
-    box-shadow: none !important;
-}
-
 .card > .card-header {
-    border-bottom: 1px solid var(--kt-border-color);
+    border-bottom: 1px solid var(--ui-line);
     background-color: transparent;
 }
 
 .card > .card-header.border-0 {
-    border-bottom: 1px solid var(--kt-border-color) !important;
+    border-bottom: 1px solid var(--ui-line) !important;
 }
 
 .card > .card-header.py-5 {
@@ -403,69 +610,58 @@ a {
     padding-bottom: 1.35rem !important;
 }
 
+/* Small stat tiles (reference uses radius-md) */
+.card.card-stat,
+.card.text-start {
+    border-radius: var(--ui-radius);
+}
+
+/* --------------------------------------------------------------------------
+   8. Dropdowns / menus / popovers
+   -------------------------------------------------------------------------- */
 .dropdown-menu,
 .modal-content,
 .offcanvas,
-.popover {
-    border: 1px solid var(--kt-card-border-color);
+.popover,
+.menu-sub-dropdown {
+    border: 1px solid var(--ui-line-hi);
     border-radius: var(--ui-radius);
     background-color: var(--kt-card-bg);
 }
 
 .dropdown-menu,
-.popover {
-    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.45);
+.popover,
+.menu-sub-dropdown {
+    box-shadow: var(--ui-shadow-lg);
 }
 
-/* ==========================================================================
-   BUTTONS
-   ========================================================================== */
-.btn {
+.dropdown-menu .dropdown-item,
+.menu-sub-dropdown .menu-link {
     border-radius: var(--ui-radius-sm);
-    font-weight: 600;
-    letter-spacing: 0.005em;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease,
-        box-shadow 0.15s ease, transform 0.05s ease;
+    color: var(--ui-ink-2);
+    transition: background-color 0.12s ease, color 0.12s ease;
 }
 
-.btn.btn-sm {
-    border-radius: 8px;
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus,
+.menu-sub-dropdown .menu-link:hover {
+    background-color: rgba(108, 99, 255, 0.08);
+    color: var(--ui-brand-2);
 }
 
-.btn.btn-lg {
-    border-radius: var(--ui-radius);
+.dropdown-menu .dropdown-item.active,
+.dropdown-menu .dropdown-item:active {
+    background-color: var(--kt-primary);
+    color: #ffffff;
 }
 
-.btn.btn-icon {
-    border-radius: var(--ui-radius-sm);
+.dropdown-divider {
+    border-color: var(--ui-line);
 }
 
-.btn.btn-circle {
-    border-radius: 50%;
-}
-
-.btn.btn-primary {
-    box-shadow: var(--ui-glow) !important;
-}
-
-.btn.btn-primary:active {
-    transform: translateY(1px);
-}
-
-.btn:focus-visible {
-    outline: none;
-    box-shadow: var(--kt-btn-focus-box-shadow) !important;
-}
-
-.btn-loaded,
-.btn-light {
-    background-color: var(--kt-gray-200);
-    border-color: var(--kt-gray-200);
-}
-
-/* ==========================================================================
-   FORM CONTROLS
-   ========================================================================== */
+/* --------------------------------------------------------------------------
+   9. Form controls
+   -------------------------------------------------------------------------- */
 .form-control,
 .form-select,
 .input-group-text,
@@ -478,9 +674,22 @@ a {
 
 .form-control,
 .form-select {
-    border-color: var(--kt-input-border-color);
+    border: 1px solid var(--kt-input-border-color);
     background-color: var(--kt-input-bg);
     color: var(--kt-input-color);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--kt-primary);
+    background-color: var(--kt-input-focus-bg);
+    color: var(--kt-input-focus-color);
+    box-shadow: var(--ui-focus-ring);
+}
+
+.form-control::placeholder,
+.form-select::placeholder {
+    color: var(--kt-input-placeholder-color);
 }
 
 .form-control-solid,
@@ -489,16 +698,33 @@ a {
     background-color: var(--kt-input-solid-bg);
 }
 
-.form-control:focus,
-.form-select:focus,
+.form-select.form-select-transparent {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--ui-ink);
+}
+
+.form-check-input {
+    background-color: var(--kt-input-solid-bg);
+    border: 1px solid var(--kt-input-border-color);
+}
+
 .form-check-input:focus {
     border-color: var(--kt-primary);
-    box-shadow: var(--kt-input-btn-focus-box-shadow);
+    box-shadow: var(--ui-focus-ring);
 }
 
 .form-check-input:checked {
     background-color: var(--kt-primary);
     border-color: var(--kt-primary);
+}
+
+.form-check-input:checked[type=checkbox] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.form-check-input[type=checkbox] {
+    accent-color: var(--kt-primary);
 }
 
 .form-label {
@@ -511,9 +737,144 @@ a {
     margin-bottom: 0.4rem;
 }
 
-/* ==========================================================================
-   TABLES  (clean, reference-style)
-   ========================================================================== */
+.form-text,
+.text-muted.fs-7 {
+    color: var(--kt-text-muted);
+}
+
+/* Switch */
+.form-check.form-switch .form-check-input:checked {
+    background-color: var(--kt-primary);
+    border-color: var(--kt-primary);
+}
+
+/* --------------------------------------------------------------------------
+   10. Select2
+   -------------------------------------------------------------------------- */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    min-height: calc(1.5em + 1.1rem + 2px);
+    border: 1px solid var(--kt-input-border-color);
+    background-color: var(--kt-input-bg);
+    color: var(--kt-input-color);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--kt-input-color);
+    line-height: 1.5;
+    padding-left: 0.25rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+    top: 0;
+}
+
+.select2-dropdown {
+    background-color: var(--ui-raised);
+    border: 1px solid var(--ui-line-hi);
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-shadow-lg);
+    overflow: hidden;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background-color: var(--ui-raised);
+    border: 1px solid var(--ui-line-hi);
+    border-radius: var(--ui-radius-sm);
+    color: var(--kt-input-color);
+}
+
+.select2-container--default .select2-results__option--highlighted,
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: var(--kt-primary);
+    color: #ffffff;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: rgba(108, 99, 255, 0.12);
+    color: var(--ui-brand-2);
+}
+
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: var(--kt-primary);
+    box-shadow: var(--ui-focus-ring);
+}
+
+/* --------------------------------------------------------------------------
+   11. Flatpickr
+   -------------------------------------------------------------------------- */
+.flatpickr-calendar {
+    background: var(--ui-raised);
+    border: 1px solid var(--ui-line-hi);
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-shadow-lg);
+}
+
+.flatpickr-calendar .flatpickr-day.selected,
+.flatpickr-calendar .flatpickr-day.startRange,
+.flatpickr-calendar .flatpickr-day.endRange {
+    background: var(--kt-primary);
+    border-color: var(--kt-primary);
+    color: #ffffff;
+}
+
+.flatpickr-calendar .flatpickr-day:hover {
+    background: rgba(108, 99, 255, 0.12);
+    border-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   12. Tabs
+   -------------------------------------------------------------------------- */
+.nav-tabs {
+    border-bottom: 1px solid var(--ui-line);
+}
+
+.nav-tabs .nav-link {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: var(--kt-text-muted);
+    font-weight: 600;
+    padding: 0.65rem 0.25rem;
+    margin-right: 1.5rem;
+    background: transparent;
+    border-radius: 0;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--ui-ink);
+    border-bottom-color: var(--ui-line-hi);
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link,
+.nav-line-tabs .nav-link.active {
+    color: var(--kt-text-primary);
+    border-bottom-color: var(--kt-primary);
+    background: transparent;
+}
+
+.nav-line-tabs.nav-line-tabs-2x .nav-link.active {
+    border-bottom-width: 2px;
+}
+
+.nav-pills .nav-link {
+    border-radius: var(--ui-radius-sm);
+    color: var(--kt-text-muted);
+    font-weight: 600;
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--kt-primary-light);
+    color: var(--kt-text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   13. Tables
+   -------------------------------------------------------------------------- */
 .table {
     width: 100%;
     margin-bottom: 0;
@@ -545,6 +906,7 @@ a {
     border-bottom: 1px solid var(--kt-border-color);
     background-color: transparent;
     vertical-align: middle;
+    font-variant-numeric: tabular-nums;
 }
 
 .table > tbody > tr:last-child > * {
@@ -555,7 +917,6 @@ a {
     background-color: var(--ui-table-hover);
 }
 
-/* Neutralise the old dashed / gutter helpers */
 .table.table-row-dashed > :not(caption) > * > *,
 .table.table-row-gray-300 > :not(caption) > * > *,
 .table.table-row-gray-200 > :not(caption) > * > * {
@@ -579,7 +940,7 @@ a {
 .dataTables_wrapper .dataTables_filter input,
 .dataTables_wrapper .dataTables_length select {
     border-radius: var(--ui-radius-sm);
-    border-color: var(--kt-input-border-color);
+    border: 1px solid var(--kt-input-border-color);
     background-color: var(--kt-input-bg);
     color: var(--kt-input-color);
     padding: 0.4rem 0.75rem;
@@ -587,15 +948,22 @@ a {
 
 .dataTables_wrapper .dataTables_info,
 .dataTables_wrapper .dataTables_length,
-.dataTables_wrapper .dataTables_filter {
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_processing {
     color: var(--kt-text-muted);
     font-size: 0.85rem;
 }
 
+.dataTables_wrapper .dataTables_processing {
+    background: var(--kt-card-bg);
+    border-radius: var(--ui-radius);
+}
+
+/* Pagination */
 .page-link {
     border-radius: 8px !important;
     margin: 0 2px;
-    border-color: var(--kt-border-color);
+    border: 1px solid var(--kt-border-color);
     color: var(--kt-text-secondary);
     background-color: transparent;
 }
@@ -617,9 +985,9 @@ a {
     border-color: var(--kt-border-color);
 }
 
-/* ==========================================================================
-   BADGES  (pill status badges)
-   ========================================================================== */
+/* --------------------------------------------------------------------------
+   14. Badges / chips / status dots
+   -------------------------------------------------------------------------- */
 .badge {
     border-radius: var(--ui-radius-pill);
     font-weight: 600;
@@ -652,47 +1020,189 @@ a {
     color: var(--kt-body-color);
 }
 
-.badge.badge-light-success {
-    color: var(--kt-success);
-    background-color: var(--kt-success-light);
+.badge.badge-light-success { color: var(--kt-success); background-color: var(--kt-success-light); }
+.badge.badge-light-danger  { color: var(--kt-danger);  background-color: var(--kt-danger-light); }
+.badge.badge-light-warning { color: var(--kt-warning); background-color: var(--kt-warning-light); }
+.badge.badge-light-primary { color: var(--kt-text-primary); background-color: var(--kt-primary-light); }
+.badge.badge-light-info    { color: var(--kt-info);    background-color: var(--kt-info-light); }
+.badge.badge-light-secondary { color: var(--kt-secondary-inverse); background-color: var(--kt-secondary-light); }
+.badge.badge-light-dark    { color: var(--kt-text-dark); background-color: var(--kt-dark-light); }
+
+/* Reference-style badges / chips */
+.badge-brand {
+    border: 1px solid rgba(108, 99, 255, 0.3);
+    background: rgba(108, 99, 255, 0.1);
+    color: var(--ui-brand-2);
+    border-radius: 6px;
+    font-family: var(--ui-font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.4rem;
 }
 
-.badge.badge-light-danger {
-    color: var(--kt-danger);
-    background-color: var(--kt-danger-light);
+.badge-mint {
+    border: 1px solid rgba(0, 212, 170, 0.25);
+    background: rgba(0, 212, 170, 0.1);
+    color: var(--ui-mint-ink);
+    border-radius: 6px;
+    font-family: var(--ui-font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 0.15rem 0.45rem;
 }
 
-.badge.badge-light-warning {
-    color: var(--kt-warning);
-    background-color: var(--kt-warning-light);
+.badge-danger {
+    border: 1px solid rgba(255, 102, 127, 0.25);
+    background: rgba(255, 102, 127, 0.1);
+    color: #ff667f;
+    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
 }
 
-.badge.badge-light-primary {
-    color: var(--kt-text-primary);
-    background-color: var(--kt-primary-light);
+.badge-warning {
+    border: 1px solid rgba(252, 187, 0, 0.25);
+    background: rgba(252, 187, 0, 0.1);
+    color: #d9a400;
+    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
 }
 
-.badge.badge-light-info {
-    color: var(--kt-info);
-    background-color: var(--kt-info-light);
+.badge-neutral {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--ui-line);
+    background: var(--ui-raised);
+    color: var(--ui-ink-2);
+    border-radius: var(--ui-radius-sm);
+    padding: 0.25rem 0.6rem;
+    font-family: var(--ui-font-mono);
+    font-size: 0.68rem;
 }
 
-.badge.badge-light-secondary {
-    color: var(--kt-secondary-inverse);
-    background-color: var(--kt-secondary-light);
+/* --------------------------------------------------------------------------
+   15. Modals / offcanvas
+   -------------------------------------------------------------------------- */
+.modal-content,
+.offcanvas {
+    border: 1px solid var(--ui-line-hi);
+    border-radius: var(--ui-radius-lg);
+    background-color: var(--kt-card-bg);
+    box-shadow: var(--ui-shadow-lg);
 }
 
-.badge.badge-light-dark {
-    color: var(--kt-text-dark);
-    background-color: var(--kt-dark-light);
+.modal-header,
+.modal-footer {
+    border-color: var(--ui-line);
 }
 
-/* ==========================================================================
-   SIDEBAR  (dark in both themes, matching the reference)
-   ========================================================================== */
+.modal-backdrop.show {
+    opacity: 0.7;
+    background-color: #000;
+}
+
+.modal-backdrop {
+    backdrop-filter: blur(4px);
+}
+
+.btn-close {
+    filter: var(--kt-btn-close-filter, none);
+}
+
+[data-theme=dark] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* --------------------------------------------------------------------------
+   16. Toasts (toastr)
+   -------------------------------------------------------------------------- */
+#toast-container > div {
+    border-radius: var(--ui-radius);
+    border: 1px solid var(--ui-line-hi);
+    background-color: var(--ui-raised);
+    background-image: none !important;
+    color: var(--ui-ink);
+    box-shadow: var(--ui-shadow-md);
+    opacity: 1;
+    padding: 1rem 1rem 1rem 3.25rem;
+}
+
+#toast-container > div::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    content: "";
+    border-radius: var(--ui-radius) 0 0 var(--ui-radius);
+}
+
+#toast-container > .toast-success::before { background: var(--kt-success); }
+#toast-container > .toast-error::before   { background: var(--kt-danger); }
+#toast-container > .toast-warning::before { background: var(--kt-warning); }
+#toast-container > .toast-info::before    { background: var(--kt-info); }
+
+#toast-container > div .toast-title {
+    font-family: var(--ui-font-display);
+    font-weight: 700;
+    color: var(--ui-ink);
+}
+
+#toast-container > div .toast-message {
+    color: var(--ui-ink-2);
+    font-size: 0.85rem;
+}
+
+#toast-container > div .toast-progress {
+    height: 2px;
+    opacity: 0.7;
+}
+
+#toast-container > div .toast-close-button {
+    color: var(--ui-muted);
+    opacity: 1;
+}
+
+#toast-container > div .toast-close-button:hover {
+    color: var(--ui-ink);
+}
+
+/* Bootstrap toast variant used in layouts/toast.blade.php */
+.toast {
+    border-radius: var(--ui-radius);
+    border: 1px solid var(--ui-line-hi);
+    background-color: var(--ui-raised);
+    color: var(--ui-ink);
+}
+
+/* --------------------------------------------------------------------------
+   17. Empty states
+   -------------------------------------------------------------------------- */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border: 1px dashed var(--ui-line-hi);
+    border-radius: var(--ui-radius-lg);
+    color: var(--ui-ink-2);
+}
+
+.dataTables_wrapper .dataTables_empty,
+.table .empty-state-cell {
+    color: var(--kt-text-muted);
+    text-align: center;
+    padding: 2.5rem 1rem !important;
+}
+
+/* --------------------------------------------------------------------------
+   18. Sidebar  (dark in both themes, matching the reference)
+   -------------------------------------------------------------------------- */
 [data-kt-app-layout=dark-sidebar] .app-sidebar {
     background-color: #0a0b14;
-    border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-right: 1px solid var(--ui-line) !important;
 }
 
 [data-kt-app-layout=dark-sidebar] .app-sidebar .app-sidebar-logo {
@@ -700,11 +1210,12 @@ a {
 }
 
 [data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link {
-    border-radius: 8px;
+    border-radius: var(--ui-radius-sm);
     color: #8b93ab;
 }
 
-[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-title {
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-title,
+[data-kt-app-layout=dark-sidebar] .app-sidebar .menu .menu-item .menu-link .menu-icon i {
     color: #8b93ab;
 }
 
@@ -744,9 +1255,59 @@ a {
     background: linear-gradient(to bottom, var(--ui-brand), var(--ui-mint));
 }
 
-/* ==========================================================================
-   MISC
-   ========================================================================== */
+/* Brand lockup tile */
+.ui-logo-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ui-radius-sm);
+    border: 1px solid rgba(108, 99, 255, 0.3);
+    background: rgba(108, 99, 255, 0.1);
+    box-shadow: 0 0 24px rgba(108, 99, 255, 0.25);
+    color: var(--ui-brand-2);
+}
+
+/* --------------------------------------------------------------------------
+   19. Header
+   -------------------------------------------------------------------------- */
+.app-header {
+    background-color: color-mix(in srgb, var(--kt-app-header-base-bg-color) 85%, transparent);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--ui-line);
+}
+
+.app-header .btn-custom {
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-sm);
+    color: var(--ui-ink-2);
+}
+
+.app-header .btn-custom:hover {
+    border-color: var(--ui-line-hi);
+    color: var(--ui-brand-2);
+}
+
+/* --------------------------------------------------------------------------
+   20. Upload dropzone / misc
+   -------------------------------------------------------------------------- */
+.upload-dropzone {
+    border: 1px dashed var(--ui-line-hi);
+    border-radius: var(--ui-radius);
+    background-color: var(--ui-raised);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.upload-dropzone:hover {
+    border-color: var(--kt-primary);
+}
+
+.ui-icon {
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
 .separator {
     border-color: var(--kt-border-color);
 }
@@ -767,20 +1328,75 @@ a {
     border-radius: var(--ui-radius-sm) !important;
 }
 
-/* Subtle scrollbars */
-* {
-    scrollbar-color: var(--kt-gray-300) transparent;
-    scrollbar-width: thin;
+.text-gray-800,
+.text-dark {
+    color: var(--kt-text-gray-800) !important;
 }
 
-body::-webkit-scrollbar,
-.table-responsive::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+.text-gray-900 {
+    color: var(--kt-text-gray-900) !important;
 }
 
-body::-webkit-scrollbar-thumb,
-.table-responsive::-webkit-scrollbar-thumb {
-    background-color: var(--kt-gray-300);
-    border-radius: 999px;
+/* Scroll progress + scroll-to-top */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 400;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--ui-brand), var(--ui-mint));
+    transition: width 80ms linear;
+}
+
+.scroll-top {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--ui-radius);
+    border: 1px solid var(--ui-line-hi);
+    background: var(--ui-raised);
+    color: var(--ui-ink-2);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: opacity 0.3s, transform 0.3s, background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.scroll-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.scroll-top:hover {
+    background: var(--ui-brand);
+    color: #ffffff;
+    border-color: var(--ui-brand);
+    box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+}
+
+@media (min-width: 640px) {
+    .scroll-top {
+        bottom: 2rem;
+        right: 2rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   21. Print — keep surfaces neutral
+   -------------------------------------------------------------------------- */
+@media print {
+    body::after { display: none !important; }
+    .card,
+    .modal-content {
+        box-shadow: none !important;
+    }
 }

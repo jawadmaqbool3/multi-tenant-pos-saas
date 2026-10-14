@@ -32,8 +32,8 @@
                             <th>Product</th>
                             <th>Percentage</th>
                             <th>Amount</th>
-                            <th><button class="btn btn-success float-end" id="btn_add_row"><i
-                                        class="bi bi-plus fs-3"></i></button></th>
+                            <th><button class="btn btn-success float-end" id="btn_add_row"><x-icon
+                                        name="plus" size="16" /></button></th>
                         </tr>
                     </thead>
                     <tbody id="products_wrapper">
@@ -62,7 +62,7 @@
                                             class="form-control form-control-solid amount">
                                     </td>
                                     <td class="text-end">
-                                        <button class="btn btn-danger btn-delete"><i class="fs-3 bi bi-x"></i></button>
+                                        <button class="btn btn-danger btn-delete"><x-icon name="x" size="16" /></button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -88,7 +88,7 @@
                                     class="form-control form-control-solid amount">
                             </td>
                             <td class="text-end">
-                                <button class="btn btn-danger btn-delete" disabled><i class="fs-3 bi bi-x"></i></button>
+                                <button class="btn btn-danger btn-delete" disabled><x-icon name="x" size="16" /></button>
                             </td>
                         </tr>
 
