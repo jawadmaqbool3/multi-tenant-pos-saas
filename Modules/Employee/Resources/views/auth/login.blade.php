@@ -90,6 +90,10 @@
                                         <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                                 </button>
                             </div>
+                            <div class="text-center text-muted fw-semibold fs-6 mt-4">
+                                Don't have an account?
+                                <a href="{{ route('companies.create') }}" class="link-primary fw-bold">Create one</a>
+                            </div>
                             <div class="text-center text-muted fw-semibold fs-6 mt-4">Fast, efficient and
                                 productive.</div>
                         </form>

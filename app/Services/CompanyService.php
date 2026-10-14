@@ -81,7 +81,7 @@ class CompanyService
             $companyImage = $this->settingService->logoUpload($request->file('image'));
         }
         $company = $this->company->create([
-            'created_by' => auth()->user()->id,
+            'created_by' => auth()->id() ?? $this->user->query()->whereNull('company_id')->value('id'),
             'status' => $request->status
         ]);
         $company->refresh();
@@ -89,7 +89,7 @@ class CompanyService
         $this->setting->create([
             'company_id' => $company->id,
             'name' => $request->company_name,
-            'email' => $request->company_name,
+            'email' => $request->company_email,
             'address' => $request->company_address,
             'asidebar' => json_encode($menuLinks),
             'logo' => $companyImage

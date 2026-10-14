@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
             return "<?php if (@auth()->user()->hasPermission($name)) { ?>";
         });
         Blade::directive('setting', function ($name) {
-            return "<?php echo auth()->user()->setting()->$name ?>";
+            return "<?php echo auth()->check() && auth()->user()->setting() ? auth()->user()->setting()->$name : optional(\\App\\Models\\Setting::where('company_id', null)->first())->$name; ?>";
         });
         Blade::directive('endcan', function () {
             return "<?php } ?>";

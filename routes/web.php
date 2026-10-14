@@ -8,6 +8,9 @@ Route::get('/clear-cache', function () {
     return redirect()->back();
 })->name('clear.cache');
 
+Route::get('companies/create', 'CompanyController@create')->name('companies.create');
+Route::post('companies', 'CompanyController@store')->name('companies.store');
+
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', [
         'uses' => 'HomeController@index',
@@ -15,7 +18,7 @@ Route::group(['middleware' => ['auth']], function () {
     ]);
 
     Route::group(['middleware' => ['role:admin']], function () {
-        Route::resource('companies', CompanyController::class);
+        Route::resource('companies', CompanyController::class)->except(['create', 'store']);
     });
 
     Route::group(['prefix' => 'settings'], function () {
