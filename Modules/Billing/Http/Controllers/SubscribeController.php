@@ -4,6 +4,7 @@ namespace Modules\Billing\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use Modules\Billing\Models\Coupon;
 use Modules\Billing\Models\Plan;
 use Modules\Billing\Models\Price;
 use Modules\Billing\Models\Signup;
@@ -135,8 +136,22 @@ class SubscribeController extends Controller
             ]);
         }
 
+        $coupon = null;
+
+        if ($request->filled('coupon')) {
+            $code = strtoupper(trim((string) $request->coupon));
+            $coupon = Coupon::where('code', $code)->first();
+
+            if (!$coupon || !$coupon->isRedeemable()) {
+                return response([
+                    'error' => true,
+                    'message' => 'That promo code is invalid or has expired.',
+                ]);
+            }
+        }
+
         try {
-            $url = $this->service->startCheckout($company, $price);
+            $url = $this->service->startCheckout($company, $price, $coupon);
         } catch (\Throwable $e) {
             return response([
                 'error' => true,

@@ -2,6 +2,7 @@
 
 namespace Modules\Billing\Services;
 
+use Modules\Billing\Models\Coupon;
 use Modules\Billing\Models\Plan;
 use Modules\Billing\Models\Price;
 
@@ -41,6 +42,149 @@ class StripeSyncService
                 $this->syncPrice($client, $plan, $price);
             }
         });
+    }
+
+    /**
+     * Push a coupon/promotion to Stripe as a Coupon (the discount) plus a
+     * Promotion Code (the customer-facing code). Both ids are stored on the
+     * local record so checkout sessions can apply the discount.
+     *
+     * Stripe coupons are immutable: only the name/metadata can be updated
+     * once created, so discount-defining fields are only sent on creation.
+     *
+     * @param  \Modules\Billing\Models\Coupon  $coupon
+     * @return void
+     *
+     * @throws \App\Exceptions\StripeServiceException
+     */
+    public function syncCoupon(Coupon $coupon)
+    {
+        if (!$this->stripe->isConfigured()) {
+            return;
+        }
+
+        $client = $this->stripe->client();
+
+        $this->stripe->request(function () use ($client, $coupon) {
+            $this->syncStripeCoupon($client, $coupon);
+            $this->syncStripePromotionCode($client, $coupon);
+        });
+
+        $coupon->save();
+    }
+
+    /**
+     * Create or update the Stripe Coupon backing this record.
+     *
+     * @param  \Stripe\StripeClient  $client
+     * @param  \Modules\Billing\Models\Coupon  $coupon
+     * @return void
+     */
+    protected function syncStripeCoupon($client, Coupon $coupon)
+    {
+        $data = [
+            'name' => $coupon->name ?: $coupon->code,
+            'metadata' => [
+                'local_id' => (string) $coupon->id,
+                'local_uid' => $coupon->uid,
+            ],
+        ];
+
+        if ($coupon->stripe_coupon_id) {
+            $client->coupons->update($coupon->stripe_coupon_id, $data);
+            return;
+        }
+
+        $data['duration'] = $coupon->duration ?: 'once';
+
+        if ($coupon->percent_off !== null) {
+            $data['percent_off'] = (float) $coupon->percent_off;
+        } else {
+            $data['amount_off'] = (int) $coupon->amount_off;
+            $data['currency'] = strtolower($coupon->currency ?: config('billing.currency'));
+        }
+
+        if ($coupon->duration === 'repeating') {
+            $data['duration_in_months'] = max(1, (int) $coupon->duration_in_months);
+        }
+
+        if ($coupon->max_redemptions) {
+            $data['max_redemptions'] = (int) $coupon->max_redemptions;
+        }
+
+        if ($coupon->expires_at) {
+            $data['redeem_by'] = $coupon->expires_at->timestamp;
+        }
+
+        $stripeCoupon = $client->coupons->create($data);
+        $coupon->stripe_coupon_id = $stripeCoupon->id;
+    }
+
+    /**
+     * Create (or toggle) the Stripe Promotion Code customers type at checkout.
+     *
+     * @param  \Stripe\StripeClient  $client
+     * @param  \Modules\Billing\Models\Coupon  $coupon
+     * @return void
+     */
+    protected function syncStripePromotionCode($client, Coupon $coupon)
+    {
+        if ($coupon->stripe_promotion_code_id) {
+            $client->promotionCodes->update($coupon->stripe_promotion_code_id, [
+                'active' => $coupon->status === 'active',
+            ]);
+            return;
+        }
+
+        $data = [
+            'promotion' => [
+                'type' => 'coupon',
+                'coupon' => $coupon->stripe_coupon_id,
+            ],
+            'code' => $coupon->code,
+            'active' => $coupon->status === 'active',
+            'metadata' => [
+                'local_id' => (string) $coupon->id,
+                'local_uid' => $coupon->uid,
+            ],
+        ];
+
+        if ($coupon->expires_at) {
+            $data['expires_at'] = $coupon->expires_at->timestamp;
+        }
+
+        $promotionCode = $client->promotionCodes->create($data);
+        $coupon->stripe_promotion_code_id = $promotionCode->id;
+    }
+
+    /**
+     * Best-effort deactivate/remove the Stripe objects behind a deleted
+     * coupon. Promotion codes cannot be reused once deactivated, but the
+     * code is retired together with the local record.
+     *
+     * @param  \Modules\Billing\Models\Coupon  $coupon
+     * @return void
+     */
+    public function archiveCoupon(Coupon $coupon)
+    {
+        if (!$this->stripe->isConfigured()) {
+            return;
+        }
+
+        $client = $this->stripe->client();
+
+        try {
+            $this->stripe->request(function () use ($client, $coupon) {
+                if ($coupon->stripe_promotion_code_id) {
+                    $client->promotionCodes->update($coupon->stripe_promotion_code_id, ['active' => false]);
+                }
+                if ($coupon->stripe_coupon_id) {
+                    $client->coupons->delete($coupon->stripe_coupon_id);
+                }
+            });
+        } catch (\Throwable $e) {
+            // Local record is already gone; Stripe cleanup is best-effort.
+        }
     }
 
     /**

@@ -110,6 +110,12 @@ class AsideMenuLinks extends Component
                         'link' => route('billing.invoices.index'),
                         'icon' => 'bi bi-receipt',
                     ],
+                    [
+                        'title' => 'Promotions & Coupons',
+                        'permission' => 'view coupon',
+                        'link' => route('billing.coupons.index'),
+                        'icon' => 'bi bi-tag',
+                    ],
                 ],
             ],
         ];

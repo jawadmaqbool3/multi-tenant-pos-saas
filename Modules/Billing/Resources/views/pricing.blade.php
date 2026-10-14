@@ -56,6 +56,48 @@
             text-align: center;
         }
 
+        .pricing-coupon {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            max-width: 420px;
+            margin: 1.5rem auto 0;
+            padding: 0.5rem 0.9rem;
+            background: var(--ui-card);
+            border: 1px solid var(--ui-line-hi);
+            border-radius: 0.75rem;
+            box-shadow: var(--ui-card-shadow);
+        }
+
+        .pricing-coupon input.pricing-coupon-input {
+            flex: 1;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--ui-ink);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .pricing-coupon input.pricing-coupon-input::placeholder {
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: 500;
+            color: var(--ui-muted);
+        }
+
+        .pricing-coupon-status {
+            font-size: 0.72rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .pricing-coupon-status.is-applied {
+            color: var(--kt-success);
+        }
+
         .pricing--grid .pricing-track {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
@@ -316,6 +358,15 @@
                     Your account is active. Subscribe to a plan to unlock your workspace &mdash;
                     upgrade or change anytime.
                 </p>
+
+                <div class="pricing-coupon">
+                    <span class="svg-icon svg-icon-2 svg-icon-gray-500">
+                        <x-icon name="tag" :size="18" />
+                    </span>
+                    <input type="text" id="pricing_coupon_input" class="pricing-coupon-input"
+                        placeholder="Have a promo code? Enter it here" autocomplete="off" spellcheck="false" />
+                    <span class="pricing-coupon-status" data-coupon-status></span>
+                </div>
             </div>
 
             @if (!$configured)
@@ -375,6 +426,7 @@
                                     action="{{ route('billing.subscribe.checkout') }}">
                                     @csrf
                                     <input type="hidden" name="price" value="{{ $firstPrice->uid }}" />
+                                    <input type="hidden" name="coupon" class="pricing-coupon-hidden" value="" />
                                     <button type="submit"
                                         class="btn {{ $isPopular ? 'btn-primary' : 'btn-light-primary' }} w-100"
                                         {{ $configured ? '' : 'disabled' }}>
@@ -484,6 +536,37 @@
 
             window.addEventListener('resize', update);
             update();
+        })();
+
+        (function() {
+            var input = document.getElementById('pricing_coupon_input');
+            var hidden = document.querySelectorAll('.pricing-coupon-hidden');
+            var status = document.querySelector('[data-coupon-status]');
+
+            if (!input || !hidden.length) {
+                return;
+            }
+
+            function sync() {
+                var value = input.value.trim().toUpperCase();
+                input.value = value;
+                hidden.forEach(function(field) {
+                    field.value = value;
+                });
+
+                if (status) {
+                    if (value) {
+                        status.textContent = 'Will be applied at checkout';
+                        status.classList.add('is-applied');
+                    } else {
+                        status.textContent = '';
+                        status.classList.remove('is-applied');
+                    }
+                }
+            }
+
+            input.addEventListener('input', sync);
+            sync();
         })();
     </script>
 @endsection

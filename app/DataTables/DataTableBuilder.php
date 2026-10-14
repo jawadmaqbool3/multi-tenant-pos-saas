@@ -12,6 +12,7 @@ class DataTableBuilder
         $with = $config['with'] ?? [];
         $editColumns = $config['editColumns'] ?? [];
         $addColumns = $config['addColumns'] ?? [];
+        $filterColumns = $config['filterColumns'] ?? [];
         $rawColumns = $config['rawColumns'] ?? [];
 
         if ($with) {
@@ -25,6 +26,9 @@ class DataTableBuilder
         }
         foreach ($addColumns as $column => $callback) {
             $table->addColumn($column, $callback);
+        }
+        foreach ($filterColumns as $column => $callback) {
+            $table->filterColumn($column, $callback);
         }
 
         return $table->rawColumns(array_values(array_unique($rawColumns)))->make(true);

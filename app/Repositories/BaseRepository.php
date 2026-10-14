@@ -13,6 +13,7 @@ abstract class BaseRepository
     protected $dataTableWith = [];
     protected $dataTableEditColumns = [];
     protected $dataTableAddColumns = [];
+    protected $dataTableFilterColumns = [];
     protected $dataTableRawColumns = ['action'];
 
     public function __construct(Model $model)
@@ -29,6 +30,7 @@ abstract class BaseRepository
             'with' => $config['with'] ?? $this->dataTableWith,
             'editColumns' => array_merge($this->dataTableEditColumns, $config['editColumns'] ?? []),
             'addColumns' => array_merge($this->dataTableAddColumns, $config['addColumns'] ?? []),
+            'filterColumns' => array_merge($this->dataTableFilterColumns, $config['filterColumns'] ?? []),
             'rawColumns' => array_merge($this->dataTableRawColumns, $config['rawColumns'] ?? []),
         ]);
     }

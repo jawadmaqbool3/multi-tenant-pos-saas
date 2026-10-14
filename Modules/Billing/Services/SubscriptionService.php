@@ -3,8 +3,10 @@
 namespace Modules\Billing\Services;
 
 use App\Models\Company;
+use Modules\Billing\Models\Coupon;
 use Modules\Billing\Models\Customer;
 use Modules\Billing\Models\Price;
+use Modules\Billing\Models\Redemption;
 use Modules\Billing\Models\Subscription;
 
 class SubscriptionService
@@ -63,11 +65,12 @@ class SubscriptionService
      *
      * @param  \App\Models\Company  $company
      * @param  \Modules\Billing\Models\Price  $price
+     * @param  \Modules\Billing\Models\Coupon|null  $coupon
      * @return string
      *
      * @throws \App\Exceptions\StripeServiceException
      */
-    public function startCheckout(Company $company, Price $price): string
+    public function startCheckout(Company $company, Price $price, ?Coupon $coupon = null): string
     {
         $price->loadMissing('plan');
 
@@ -81,7 +84,13 @@ class SubscriptionService
 
         $customer = $this->ensureCustomer($company);
 
-        $session = $this->stripe->createCheckoutSession([
+        $metadata = [
+            'company_id' => (string) $company->id,
+            'plan_id' => (string) $price->plan_id,
+            'price_id' => (string) $price->id,
+        ];
+
+        $params = [
             'mode' => 'subscription',
             'customer' => $customer->stripe_customer_id,
             'line_items' => [
@@ -90,18 +99,26 @@ class SubscriptionService
             'success_url' => route('billing.subscribe.success') . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('billing.subscribe.cancel'),
             'client_reference_id' => (string) $company->id,
-            'allow_promotion_codes' => true,
-            'metadata' => [
-                'company_id' => (string) $company->id,
-                'plan_id' => (string) $price->plan_id,
-                'price_id' => (string) $price->id,
-            ],
+            'metadata' => $metadata,
             'subscription_data' => [
                 'metadata' => [
                     'company_id' => (string) $company->id,
                 ],
             ],
-        ]);
+        ];
+
+        if ($coupon && $coupon->isRedeemable()) {
+            // Apply a specific promotion code entered on the pricing page.
+            $params['discounts'] = [
+                ['promotion_code' => $coupon->stripe_promotion_code_id],
+            ];
+            $params['metadata']['coupon_id'] = (string) $coupon->id;
+        } else {
+            // Otherwise let customers enter a promotion code on Stripe's page.
+            $params['allow_promotion_codes'] = true;
+        }
+
+        $session = $this->stripe->createCheckoutSession($params);
 
         return $session->url;
     }
@@ -129,7 +146,52 @@ class SubscriptionService
 
         $stripeSubscription = $this->stripe->retrieveSubscription($subscriptionId, ['items.data.price']);
 
-        return $this->syncFromStripe($stripeSubscription);
+        $subscription = $this->syncFromStripe($stripeSubscription);
+
+        $this->recordRedemption($session, $subscription);
+
+        return $subscription;
+    }
+
+    /**
+     * Record that a coupon was redeemed on a completed checkout session.
+     *
+     * @param  \Stripe\Checkout\Session  $session
+     * @param  \Modules\Billing\Models\Subscription|null  $subscription
+     * @return void
+     */
+    protected function recordRedemption($session, $subscription)
+    {
+        $couponId = isset($session->metadata->coupon_id) ? (int) $session->metadata->coupon_id : null;
+
+        if (!$couponId) {
+            return;
+        }
+
+        $companyId = isset($session->metadata->company_id)
+            ? (int) $session->metadata->company_id
+            : ($subscription ? $subscription->company_id : null);
+
+        if (!$companyId) {
+            return;
+        }
+
+        $coupon = Coupon::where('id', $couponId)->first();
+
+        if (!$coupon) {
+            return;
+        }
+
+        Redemption::firstOrCreate(
+            [
+                'coupon_id' => $coupon->id,
+                'company_id' => $companyId,
+                'subscription_id' => $subscription ? $subscription->id : null,
+            ],
+            [
+                'stripe_promotion_code_id' => $coupon->stripe_promotion_code_id,
+            ]
+        );
     }
 
     /**

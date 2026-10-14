@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Billing\Http\Controllers\CouponController;
 use Modules\Billing\Http\Controllers\InvoiceController;
 use Modules\Billing\Http\Controllers\PlanController;
 use Modules\Billing\Http\Controllers\StripeWebhookController;
@@ -16,6 +17,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('plans', PlanController::class)
         ->names('billing.plans')
         ->middleware('permission:view billing plan');
+
+    Route::resource('coupons', CouponController::class)
+        ->except(['show'])
+        ->names('billing.coupons')
+        ->middleware('permission:view coupon');
 
     Route::get('invoices', [InvoiceController::class, 'index'])
         ->name('billing.invoices.index')
