@@ -49,6 +49,9 @@ class EmployeeService
 
     public function store($request)
     {
+        app(\Modules\Billing\Services\PlanLimitService::class)
+            ->ensureWithinLimit('employees', $this->company());
+
         $image = '';
         if ($request->file('image')) {
             $image = Helper::uploadfile([
@@ -133,5 +136,19 @@ class EmployeeService
             'path' => $this->profileDirectory
         ]);
         $employee->delete();
+    }
+
+    /**
+     * The company the current user belongs to (null for platform accounts).
+     *
+     * @return \App\Models\Company|null
+     */
+    protected function company()
+    {
+        if (!auth()->user() || !auth()->user()->company_id) {
+            return null;
+        }
+
+        return \App\Models\Company::where('id', auth()->user()->company_id)->first();
     }
 }

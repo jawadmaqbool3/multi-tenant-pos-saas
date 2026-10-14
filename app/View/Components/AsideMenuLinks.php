@@ -2,8 +2,11 @@
 
 namespace App\View\Components;
 
+use App\Models\Company;
 use App\Models\Setting;
 use Illuminate\View\Component;
+use Modules\Billing\Services\PlanFeatureService;
+use Modules\RBAC\Models\Permission;
 
 class AsideMenuLinks extends Component
 {
@@ -18,6 +21,20 @@ class AsideMenuLinks extends Component
      * @var bool
      */
     public $flat = false;
+
+    /**
+     * Module names included in the current company's plan (null = no gating).
+     *
+     * @var array<int, string>|null
+     */
+    protected $planModules = null;
+
+    /**
+     * Map of permission name => module name for the current company.
+     *
+     * @var array<string, string|null>|null
+     */
+    protected $permissionModules = null;
 
     public function __construct()
     {
@@ -119,6 +136,10 @@ class AsideMenuLinks extends Component
                 foreach ($category['links']  as $z => $link) {
                     if (auth()->user()->hasPermission($link['permission']) == false) {
                         unset($links[$x]['categories'][$y]['links'][$z]);
+                        continue;
+                    }
+                    if (!$this->moduleAllowedByPlan($link['permission'])) {
+                        unset($links[$x]['categories'][$y]['links'][$z]);
                     }
                 }
                 if (count($links[$x]['categories'][$y]['links']) == 0) {
@@ -133,6 +154,79 @@ class AsideMenuLinks extends Component
             $links = [];
         }
         return $links;
+    }
+
+    /**
+     * Gate feature modules (chart of accounts, inventory, promotions) behind
+     * the modules included in the company's plan.
+     *
+     * @param  string  $permission
+     * @return bool
+     */
+    protected function moduleAllowedByPlan($permission)
+    {
+        $planModules = $this->planModules();
+
+        if ($planModules === null) {
+            return true;
+        }
+
+        $module = $this->moduleForPermission($permission);
+
+        if (!$module) {
+            return true;
+        }
+
+        if (!app(PlanFeatureService::class)->isModuleGated($module)) {
+            return true;
+        }
+
+        return in_array($module, $planModules, true);
+    }
+
+    /**
+     * @return array<int, string>|null
+     */
+    protected function planModules()
+    {
+        if ($this->planModules !== null) {
+            return $this->planModules;
+        }
+
+        $user = auth()->user();
+
+        if (!$user || !$user->company_id) {
+            return null;
+        }
+
+        $company = Company::where('id', $user->company_id)->first();
+
+        if (!$company) {
+            return null;
+        }
+
+        return $this->planModules = app(PlanFeatureService::class)->allowedModules($company);
+    }
+
+    /**
+     * @param  string  $permission
+     * @return string|null
+     */
+    protected function moduleForPermission($permission)
+    {
+        if ($this->permissionModules === null) {
+            $this->permissionModules = [];
+
+            $permissions = Permission::with('module')
+                ->where('company_id', auth()->user()->company_id)
+                ->get();
+
+            foreach ($permissions as $row) {
+                $this->permissionModules[$row->name] = $row->module->name ?? null;
+            }
+        }
+
+        return $this->permissionModules[$permission] ?? null;
     }
 
     /**

@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CompanySeeder::class,
             AccountsSeeder::class,
             VoucherTypeSeeder::class,
+            PlanSeeder::class,
         ]);
     }
 }

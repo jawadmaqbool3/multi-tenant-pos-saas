@@ -30,12 +30,23 @@ class RoleService
 
     public function getRoleByName($name)
     {
-        $query = $this->roles->query()->where('name', $name);
         if (auth()->user()) {
-            $query->where('company_id', auth()->user()->company_id);
+            $companyRole = $this->roles->query()
+                ->where('name', $name)
+                ->where('company_id', auth()->user()->company_id)
+                ->first();
+
+            if ($companyRole) {
+                return $companyRole;
+            }
         }
 
-        return $query->first();
+        // Fall back to the shared template role when a company-specific one
+        // has not been provisioned.
+        return $this->roles->query()
+            ->where('name', $name)
+            ->whereNull('company_id')
+            ->first();
     }
 
     public function getRolesList()
@@ -60,6 +71,9 @@ class RoleService
 
     public function store($request)
     {
+        app(\Modules\Billing\Services\PlanLimitService::class)
+            ->ensureWithinLimit('roles', $this->company());
+
         $role = $this->roles->create([
             'name' => $request->name,
             'status' => $request->status,
@@ -99,5 +113,19 @@ class RoleService
     public function delete($role)
     {
         return $this->roles->delete($role->id);
+    }
+
+    /**
+     * The company the current user belongs to (null for platform accounts).
+     *
+     * @return \App\Models\Company|null
+     */
+    protected function company()
+    {
+        if (!auth()->user() || !auth()->user()->company_id) {
+            return null;
+        }
+
+        return \App\Models\Company::where('id', auth()->user()->company_id)->first();
     }
 }

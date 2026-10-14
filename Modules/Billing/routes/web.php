@@ -8,6 +8,7 @@ use Modules\Billing\Http\Controllers\SubscribeController;
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('subscribe', [SubscribeController::class, 'show'])->name('billing.subscribe');
+    Route::get('pricing', [SubscribeController::class, 'pricing'])->name('billing.pricing');
     Route::post('subscribe/checkout', [SubscribeController::class, 'checkout'])->name('billing.subscribe.checkout');
     Route::get('subscribe/success', [SubscribeController::class, 'success'])->name('billing.subscribe.success');
     Route::get('subscribe/cancel', [SubscribeController::class, 'cancel'])->name('billing.subscribe.cancel');

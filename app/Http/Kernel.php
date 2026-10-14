@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'role' => \App\Http\Middleware\EnsureRole::class,
         'permission' => \App\Http\Middleware\EnsurePermission::class,
         'subscribed' => \App\Http\Middleware\EnsureSubscribed::class,
+        'plan.feature' => \App\Http\Middleware\EnsurePlanFeature::class,
     ];
 }

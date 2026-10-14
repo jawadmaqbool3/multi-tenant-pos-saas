@@ -7,6 +7,7 @@ use App\Models\Company;
 use Modules\Billing\Models\Plan;
 use Modules\Billing\Models\Price;
 use Modules\Billing\Models\Signup;
+use Modules\Billing\Services\PlanFeaturePresenter;
 use Modules\Billing\Services\SubscriptionService;
 use Illuminate\Http\Request;
 
@@ -26,6 +27,26 @@ class SubscribeController extends Controller
      */
     public function show(Request $request)
     {
+        return $this->renderPricing();
+    }
+
+    /**
+     * The dedicated public plans/pricing page (visible after registration).
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function pricing(Request $request)
+    {
+        return $this->renderPricing();
+    }
+
+    /**
+     * Build and render the plans/pricing page for the current tenant.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function renderPricing()
+    {
         $user = auth()->user();
 
         // Platform owners never need a plan.
@@ -42,9 +63,12 @@ class SubscribeController extends Controller
         $plans = Plan::query()
             ->where('status', 'active')
             ->where('is_public', true)
-            ->with(['prices' => function ($query) {
-                $query->where('active', true)->orderBy('unit_amount');
-            }])
+            ->with([
+                'prices' => function ($query) {
+                    $query->where('active', true)->orderBy('unit_amount');
+                },
+                'limits',
+            ])
             ->orderBy('sort')
             ->orderBy('name')
             ->get()
@@ -53,14 +77,20 @@ class SubscribeController extends Controller
             })
             ->values();
 
+        $presenter = app(PlanFeaturePresenter::class);
+        $features = $plans->mapWithKeys(function ($plan) use ($presenter) {
+            return [$plan->uid => $presenter->present($plan)];
+        });
+
         $selectedPrice = null;
         $signup = Signup::where('email', $user->email)->latest('id')->first();
         if ($signup && $signup->price_id) {
             $selectedPrice = $signup->price_id;
         }
 
-        return view('billing::subscribe', [
+        return view('billing::pricing', [
             'plans' => $plans,
+            'features' => $features,
             'currency' => config('billing.currency'),
             'configured' => $this->service->isConfigured(),
             'selectedPrice' => $selectedPrice,
@@ -149,6 +179,6 @@ class SubscribeController extends Controller
      */
     public function cancel()
     {
-        return redirect()->route('billing.subscribe')->with('message', 'Checkout cancelled. Your plan was not changed.');
+        return redirect()->route('billing.pricing')->with('message', 'Checkout cancelled. Your plan was not changed.');
     }
 }

@@ -19,6 +19,7 @@ class PlanService
         'products' => 'Products',
         'users' => 'Users',
         'employees' => 'Employees',
+        'roles' => 'Roles',
         'suppliers' => 'Suppliers',
         'promotions' => 'Promotions',
         'purchase_orders' => 'Purchase Orders',

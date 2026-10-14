@@ -28,6 +28,7 @@ class EnsureSubscribed
             'signup',
             'subscribe',
             'subscribe/*',
+            'pricing',
             'stripe/webhook',
             'clear-cache'
         )) {
@@ -56,10 +57,10 @@ class EnsureSubscribed
                 'warning' => true,
                 'message' => 'Please choose a plan to continue.',
                 'redirect' => true,
-                'url' => route('billing.subscribe'),
+                'url' => route('billing.pricing'),
             ]);
         }
 
-        return redirect()->route('billing.subscribe');
+        return redirect()->route('billing.pricing');
     }
 }
