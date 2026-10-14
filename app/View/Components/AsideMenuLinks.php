@@ -21,7 +21,7 @@ class AsideMenuLinks extends Component
 
     public function __construct()
     {
-        $this->links = $this->buildLinks();
+        $this->links = $this->markActive($this->buildLinks());
     }
 
     /**
@@ -133,6 +133,50 @@ class AsideMenuLinks extends Component
             $links = [];
         }
         return $links;
+    }
+
+    /**
+     * Flag the link (and its parent category) that matches the current page,
+     * so the sidebar can highlight it.
+     *
+     * @param  array  $links
+     * @return array
+     */
+    protected function markActive($links)
+    {
+        foreach ($links as $x => $menu) {
+            foreach ($menu['categories'] as $y => $category) {
+                $categoryActive = false;
+                foreach ($category['links'] as $z => $link) {
+                    $active = $this->isActiveLink($link['link'] ?? '');
+                    $links[$x]['categories'][$y]['links'][$z]['active'] = $active;
+                    if ($active) {
+                        $categoryActive = true;
+                    }
+                }
+                $links[$x]['categories'][$y]['active'] = $categoryActive;
+            }
+        }
+
+        return $links;
+    }
+
+    /**
+     * Match a menu URL against the current request path, ignoring the host so
+     * that stored (absolute) links and the live request always line up.
+     *
+     * @param  string  $url
+     * @return bool
+     */
+    protected function isActiveLink($url)
+    {
+        $path = trim((string) parse_url($url, PHP_URL_PATH), '/');
+
+        if ($path === '') {
+            return false;
+        }
+
+        return request()->is($path) || request()->is($path . '/*');
     }
 
     /**

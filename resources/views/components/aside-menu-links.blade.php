@@ -27,8 +27,8 @@
         @foreach ($menu['categories'] as $category)
             @if ($flat ?? false)
                 @foreach ($category['links'] as $link)
-                    <div class="menu-item">
-                        <a class="menu-link" href="{{ $link['link'] }}">
+                    <div class="menu-item {{ !empty($link['active']) ? 'here' : '' }}">
+                        <a class="menu-link {{ !empty($link['active']) ? 'active' : '' }}" href="{{ $link['link'] }}">
                             <span class="menu-icon">
                                 <span class="svg-icon svg-icon-2">
                                     <x-icon :name="$iconMap[$link['icon'] ?? ($category['icon'] ?? '')] ?? 'circle'" :size="18" />
@@ -39,7 +39,7 @@
                     </div>
                 @endforeach
             @else
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ !empty($category['active']) ? 'hover show' : '' }}">
                     <span class="menu-link">
                         <span class="menu-icon">
                             <span class="svg-icon svg-icon-2">
@@ -49,10 +49,10 @@
                         <span class="menu-title">{{ $category['name'] }}</span>
                         <span class="menu-arrow"></span>
                     </span>
-                    <div class="menu-sub menu-sub-accordion">
+                    <div class="menu-sub menu-sub-accordion {{ !empty($category['active']) ? 'show' : '' }}">
                         @foreach ($category['links'] as $link)
                             <div class="menu-item">
-                                <a class="menu-link" href="{{ $link['link'] }}">
+                                <a class="menu-link {{ !empty($link['active']) ? 'active' : '' }}" href="{{ $link['link'] }}">
                                     <span class="menu-bullet">
                                         <span class="bullet bullet-dot"></span>
                                     </span>
