@@ -4,8 +4,8 @@ namespace App\Exceptions;
 
 class EmailAlreadyTakenException extends CustomException
 {
-    public function __construct()
+    public function __construct($field = null, $message = 'Email already has been taken')
     {
-        parent::__construct('Email already has been taken', 'error');
+        parent::__construct($message, 'error', $field);
     }
 }

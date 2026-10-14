@@ -73,7 +73,7 @@
 
             </div>
         </div>
-        @if (auth()->check() && auth()->user()->hasRole('admin'))
+        @if (auth()->user()->hasRole('admin'))
             <div class="card card-flush p-4 my-5">
                 <div class="col-md-12">
                     <div class="form-check form-switch form-check-custom form-check-solid">
@@ -85,18 +85,16 @@
                 </div>
             </div>
         @endif
-        @auth
-            <div class="card card-flush py-4 mb-8">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h2>Roles</h2>
-                    </div>
-                </div>
-                <div class="card-body pt-0 w-100">
-                    <x-role-selector :company="@$company" />
+        <div class="card card-flush py-4 mb-8">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2>Roles</h2>
                 </div>
             </div>
-        @endauth
+            <div class="card-body pt-0 w-100">
+                <x-role-selector :company="@$company" />
+            </div>
+        </div>
     </div>
     <div class="col-md-8">
         <div class="card card-flush py-4 mb-8">
@@ -175,20 +173,18 @@
             </div>
         </div>
 
-        @auth
-            <div class="card card-flush py-4 mb-8">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h2>Attach Permissions</h2>
-                    </div>
-                </div>
-                <div class="card-body my-3">
-                    <x-permission-selector :company="@$company" />
+        <div class="card card-flush py-4 mb-8">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2>Attach Permissions</h2>
                 </div>
             </div>
-        @endauth
+            <div class="card-body my-3">
+                <x-permission-selector :company="@$company" />
+            </div>
+        </div>
         <div class="d-flex justify-content-end">
-            <a href="{{ auth()->check() ? route('companies.index') : route('login') }}"
+            <a href="{{ route('companies.index') }}"
                 id="kt_ecommerce_add_product_cancel" class="btn btn-light me-5">Cancel</a>
             <button type="submit" id="kt_ecommerce_add_category_submit" class="btn btn-primary">
                 <span class="indicator-label">Save Changes</span>

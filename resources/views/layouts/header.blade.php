@@ -7,7 +7,7 @@
     </div>
     <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0">
         <a href="{{ route('dashboard') }}" class="d-lg-none">
-            <img alt="Logo" src="{{ asset('assets/media/small/logo') }}/@setting(logo)" class="h-50px rounded" />
+            <img alt="Logo" src="@logo(small)" class="h-50px rounded" />
         </a>
     </div>
     <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1" id="kt_app_header_wrapper">

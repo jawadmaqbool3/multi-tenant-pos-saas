@@ -149,6 +149,8 @@ class CompanyService
         $defaultService->initiateAccounts($company);
         $defaultService->initiateVouchers($company);
         $defaultService->initiateAccountSettings($company);
+
+        return $company;
     }
 
     public function destroy($company)

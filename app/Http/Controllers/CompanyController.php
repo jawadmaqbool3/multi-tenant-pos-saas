@@ -56,9 +56,9 @@ class CompanyController extends Controller
 
             return response([
                 'success' => true,
-                'message' => auth()->check() ? 'New Company Registered' : 'Your account has been created. Please sign in.',
+                'message' => 'New Company Registered',
                 'redirect' => true,
-                'url' => auth()->check() ? route('companies.index') : route('login'),
+                'url' => route('companies.index'),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();

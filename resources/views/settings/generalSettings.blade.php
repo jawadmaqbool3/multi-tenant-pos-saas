@@ -37,7 +37,7 @@
                             <div class="image-input image-input-empty image-input-outline image-input-placeholder mb-3"
                                 data-kt-image-input="true">
                                 <div class="image-input-wrapper w-150px h-150px"
-                                    style="background-image: url('{{ asset('assets/media/medium/logo/' . $setting->logo) }}')">
+                                    style="background-image: url('@logo(medium)')">
                                 </div>
                                 <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
                                     data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Change avatar">

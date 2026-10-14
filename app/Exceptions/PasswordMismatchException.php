@@ -4,8 +4,8 @@ namespace App\Exceptions;
 
 class PasswordMismatchException extends CustomException
 {
-    public function __construct()
+    public function __construct($field = 'password_confirmation', $message = 'Password mismatch')
     {
-        parent::__construct('Password mismatch', 'error');
+        parent::__construct($message, 'error', $field);
     }
 }

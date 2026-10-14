@@ -8,7 +8,7 @@
 <head>
     <title>Login | {{$setting->name}}</title>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="{{ asset('assets/media/icons/logo/' . $setting->logo) }}" />
+    <link rel="shortcut icon" href="@logo(icon)" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
     @include('layouts.style')
 
@@ -93,7 +93,7 @@
                             </div>
                             <div class="text-center text-muted fw-semibold fs-6 mt-4">
                                 Don't have an account?
-                                <a href="{{ route('companies.create') }}" class="link-primary fw-bold">Create one</a>
+                                <a href="{{ route('signup') }}" class="link-primary fw-bold">Create one</a>
                             </div>
                             <div class="text-center text-muted fw-semibold fs-6 mt-4">Fast, efficient and
                                 productive.</div>
@@ -105,7 +105,7 @@
             <div class="d-none d-lg-flex flex-lg-row-fluid w-lg-50 order-1 order-lg-2"
                 style="background-image: linear-gradient(135deg, #6c63ff 0%, #4a41e0 55%, #07080f 100%);">
                 <div class="d-flex flex-column flex-center py-7 py-lg-15 px-5 px-md-15 w-100">
-                    <img alt="Logo" src="{{ asset('assets/media/small/logo/' . $setting->logo) }}"
+                    <img alt="Logo" src="@logo(large)"
                         class="h-60px h-lg-75px rounded mb-10" />
                     <h2 class="text-white fw-bolder text-center mb-4">{{ $setting->name }}</h2>
                     <div class="fw-semibold text-center" style="color: rgba(255,255,255,.7); max-width: 350px;">Point

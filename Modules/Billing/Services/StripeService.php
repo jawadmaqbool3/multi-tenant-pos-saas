@@ -87,4 +87,78 @@ class StripeService
             ];
         });
     }
+
+    /**
+     * Create (or return) a Stripe Customer for the given company.
+     *
+     * @return \Stripe\Customer
+     *
+     * @throws \App\Exceptions\StripeServiceException
+     */
+    public function createCustomer(string $email, string $name, array $metadata = [])
+    {
+        return $this->request(function () use ($email, $name, $metadata) {
+            return $this->client()->customers->create([
+                'email' => $email,
+                'name' => $name,
+                'metadata' => $metadata,
+            ]);
+        });
+    }
+
+    /**
+     * Retrieve an existing Stripe Customer.
+     *
+     * @return \Stripe\Customer
+     *
+     * @throws \App\Exceptions\StripeServiceException
+     */
+    public function retrieveCustomer(string $stripeCustomerId)
+    {
+        return $this->request(function () use ($stripeCustomerId) {
+            return $this->client()->customers->retrieve($stripeCustomerId);
+        });
+    }
+
+    /**
+     * Create a Checkout Session in subscription mode.
+     *
+     * @return \Stripe\Checkout\Session
+     *
+     * @throws \App\Exceptions\StripeServiceException
+     */
+    public function createCheckoutSession(array $params)
+    {
+        return $this->request(function () use ($params) {
+            return $this->client()->checkout->sessions->create($params);
+        });
+    }
+
+    /**
+     * Retrieve a Checkout Session.
+     *
+     * @return \Stripe\Checkout\Session
+     *
+     * @throws \App\Exceptions\StripeServiceException
+     */
+    public function retrieveCheckoutSession(string $sessionId, array $expand = [])
+    {
+        return $this->request(function () use ($sessionId, $expand) {
+            return $this->client()->checkout->sessions->retrieve($sessionId, $expand);
+        });
+    }
+
+    /**
+     * Retrieve a Subscription.
+     *
+     * @return \Stripe\Subscription
+     *
+     * @throws \App\Exceptions\StripeServiceException
+     */
+    public function retrieveSubscription(string $subscriptionId, array $expand = [])
+    {
+        return $this->request(function () use ($subscriptionId, $expand) {
+            return $this->client()->subscriptions->retrieve($subscriptionId, $expand);
+        });
+    }
 }

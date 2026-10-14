@@ -4,8 +4,7 @@
     <div class="app-sidebar-logo px-5" id="kt_app_sidebar_logo">
         <a href="{{ route('dashboard') }}">
             <div class="d-flex">
-                <img alt="Logo" src="{{ asset('assets/media/small/logo/') }}/@setting(logo)"
-                    class="h-50px  rounded" />
+                <img alt="Logo" src="@logo(small)" class="h-50px  rounded" />
                 <h3 class="app-sidebar-logo-default text-white mt-5 px-5">@setting(name)</h3>
             </div>
         </a>

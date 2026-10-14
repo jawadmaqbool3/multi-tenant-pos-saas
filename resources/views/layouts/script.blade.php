@@ -95,6 +95,25 @@
                                 }
                             );
                         }
+                        if (!response.success && response.field) {
+                            var fieldEl = document.querySelector('[name="' + response.field + '"]');
+                            if (fieldEl) {
+                                fieldEl.classList.add('border-danger');
+                                try {
+                                    fieldEl.focus();
+                                } catch (e) {}
+                                fieldEl.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center'
+                                });
+                            }
+                            document.dispatchEvent(new CustomEvent('fieldValidationError', {
+                                detail: {
+                                    field: response.field,
+                                    message: response.message
+                                }
+                            }));
+                        }
                         if (response.reload) {
                             window.location.reload();
                         }

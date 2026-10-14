@@ -27,6 +27,43 @@ class Helper
         return str_replace(' ', '_', strtolower($string));
     }
 
+    public static function logo($variant = 'small')
+    {
+        $directories = [
+            'large' => '/assets/media/large/logo/',
+            'medium' => '/assets/media/medium/logo/',
+            'small' => '/assets/media/small/logo/',
+            'icon' => '/assets/media/icons/logo/',
+        ];
+        $defaults = [
+            'large' => '/assets/media/logos/logo-large.jpeg',
+            'medium' => '/assets/media/logos/logo.jpeg',
+            'small' => '/assets/media/logos/logo.jpeg',
+            'icon' => '/assets/media/logos/favicon.jpeg',
+        ];
+
+        $user = auth()->user();
+        if ($user && $user->company_id) {
+            $setting = $user->setting();
+            if ($setting && $setting->logo) {
+                $fallbacks = array_unique(array_merge(
+                    [$variant],
+                    ['medium', 'small', 'icon', 'large']
+                ));
+                foreach ($fallbacks as $v) {
+                    if (!isset($directories[$v])) {
+                        continue;
+                    }
+                    if (file_exists(public_path(ltrim($directories[$v] . $setting->logo, '/')))) {
+                        return asset($directories[$v] . $setting->logo);
+                    }
+                }
+            }
+        }
+
+        return asset($defaults[$variant] ?? $defaults['small']);
+    }
+
     public static function uploadFile($settings)
     {
         $file = $settings['file'];

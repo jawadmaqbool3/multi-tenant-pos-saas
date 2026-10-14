@@ -39,6 +39,17 @@ class SettingSeeder extends Seeder
                     ]
                 },
                 {
+                    "icon": "bi bi-credit-card",
+                    "name": "Billing",
+                    "links": [
+                        {
+                            "link": "http://127.0.0.1:8000/plans",
+                            "title": "Plans",
+                            "permission": "view billing plan"
+                        }
+                    ]
+                },
+                {
                     "icon": "bi bi-shop",
                     "name": "Inventory",
                     "links": [

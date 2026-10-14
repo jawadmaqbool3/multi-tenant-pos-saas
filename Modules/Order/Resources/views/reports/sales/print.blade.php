@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
+    <link rel="shortcut icon" href="@logo(icon)" />
     @include('layouts.style')
     <title>Sales Report | {{ $from }}-{{ $to }}</title>
     @php
@@ -17,7 +17,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-2 p-0">
-                <img class="w-100" src="{{ asset('assets/media/logos/' . $setting->logo) }}" alt="">
+                <img class="w-100" src="@logo(large)" alt="">
             </div>
             <div class="col-8 p-0">
                 <h1 class="text-center mt-10 fs-1 fw-bolder">{{ $setting->name }}</h1>
