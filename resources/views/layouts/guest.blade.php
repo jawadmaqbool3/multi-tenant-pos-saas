@@ -1,5 +1,6 @@
 @php
-    $setting = App\Models\Setting::where('company_id', null)->first();
+    $setting = (auth()->check() ? auth()->user()->setting() : null)
+        ?? App\Models\Setting::where('company_id', null)->first();
 @endphp
 <!DOCTYPE html>
 

@@ -13,6 +13,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background: var(--ui-void);
         }
 
         .pricing-topbar {
@@ -20,7 +21,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 1.25rem 2rem;
-            border-bottom: 1px solid rgba(24, 28, 50, 0.06);
+            background: var(--ui-surface);
+            border-bottom: 1px solid var(--ui-line);
         }
 
         .pricing-brand {
@@ -29,8 +31,13 @@
             gap: 0.6rem;
             font-weight: 800;
             font-size: 1.1rem;
-            color: #181c32;
+            color: var(--ui-ink);
             text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .pricing-brand:hover {
+            color: var(--kt-primary);
         }
 
         .pricing-brand img {
@@ -82,22 +89,23 @@
             position: relative;
             display: flex;
             flex-direction: column;
-            background: #ffffff;
-            border: 1px solid #eef0f5;
+            background: var(--ui-card);
+            border: 1px solid var(--ui-line-hi);
             border-radius: 1rem;
             padding: 2rem 1.75rem;
-            box-shadow: 0 6px 20px rgba(24, 28, 50, 0.04);
+            box-shadow: var(--ui-card-shadow);
             transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
         }
 
         .pricing-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 16px 34px rgba(24, 28, 50, 0.09);
+            border-color: var(--kt-primary);
+            box-shadow: var(--ui-shadow-lg);
         }
 
         .pricing-card.is-popular {
-            border-color: #3699ff;
-            box-shadow: 0 18px 42px rgba(54, 153, 255, 0.16);
+            border-color: var(--kt-primary);
+            box-shadow: var(--ui-glow);
         }
 
         .pricing--slider .pricing-card {
@@ -119,8 +127,8 @@
             right: 1.15rem;
             padding: 0.28rem 0.65rem;
             border-radius: 999px;
-            background: #3699ff;
-            color: #ffffff;
+            background: var(--kt-primary);
+            color: var(--kt-primary-inverse, #ffffff);
             font-size: 0.68rem;
             font-weight: 700;
             text-transform: uppercase;
@@ -130,14 +138,14 @@
         .pricing-card-name {
             font-size: 1.25rem;
             font-weight: 800;
-            color: #181c32;
+            color: var(--ui-ink);
             margin-bottom: 0.35rem;
         }
 
         .pricing-card-desc {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #7e8299;
+            color: var(--ui-muted);
             margin-bottom: 0;
             min-height: 2.4rem;
         }
@@ -154,25 +162,25 @@
             font-weight: 800;
             line-height: 1;
             letter-spacing: -0.02em;
-            color: #181c32;
+            color: var(--ui-ink);
         }
 
         .pricing-currency {
             font-weight: 700;
-            color: #7e8299;
+            color: var(--ui-muted);
         }
 
         .pricing-interval {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #a1a5b7;
+            color: var(--ui-muted);
         }
 
         .pricing-features {
             list-style: none;
             margin: 1.5rem 0 0;
             padding: 1.5rem 0 0;
-            border-top: 1px solid #eef0f5;
+            border-top: 1px solid var(--ui-line);
             display: flex;
             flex-direction: column;
             gap: 0.85rem;
@@ -195,23 +203,23 @@
         }
 
         .pricing-features li:not(.is-off) .pricing-feature-icon {
-            background: #e8f5ee;
-            color: #50cd89;
+            background: var(--kt-success-light);
+            color: var(--kt-success);
         }
 
         .pricing-features li.is-off .pricing-feature-icon {
-            background: #f5f8fa;
-            color: #b5b5c3;
+            background: var(--kt-light);
+            color: var(--ui-muted);
         }
 
         .pricing-feature-label {
             font-size: 0.9rem;
             font-weight: 600;
-            color: #3f4254;
+            color: var(--ui-ink-2);
         }
 
         .pricing-features li.is-off .pricing-feature-label {
-            color: #a1a5b7;
+            color: var(--ui-muted);
             text-decoration: line-through;
         }
 
@@ -223,21 +231,21 @@
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            border: 1px solid #eef0f5;
-            background: #ffffff;
-            color: #3f4254;
+            border: 1px solid var(--ui-line-hi);
+            background: var(--ui-surface);
+            color: var(--ui-ink-2);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 16px rgba(24, 28, 50, 0.12);
+            box-shadow: var(--ui-card-shadow);
             cursor: pointer;
-            transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
         }
 
         .pricing-nav:hover {
-            background: #3699ff;
-            border-color: #3699ff;
-            color: #ffffff;
+            background: var(--kt-primary);
+            border-color: var(--kt-primary);
+            color: var(--kt-primary-inverse, #ffffff);
         }
 
         .pricing-nav--prev {
@@ -272,7 +280,7 @@
             padding: 0;
             border: 0;
             border-radius: 50%;
-            background: #d9d9d9;
+            background: var(--ui-line-hi);
             cursor: pointer;
             transition: width 0.18s ease, background 0.18s ease;
         }
@@ -280,14 +288,14 @@
         .pricing-dot.is-active {
             width: 26px;
             border-radius: 999px;
-            background: #3699ff;
+            background: var(--kt-primary);
         }
     </style>
 
     <div class="pricing-shell">
         <header class="pricing-topbar">
             <a href="{{ url('/') }}" class="pricing-brand">
-                <img src="@logo(logo)" alt="@setting(name)" />
+                <img src="@logo(small)" alt="@setting(name)" />
                 <span>@setting(name)</span>
             </a>
 
