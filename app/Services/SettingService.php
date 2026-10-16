@@ -102,20 +102,16 @@ class SettingService
         ]);
 
         if (is_array($request->permissions)) {
-            $allPermissions = $this->permission->query()->whereIn('uid', $request->permissions)->get();
-            $permissionToKeep = [];
-            foreach ($allPermissions as $key => $permission) {
-                $_permission = $this->permission->query()->where('name', $permission->name)->where('company_id', $setting->company_id)->first();
-                if (!$_permission) {
-                    $_permission = $this->permission->create([
-                        'module_id' => $permission->module_id,
-                        'name' => $permission->name,
-                        'company_id' => $setting->company_id,
-                    ]);
-                }
-                $permissionToKeep[] = $_permission->uid;
+            $provisioning = app(\Modules\RBAC\Services\RoleProvisioningService::class);
+            $companyRole = $this->role->query()
+                ->where('company_id', $setting->company_id)
+                ->where('name', 'company')
+                ->first();
+
+            if ($companyRole) {
+                $allPermissions = $this->permission->query()->whereIn('uid', $request->permissions)->get();
+                $provisioning->syncRolePermissions($companyRole->id, $allPermissions->pluck('id')->all());
             }
-            $this->permission->query()->whereNotIn('uid', $permissionToKeep)->where('company_id', $setting->company_id)->delete();
         }
         if (is_array($request->roles)) {
             $allRoles = $this->role->query()->whereIn('uid', $request->roles)->get();
@@ -125,7 +121,7 @@ class SettingService
                 if (!$_role) {
                     $_role = $this->role->create([
                         'name' => $role->name,
-                        'company_id' => $role->company_id,
+                        'company_id' => $setting->company_id,
                     ]);
                 }
                 $rolesToKeep[] = $_role->uid;

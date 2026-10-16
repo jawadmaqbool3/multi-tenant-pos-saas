@@ -6,5 +6,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('roles', RoleController::class)->middleware('permission:view role');
-    Route::resource('permissions', PermissionController::class)->middleware('permission:view permission');
+    Route::resource('permissions', PermissionController::class)->only(['index'])->middleware('permission:view permission');
 });

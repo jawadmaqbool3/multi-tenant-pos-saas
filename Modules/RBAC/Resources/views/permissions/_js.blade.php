@@ -1,12 +1,5 @@
 <script>
     $(document).ready(function() {
-       
-        $('#create_modal ._select2').select2({
-            dropdownParent: $('#create_modal #dropdown_parent')
-        });
-        $('#edit_modal ._select2').select2({
-            dropdownParent: $('#edit_modal #dropdown_parent')
-        });
         var table = $('#category_table').DataTable({
             "processing": true,
             "serverSide": true,
@@ -22,9 +15,7 @@
                     "data": "name"
                 },
                 {
-                    "data": "action",
-                    "orderable": false,
-                    "searchable": false
+                    "data": "module.name"
                 },
             ],
         });

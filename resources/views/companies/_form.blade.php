@@ -73,18 +73,6 @@
 
             </div>
         </div>
-        @if (auth()->user()->hasRole('admin'))
-            <div class="card card-flush p-4 my-5">
-                <div class="col-md-12">
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input name="isManager" class="form-check-input" type="checkbox" value="1" id="isManager">
-                        <label class="form-check-label" for="isManager">
-                            Is Manager?
-                        </label>
-                    </div>
-                </div>
-            </div>
-        @endif
         <div class="card card-flush py-4 mb-8">
             <div class="card-header">
                 <div class="card-title">

@@ -10,8 +10,8 @@ use Modules\Inventory\Services\CategoryService;
 use App\Services\AsideSettingService;
 use App\Repositories\CompanyRepository;
 use Modules\RBAC\Repositories\PermissionRepository;
-use Modules\RBAC\Repositories\PermissionRoleRepository;
 use Modules\RBAC\Repositories\RoleRepository;
+use Modules\RBAC\Services\RoleProvisioningService;
 use App\Repositories\SettingRepository;
 use Modules\Employee\Repositories\UserRepository;
 use Modules\RBAC\Repositories\UserRoleRepository;
@@ -25,7 +25,6 @@ class CompanyService
     protected $user;
     protected $userRole;
     protected $permission;
-    protected $permissionRole;
     protected $settingService;
     protected $categoryService;
     protected $dashboardSettingService;
@@ -42,7 +41,6 @@ class CompanyService
         UserRepository $user,
         UserRoleRepository $userRole,
         PermissionRepository $permission,
-        PermissionRoleRepository $permissionRole,
         SettingService $settingService,
         CategoryService $categoryService,
         DashboardSettingService $dashboardSettingService
@@ -53,7 +51,6 @@ class CompanyService
         $this->user = $user;
         $this->userRole = $userRole;
         $this->permission = $permission;
-        $this->permissionRole = $permissionRole;
         $this->settingService = $settingService;
         $this->categoryService = $categoryService;
         $this->dashboardSettingService = $dashboardSettingService;
@@ -81,7 +78,7 @@ class CompanyService
             $companyImage = $this->settingService->logoUpload($request->file('image'));
         }
         $company = $this->company->create([
-            'created_by' => auth()->id() ?? $this->user->query()->whereNull('company_id')->value('id'),
+            'created_by' => optional(auth()->user())->id ?? $this->user->query()->whereNull('company_id')->value('id'),
             'status' => $request->status
         ]);
         $company->refresh();
@@ -95,7 +92,7 @@ class CompanyService
             'logo' => $companyImage
         ]);
         $companyRole = $this->role->create([
-            'name' => $request->isManager ? 'manager' : 'company',
+            'name' => 'company',
             'company_id' => $company->id,
             'status' => $request->status,
         ]);
@@ -114,14 +111,17 @@ class CompanyService
             'role_id' => $companyRole->id,
             'user_id' => $user->id
         ]);
+
+        // Auto-provision every default role for the new company and attach the
+        // shared global permissions to each of them.
+        $provisioning = app(RoleProvisioningService::class);
+        $provisioning->provisionForCompany($company->id, $request->status);
+
+        // Optional manual selections from the form are additive.
         if ($request->roles) {
             $roles = $this->role->query()->whereIn('uid', $request->roles)->get();
             foreach ($roles as $key => $role) {
-                $this->role->create([
-                    'company_id' => $company->id,
-                    'name' => $role->name,
-                    'status' => $request->status,
-                ]);
+                $provisioning->ensureRole($company->id, $role->name, $request->status);
             }
         }
 
@@ -130,19 +130,7 @@ class CompanyService
                 ->whereIn('uid', $request->permissions)
                 ->where('is_platform', false)
                 ->get();
-            foreach ($permissions as $key => $permission) {
-                $permission = $this->permission->create([
-                    'company_id' => $company->id,
-                    'name' => $permission->name,
-                    'module_id' => $permission->module_id,
-                    'is_platform' => false,
-                ]);
-                $permission->refresh();
-                $this->permissionRole->create([
-                    'role_id' => $companyRole->id,
-                    'permission_id' =>  $permission->id
-                ]);
-            }
+            $provisioning->syncRolePermissions($companyRole->id, $permissions->pluck('id')->all());
         }
 
         $defaultService = app(DefaultService::class);

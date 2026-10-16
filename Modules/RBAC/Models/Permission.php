@@ -18,7 +18,7 @@ class Permission extends UIDModel
 
     public function scopeFilter($query)
     {
-        return $query->where('company_id', auth()->user()->company_id);
+        return $query->whereNull('company_id');
     }
 
     public function scopePlatform($query)

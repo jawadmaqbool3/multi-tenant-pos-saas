@@ -27,9 +27,10 @@ class ProvisionPayrollPermissions extends Migration
     ];
 
     /**
-     * Provision the Payroll permission module + template permissions, then copy
-     * them onto every existing company and grant them to that company's owner
-     * role. Data migration: direct DB access is intentional.
+     * Provision the Payroll permission module + global template permissions,
+     * then grant the global permissions to every existing company's owner role.
+     * Permissions are global and are never copied per company.
+     * Data migration: direct DB access is intentional.
      *
      * @return void
      */
@@ -39,11 +40,9 @@ class ProvisionPayrollPermissions extends Migration
         $templatePermissionIds = $this->ensureTemplatePermissions($moduleId);
 
         foreach (DB::table('companies')->get() as $company) {
-            $companyPermissionIds = $this->ensureCompanyPermissions($company->id, $moduleId);
-
             $ownerRoleId = $this->ownerRoleId($company->id);
             if ($ownerRoleId) {
-                $this->grantRole($ownerRoleId, $companyPermissionIds);
+                $this->grantRole($ownerRoleId, $templatePermissionIds);
             }
         }
     }
@@ -112,40 +111,6 @@ class ProvisionPayrollPermissions extends Migration
                 'name' => $name,
                 'module_id' => $moduleId,
                 'company_id' => null,
-                'is_platform' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-                'uid' => (string) Str::uuid(),
-            ]);
-        }
-
-        return $ids;
-    }
-
-    /**
-     * @param  int  $companyId
-     * @param  int  $moduleId
-     * @return array<int, int>
-     */
-    protected function ensureCompanyPermissions($companyId, $moduleId)
-    {
-        $ids = [];
-        foreach ($this->permissions as $name) {
-            $existing = DB::table('permissions')
-                ->where('name', $name)
-                ->where('module_id', $moduleId)
-                ->where('company_id', $companyId)
-                ->first();
-
-            if ($existing) {
-                $ids[] = $existing->id;
-                continue;
-            }
-
-            $ids[] = DB::table('permissions')->insertGetId([
-                'name' => $name,
-                'module_id' => $moduleId,
-                'company_id' => $companyId,
                 'is_platform' => false,
                 'created_at' => now(),
                 'updated_at' => now(),

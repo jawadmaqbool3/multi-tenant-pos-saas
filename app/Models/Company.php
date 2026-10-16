@@ -67,7 +67,10 @@ class Company extends UIDModel
 
     public function hasPermission($permission)
     {
-        $permissionClass = Relation::getMorphedModel('permission');
-        return $permissionClass::where('company_id', $this->id)->where('name', $permission)->exists();
+        $roleClass = Relation::getMorphedModel('role');
+        return $roleClass::where('company_id', $this->id)
+            ->whereHas('permissions', function ($query) use ($permission) {
+                $query->where('name', $permission);
+            })->exists();
     }
 }

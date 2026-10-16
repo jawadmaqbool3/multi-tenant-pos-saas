@@ -14,7 +14,7 @@ trait RoleTrait
 
         return $this->morphClassName('role')::where('id', $this->role->id)
             ->whereHas('permissions', function ($query) use ($permission) {
-                $query->where('name', $permission)->where('company_id', auth()->user()->company_id);
+                $query->where('name', $permission);
             })->exists();
     }
     public function hasRole($role)

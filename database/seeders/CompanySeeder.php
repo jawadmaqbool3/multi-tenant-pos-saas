@@ -6,10 +6,9 @@ use App\Models\Company;
 use App\Models\Setting;
 use App\Services\DefaultService;
 use Modules\Employee\Models\User;
-use Modules\RBAC\Models\Permission;
-use Modules\RBAC\Models\PermissionRole;
 use Modules\RBAC\Models\Role;
 use Modules\RBAC\Models\UserRole;
+use Modules\RBAC\Services\RoleProvisioningService;
 use Illuminate\Database\Seeder;
 
 class CompanySeeder extends Seeder
@@ -46,6 +45,11 @@ class CompanySeeder extends Seeder
             ]
         );
 
+        // Provision every default role for this company and attach the shared
+        // global permissions to each role (permissions are not copied per
+        // company; they are global and immutable).
+        app(RoleProvisioningService::class)->provisionForCompany($company->id);
+
         $companyRole = Role::firstOrCreate([
             'name' => 'company',
             'company_id' => $company->id,
@@ -53,46 +57,6 @@ class CompanySeeder extends Seeder
             'status' => 'active',
         ]);
         $companyRole->refresh();
-
-        foreach (Permission::where('company_id', null)->where('is_platform', false)->get() as $permission) {
-            $companyPermission = Permission::firstOrCreate([
-                'name' => $permission->name,
-                'module_id' => $permission->module_id,
-                'company_id' => $company->id,
-            ], [
-                'is_platform' => false,
-            ]);
-            $companyPermission->refresh();
-            PermissionRole::firstOrCreate([
-                'role_id' => $companyRole->id,
-                'permission_id' => $companyPermission->id,
-            ]);
-        }
-
-        // Provision the default tenant roles (employee, HR, accountant, sales
-        // person, stock manager) with their permission subsets.
-        foreach ((new RolePermissionSeeder())->tenantRoles as $roleName => $permissionNames) {
-            $role = Role::firstOrCreate([
-                'name' => $roleName,
-                'company_id' => $company->id,
-            ], [
-                'status' => 'active',
-            ]);
-            $role->refresh();
-
-            foreach ($permissionNames as $permissionName) {
-                $permission = Permission::where('name', $permissionName)
-                    ->where('company_id', $company->id)
-                    ->first();
-
-                if ($permission) {
-                    PermissionRole::firstOrCreate([
-                        'role_id' => $role->id,
-                        'permission_id' => $permission->id,
-                    ]);
-                }
-            }
-        }
 
         $owner = User::where('email', 'admin@gmail.com')->first();
         if ($owner) {
