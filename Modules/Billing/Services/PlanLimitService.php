@@ -4,11 +4,12 @@ namespace Modules\Billing\Services;
 
 use App\Exceptions\PlanLimitExceededException;
 use App\Models\Company;
-use Illuminate\Support\Facades\DB;
-use Modules\Billing\Models\Plan;
-use Modules\Employee\Models\User;
 use Modules\Employee\Repositories\UserRepository;
-use Modules\RBAC\Models\Role;
+use Modules\RBAC\Repositories\RoleRepository;
+use Modules\RBAC\Repositories\UserRoleRepository;
+use Modules\Billing\Repositories\PlanLimitRepository;
+use Modules\Billing\Repositories\PlanRepository;
+use Modules\Billing\Repositories\SubscriptionRepository;
 
 class PlanLimitService
 {
@@ -17,14 +18,27 @@ class PlanLimitService
      */
     const UNLIMITED = -1;
 
-    /**
-     * @var \Modules\Employee\Repositories\UserRepository
-     */
     protected $users;
+    protected $roles;
+    protected $userRoles;
+    protected $subscriptions;
+    protected $plans;
+    protected $planLimits;
 
-    public function __construct(UserRepository $users)
-    {
+    public function __construct(
+        UserRepository $users,
+        RoleRepository $roles,
+        UserRoleRepository $userRoles,
+        SubscriptionRepository $subscriptions,
+        PlanRepository $plans,
+        PlanLimitRepository $planLimits
+    ) {
         $this->users = $users;
+        $this->roles = $roles;
+        $this->userRoles = $userRoles;
+        $this->subscriptions = $subscriptions;
+        $this->plans = $plans;
+        $this->planLimits = $planLimits;
     }
 
     /**
@@ -33,19 +47,26 @@ class PlanLimitService
      * @param  \App\Models\Company|null  $company
      * @return \Modules\Billing\Models\Plan|null
      */
-    public function planForCompany(?Company $company): ?Plan
+    public function planForCompany(?Company $company): ?\Modules\Billing\Models\Plan
     {
         if (!$company) {
             return null;
         }
 
-        $subscription = $company->activeSubscription();
+        $subscription = $this->subscriptions->query()
+            ->where('company_id', $company->id)
+            ->whereIn('status', ['active', 'trialing'])
+            ->where(function ($q) {
+                $q->whereNull('current_period_end')->orWhere('current_period_end', '>', now());
+            })
+            ->latest('id')
+            ->first();
 
         if (!$subscription) {
             return null;
         }
 
-        return $subscription->plan()->first();
+        return $this->plans->query()->where('id', $subscription->plan_id)->first();
     }
 
     /**
@@ -55,13 +76,13 @@ class PlanLimitService
      * @param  \Modules\Billing\Models\Plan|null  $plan
      * @return int|null
      */
-    public function limitFor(string $key, ?Plan $plan): ?int
+    public function limitFor(string $key, ?\Modules\Billing\Models\Plan $plan): ?int
     {
         if (!$plan) {
             return null;
         }
 
-        $limit = $plan->limits()->where('resource_key', $key)->first();
+        $limit = $this->planLimits->query()->where('plan_id', $plan->id)->where('resource_key', $key)->first();
 
         if (!$limit) {
             return null;
@@ -143,7 +164,7 @@ class PlanLimitService
      */
     protected function rolesUsage(Company $company): int
     {
-        $query = Role::where('company_id', $company->id);
+        $query = $this->roles->query()->where('company_id', $company->id);
 
         $ownerRoleId = $this->ownerRoleId($company);
 
@@ -162,13 +183,13 @@ class PlanLimitService
      */
     protected function ownerRoleId(Company $company): ?int
     {
-        $ownerUserId = User::where('company_id', $company->id)->orderBy('id')->value('id');
+        $ownerUserId = $this->users->query()->where('company_id', $company->id)->orderBy('id')->value('id');
 
         if (!$ownerUserId) {
             return null;
         }
 
-        return DB::table('user_roles')->where('user_id', $ownerUserId)->value('role_id');
+        return $this->userRoles->query()->where('user_id', $ownerUserId)->value('role_id');
     }
 
     /**

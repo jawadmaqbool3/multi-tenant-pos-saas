@@ -4,9 +4,26 @@ namespace Modules\Billing\Services;
 
 use App\Models\Company;
 use Modules\Billing\Models\Plan;
+use Modules\Billing\Repositories\PlanFeatureRepository;
+use Modules\Billing\Repositories\PlanRepository;
+use Modules\Billing\Repositories\SubscriptionRepository;
 
 class PlanFeatureService
 {
+    protected $subscriptions;
+    protected $plans;
+    protected $planFeatures;
+
+    public function __construct(
+        SubscriptionRepository $subscriptions,
+        PlanRepository $plans,
+        PlanFeatureRepository $planFeatures
+    ) {
+        $this->subscriptions = $subscriptions;
+        $this->plans = $plans;
+        $this->planFeatures = $planFeatures;
+    }
+
     /**
      * Feature levers mapped to the permission modules that unlock them.
      *
@@ -31,13 +48,20 @@ class PlanFeatureService
             return null;
         }
 
-        $subscription = $company->activeSubscription();
+        $subscription = $this->subscriptions->query()
+            ->where('company_id', $company->id)
+            ->whereIn('status', ['active', 'trialing'])
+            ->where(function ($q) {
+                $q->whereNull('current_period_end')->orWhere('current_period_end', '>', now());
+            })
+            ->latest('id')
+            ->first();
 
         if (!$subscription) {
             return null;
         }
 
-        return $subscription->plan()->first();
+        return $this->plans->query()->where('id', $subscription->plan_id)->first();
     }
 
     /**
@@ -55,12 +79,7 @@ class PlanFeatureService
             return null;
         }
 
-        return $plan->features()->with('module')->get()
-            ->pluck('module.name')
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
+        return $this->planFeatures->moduleNamesForPlan($plan->id);
     }
 
     /**

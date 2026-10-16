@@ -3,9 +3,20 @@
 namespace Modules\Billing\Services;
 
 use Modules\Billing\Models\Plan;
+use Modules\Billing\Repositories\PlanFeatureRepository;
+use Modules\Billing\Repositories\PlanLimitRepository;
 
 class PlanFeaturePresenter
 {
+    protected $planFeatures;
+    protected $planLimits;
+
+    public function __construct(PlanFeatureRepository $planFeatures, PlanLimitRepository $planLimits)
+    {
+        $this->planFeatures = $planFeatures;
+        $this->planLimits = $planLimits;
+    }
+
     /**
      * Presentation metadata for each plan-gated feature lever.
      *
@@ -45,15 +56,9 @@ class PlanFeaturePresenter
      */
     public function present(Plan $plan): array
     {
-        $modules = $plan->features()
-            ->with('module')
-            ->get()
-            ->pluck('module.name')
-            ->filter()
-            ->unique()
-            ->values();
+        $modules = collect($this->planFeatures->moduleNamesForPlan($plan->id));
 
-        $limits = $plan->limits->pluck('limit_value', 'resource_key');
+        $limits = $this->planLimits->valuesForPlan($plan->id);
 
         $lines = [
             [

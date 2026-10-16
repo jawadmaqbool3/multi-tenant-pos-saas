@@ -11,4 +11,23 @@ class PlanFeatureRepository extends BaseRepository
     {
         parent::__construct(new PlanFeature());
     }
+
+    /**
+     * Module names included in a plan.
+     *
+     * @param  int|string  $planId
+     * @return array<int, string>
+     */
+    public function moduleNamesForPlan($planId): array
+    {
+        return $this->query()
+            ->where('plan_id', $planId)
+            ->with('module')
+            ->get()
+            ->pluck('module.name')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
 }

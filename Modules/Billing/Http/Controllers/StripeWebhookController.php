@@ -4,15 +4,14 @@ namespace Modules\Billing\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Billing\Models\WebhookEvent;
-use Modules\Billing\Services\SubscriptionService;
+use Modules\Billing\Services\StripeWebhookService;
 use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
 {
     protected $service;
 
-    public function __construct(SubscriptionService $service)
+    public function __construct(StripeWebhookService $service)
     {
         $this->service = $service;
     }
@@ -39,83 +38,15 @@ class StripeWebhookController extends Controller
             return response('Invalid signature.', 400);
         }
 
-        // Idempotency: only process each event once.
-        $existing = WebhookEvent::where('stripe_event_id', $event->id)->first();
-        if ($existing && $existing->status === WebhookEvent::STATUS_PROCESSED) {
-            return response('Already processed.', 200);
-        }
+        $result = $this->service->process($event);
 
-        $record = $existing ?: WebhookEvent::create([
-            'stripe_event_id' => $event->id,
-            'type' => $event->type,
-            'payload' => json_encode($event->toArray()),
-            'status' => WebhookEvent::STATUS_RECEIVED,
-        ]);
-
-        $record->update(['status' => WebhookEvent::STATUS_PROCESSING]);
-
-        try {
-            $this->dispatch($event);
-            $record->update(['status' => WebhookEvent::STATUS_PROCESSED]);
-        } catch (\Throwable $e) {
-            $record->update([
-                'status' => WebhookEvent::STATUS_FAILED,
-                'failed_at' => now(),
-            ]);
-
-            return response('Handler failed.', 500);
-        }
-
-        return response('OK', 200);
-    }
-
-    /**
-     * Route a Stripe event to the matching local handler.
-     *
-     * @param  \Stripe\Event  $event
-     * @return void
-     */
-    protected function dispatch($event)
-    {
-        switch ($event->type) {
-            case 'checkout.session.completed':
-                $this->onCheckoutCompleted($event);
-                break;
-
-            case 'customer.subscription.created':
-            case 'customer.subscription.updated':
-            case 'customer.subscription.deleted':
-                $this->onSubscriptionChanged($event);
-                break;
-        }
-    }
-
-    /**
-     * @param  \Stripe\Event  $event
-     * @return void
-     */
-    protected function onCheckoutCompleted($event)
-    {
-        $session = $event->data->object;
-        $subscriptionId = is_object($session->subscription)
-            ? $session->subscription->id
-            : $session->subscription;
-
-        if ($subscriptionId) {
-            $this->service->syncByStripeId($subscriptionId);
-        }
-    }
-
-    /**
-     * @param  \Stripe\Event  $event
-     * @return void
-     */
-    protected function onSubscriptionChanged($event)
-    {
-        $subscription = $event->data->object;
-
-        if (!empty($subscription->id)) {
-            $this->service->syncByStripeId($subscription->id);
+        switch ($result) {
+            case 'already':
+                return response('Already processed.', 200);
+            case 'failed':
+                return response('Handler failed.', 500);
+            default:
+                return response('OK', 200);
         }
     }
 }

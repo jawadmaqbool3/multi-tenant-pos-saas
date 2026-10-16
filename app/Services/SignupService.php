@@ -2,24 +2,35 @@
 
 namespace App\Services;
 
-use Modules\Billing\Models\Plan;
-use Modules\Billing\Models\Signup;
-use Modules\Employee\Models\User;
+use Modules\Employee\Repositories\UserRepository;
+use Modules\Billing\Repositories\PlanRepository;
+use Modules\Billing\Repositories\PriceRepository;
+use Modules\Billing\Repositories\SignupRepository;
 
 class SignupService
 {
     protected $companyService;
+    protected $users;
+    protected $signups;
+    protected $plans;
+    protected $prices;
 
-    public function __construct(CompanyService $companyService)
-    {
+    public function __construct(
+        CompanyService $companyService,
+        UserRepository $users,
+        SignupRepository $signups,
+        PlanRepository $plans,
+        PriceRepository $prices
+    ) {
         $this->companyService = $companyService;
+        $this->users = $users;
+        $this->signups = $signups;
+        $this->plans = $plans;
+        $this->prices = $prices;
     }
 
     /**
      * Provision a brand new tenant from a public self-signup.
-     *
-     * Guests always create active companies; commercial state is tracked in
-     * billing_signups + Stripe rather than gating access to the app.
      *
      * @param  \App\Http\Requests\StoreSignupRequest  $request
      * @return \App\Models\Company
@@ -30,57 +41,60 @@ class SignupService
 
         $company = $this->companyService->store($request);
 
-        $user = User::query()
-            ->where('email', $request->email)
-            ->where('company_id', $company->id)
-            ->first();
-
-        [$plan, $price] = $this->resolvePlan($request->input('plan'));
-
-        if ($user) {
-            Signup::create([
-                'user_id' => $user->id,
-                'plan_id' => $plan ? $plan->id : null,
-                'price_id' => $price ? $price->id : null,
-                'email' => $user->email,
-                'status' => 'provisioned',
-                'metadata' => json_encode([
-                    'company_id' => $company->id,
-                    'company_name' => $request->company_name,
-                ]),
-            ]);
+        if ($request->filled('plan')) {
+            $this->recordSignup($company, $request);
         }
 
         return $company;
     }
 
     /**
-     * @param  string|null  $uid
-     * @return array{0: \Modules\Billing\Models\Plan|null, 1: \Modules\Billing\Models\Price|null}
+     * Find a registered user for a company by email.
+     *
+     * @param  int|string  $companyId
+     * @param  string  $email
+     * @return \Modules\Employee\Models\User|null
      */
-    protected function resolvePlan($uid)
+    public function findUser($companyId, string $email)
     {
-        if (!$uid) {
-            return [null, null];
-        }
+        return $this->users->query()
+            ->where('email', $email)
+            ->where('company_id', $companyId)
+            ->first();
+    }
 
-        $plan = Plan::query()
-            ->where('uid', $uid)
-            ->where('status', 'active')
+    /**
+     * Persist the signup record so pricing/checkout can pre-select the plan.
+     *
+     * @param  \App\Models\Company  $company
+     * @param  \App\Http\Requests\StoreSignupRequest  $request
+     * @return void
+     */
+    protected function recordSignup($company, $request)
+    {
+        $user = $this->users->query()
+            ->where('company_id', $company->id)
+            ->where('email', $request->email)
             ->first();
 
-        if (!$plan) {
-            return [null, null];
+        $plan = $this->plans->query()->where('uid', $request->plan)->first();
+
+        if (!$user || !$plan) {
+            return;
         }
 
-        $price = $plan->prices()
+        $price = $this->prices->query()
+            ->where('plan_id', $plan->id)
             ->where('active', true)
-            ->get()
-            ->sortBy(function ($price) {
-                return $price->interval === 'month' ? 0 : 1;
-            })
+            ->orderBy('unit_amount')
             ->first();
 
-        return [$plan, $price];
+        $this->signups->create([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'company_id' => $company->id,
+            'plan_id' => $plan->id,
+            'price_id' => $price ? $price->id : null,
+        ]);
     }
 }

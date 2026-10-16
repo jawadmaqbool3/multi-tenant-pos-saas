@@ -126,6 +126,6 @@ class RoleService
             return null;
         }
 
-        return \App\Models\Company::where('id', auth()->user()->company_id)->first();
+        return $this->companies->query()->where('id', auth()->user()->company_id)->first();
     }
 }

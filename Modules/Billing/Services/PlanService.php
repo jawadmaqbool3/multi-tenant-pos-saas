@@ -88,11 +88,10 @@ class PlanService
         $limits = [];
 
         if ($plan) {
-            $plan->loadMissing(["features", "permissions", "prices", "limits"]);
-            $selectedModules = $plan->features->pluck('permission_module_id')->all();
-            $selectedPermissions = $plan->permissions->pluck('permission_id')->all();
-            $selectedPrices = $plan->prices;
-            $limits = $plan->limits->pluck('limit_value', 'resource_key')->all();
+            $selectedModules = $this->features->query()->where('plan_id', $plan->id)->pluck('permission_module_id')->all();
+            $selectedPermissions = $this->planPermissions->query()->where('plan_id', $plan->id)->pluck('permission_id')->all();
+            $selectedPrices = $this->prices->query()->where('plan_id', $plan->id)->get();
+            $limits = $this->limits->query()->where('plan_id', $plan->id)->pluck('limit_value', 'resource_key')->all();
         }
 
         return [
@@ -160,10 +159,10 @@ class PlanService
             $plan->refresh();
 
             // Replace prices and junctions wholesale.
-            $plan->prices()->delete();
-            $plan->features()->delete();
-            $plan->permissions()->delete();
-            $plan->limits()->delete();
+            $this->prices->query()->where('plan_id', $plan->id)->delete();
+            $this->features->query()->where('plan_id', $plan->id)->delete();
+            $this->planPermissions->query()->where('plan_id', $plan->id)->delete();
+            $this->limits->query()->where('plan_id', $plan->id)->delete();
 
             $this->savePrices($plan, $request->input('prices', []));
             $this->saveFeatures($plan, $request->input('modules', []));
@@ -183,10 +182,10 @@ class PlanService
     public function delete($plan)
     {
         $deleted = DB::transaction(function () use ($plan) {
-            $plan->prices()->delete();
-            $plan->features()->delete();
-            $plan->permissions()->delete();
-            $plan->limits()->delete();
+            $this->prices->query()->where('plan_id', $plan->id)->delete();
+            $this->features->query()->where('plan_id', $plan->id)->delete();
+            $this->planPermissions->query()->where('plan_id', $plan->id)->delete();
+            $this->limits->query()->where('plan_id', $plan->id)->delete();
 
             return $this->plans->delete($plan->uid);
         });

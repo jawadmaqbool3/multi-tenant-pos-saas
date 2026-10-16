@@ -2,45 +2,108 @@
 
 namespace Modules\Billing\Services;
 
-use App\Models\Company;
+use App\Repositories\CompanyRepository;
 use Modules\Billing\Models\Coupon;
 use Modules\Billing\Models\Customer;
 use Modules\Billing\Models\Price;
-use Modules\Billing\Models\Redemption;
-use Modules\Billing\Models\Subscription;
+use Modules\Billing\Repositories\CouponRepository;
+use Modules\Billing\Repositories\CustomerRepository;
+use Modules\Billing\Repositories\PlanRepository;
+use Modules\Billing\Repositories\PriceRepository;
+use Modules\Billing\Repositories\RedemptionRepository;
+use Modules\Billing\Repositories\SignupRepository;
+use Modules\Billing\Repositories\SubscriptionRepository;
+use App\Repositories\SettingRepository;
 
 class SubscriptionService
 {
     protected $stripe;
     protected $sync;
+    protected $companies;
+    protected $customers;
+    protected $coupons;
+    protected $redemptions;
+    protected $prices;
+    protected $subscriptions;
+    protected $signups;
+    protected $plans;
+    protected $settings;
 
-    public function __construct(StripeService $stripe, StripeSyncService $sync)
-    {
+    public function __construct(
+        StripeService $stripe,
+        StripeSyncService $sync,
+        CompanyRepository $companies,
+        CustomerRepository $customers,
+        CouponRepository $coupons,
+        RedemptionRepository $redemptions,
+        PriceRepository $prices,
+        SubscriptionRepository $subscriptions,
+        SignupRepository $signups,
+        PlanRepository $plans,
+        SettingRepository $settings
+    ) {
         $this->stripe = $stripe;
         $this->sync = $sync;
+        $this->companies = $companies;
+        $this->customers = $customers;
+        $this->coupons = $coupons;
+        $this->redemptions = $redemptions;
+        $this->prices = $prices;
+        $this->subscriptions = $subscriptions;
+        $this->signups = $signups;
+        $this->plans = $plans;
+        $this->settings = $settings;
     }
 
-    /**
-     * Whether the Stripe integration has been configured.
-     *
-     * @return bool
-     */
     public function isConfigured(): bool
     {
         return $this->stripe->isConfigured();
     }
 
-    /**
-     * Get (or lazily create) the Stripe customer mapped to a company.
-     *
-     * @param  \App\Models\Company  $company
-     * @return \Modules\Billing\Models\Customer
-     *
-     * @throws \App\Exceptions\StripeServiceException
-     */
-    public function ensureCustomer(Company $company): Customer
+    public function getCompany($companyId)
     {
-        $customer = Customer::where('company_id', $company->id)->first();
+        return $this->companies->query()->where('id', $companyId)->first();
+    }
+
+    public function getPublicPlans()
+    {
+        return $this->plans->query()
+            ->where('status', 'active')
+            ->where('is_public', true)
+            ->with([
+                'prices' => function ($query) {
+                    $query->where('active', true)->orderBy('unit_amount');
+                },
+                'limits',
+            ])
+            ->orderBy('sort')
+            ->orderBy('name')
+            ->get()
+            ->filter(function ($plan) {
+                return $plan->prices->isNotEmpty();
+            })
+            ->values();
+    }
+
+    public function getSelectedPrice(string $email)
+    {
+        $signup = $this->signups->query()->where('email', $email)->latest('id')->first();
+        return $signup && $signup->price_id ? $signup->price_id : null;
+    }
+
+    public function getActivePrice(string $uid)
+    {
+        return $this->prices->query()->where('uid', $uid)->where('active', true)->first();
+    }
+
+    public function getCoupon(string $code)
+    {
+        return $this->coupons->query()->where('code', $code)->first();
+    }
+
+    public function ensureCustomer($company): Customer
+    {
+        $customer = $this->customers->query()->where('company_id', $company->id)->first();
 
         if ($customer) {
             return $customer;
@@ -54,27 +117,16 @@ class SubscriptionService
             'company_id' => (string) $company->id,
         ]);
 
-        return Customer::create([
+        return $this->customers->create([
             'company_id' => $company->id,
             'stripe_customer_id' => $stripeCustomer->id,
         ]);
     }
 
-    /**
-     * Create a Stripe Checkout Session for a price and return its redirect URL.
-     *
-     * @param  \App\Models\Company  $company
-     * @param  \Modules\Billing\Models\Price  $price
-     * @param  \Modules\Billing\Models\Coupon|null  $coupon
-     * @return string
-     *
-     * @throws \App\Exceptions\StripeServiceException
-     */
-    public function startCheckout(Company $company, Price $price, ?Coupon $coupon = null): string
+    public function startCheckout($company, Price $price, ?Coupon $coupon = null): string
     {
         $price->loadMissing('plan');
 
-        // Make sure the plan/product and its prices exist in Stripe first.
         $this->sync->syncPlan($price->plan->refresh());
         $price->refresh();
 
@@ -108,13 +160,11 @@ class SubscriptionService
         ];
 
         if ($coupon && $coupon->isRedeemable()) {
-            // Apply a specific promotion code entered on the pricing page.
             $params['discounts'] = [
                 ['promotion_code' => $coupon->stripe_promotion_code_id],
             ];
             $params['metadata']['coupon_id'] = (string) $coupon->id;
         } else {
-            // Otherwise let customers enter a promotion code on Stripe's page.
             $params['allow_promotion_codes'] = true;
         }
 
@@ -123,15 +173,6 @@ class SubscriptionService
         return $session->url;
     }
 
-    /**
-     * Activate the subscription behind a completed Checkout Session and return
-     * the local subscription record (idempotent with the webhook).
-     *
-     * @param  string  $sessionId
-     * @return \Modules\Billing\Models\Subscription|null
-     *
-     * @throws \App\Exceptions\StripeServiceException
-     */
     public function activateFromCheckoutSession(string $sessionId)
     {
         $session = $this->stripe->retrieveCheckoutSession($sessionId, ['subscription']);
@@ -153,13 +194,6 @@ class SubscriptionService
         return $subscription;
     }
 
-    /**
-     * Record that a coupon was redeemed on a completed checkout session.
-     *
-     * @param  \Stripe\Checkout\Session  $session
-     * @param  \Modules\Billing\Models\Subscription|null  $subscription
-     * @return void
-     */
     protected function recordRedemption($session, $subscription)
     {
         $couponId = isset($session->metadata->coupon_id) ? (int) $session->metadata->coupon_id : null;
@@ -176,13 +210,13 @@ class SubscriptionService
             return;
         }
 
-        $coupon = Coupon::where('id', $couponId)->first();
+        $coupon = $this->coupons->query()->where('id', $couponId)->first();
 
         if (!$coupon) {
             return;
         }
 
-        Redemption::firstOrCreate(
+        $this->redemptions->firstOrCreate(
             [
                 'coupon_id' => $coupon->id,
                 'company_id' => $companyId,
@@ -194,14 +228,6 @@ class SubscriptionService
         );
     }
 
-    /**
-     * Retrieve a Stripe subscription by id and mirror it locally.
-     *
-     * @param  string  $stripeSubscriptionId
-     * @return \Modules\Billing\Models\Subscription|null
-     *
-     * @throws \App\Exceptions\StripeServiceException
-     */
     public function syncByStripeId(string $stripeSubscriptionId)
     {
         $stripeSubscription = $this->stripe->retrieveSubscription($stripeSubscriptionId, ['items.data.price']);
@@ -209,12 +235,6 @@ class SubscriptionService
         return $this->syncFromStripe($stripeSubscription);
     }
 
-    /**
-     * Upsert the local subscription mirror from a Stripe subscription object.
-     *
-     * @param  \Stripe\Subscription  $stripeSubscription
-     * @return \Modules\Billing\Models\Subscription|null
-     */
     public function syncFromStripe($stripeSubscription)
     {
         $stripeCustomerId = is_object($stripeSubscription->customer)
@@ -222,7 +242,7 @@ class SubscriptionService
             : $stripeSubscription->customer;
 
         $customer = $stripeCustomerId
-            ? Customer::where('stripe_customer_id', $stripeCustomerId)->first()
+            ? $this->customers->query()->where('stripe_customer_id', $stripeCustomerId)->first()
             : null;
 
         $companyId = $customer ? $customer->company_id : null;
@@ -244,7 +264,7 @@ class SubscriptionService
             $stripePriceId = is_object($firstItem->price) ? $firstItem->price->id : $firstItem->price;
 
             if ($stripePriceId) {
-                $price = Price::where('stripe_price_id', $stripePriceId)->first();
+                $price = $this->prices->query()->where('stripe_price_id', $stripePriceId)->first();
                 if ($price) {
                     $priceId = $price->id;
                     $planId = $price->plan_id;
@@ -254,7 +274,7 @@ class SubscriptionService
 
         [$periodStart, $periodEnd] = $this->resolvePeriod($stripeSubscription, $firstItem);
 
-        return Subscription::updateOrCreate(
+        return $this->subscriptions->updateOrCreate(
             ['stripe_subscription_id' => $stripeSubscription->id],
             [
                 'company_id' => $companyId,
@@ -272,27 +292,23 @@ class SubscriptionService
         );
     }
 
-    /**
-     * Resolve the current billing period. Stripe moved these fields from the
-     * subscription onto its items in recent API versions, so check both.
-     *
-     * @param  \Stripe\Subscription  $subscription
-     * @param  mixed  $firstItem
-     * @return array{0: string|null, 1: string|null}
-     */
-    protected function resolvePeriod($subscription, $firstItem): array
+    protected function resolvePeriod($subscription, $firstItem)
     {
-        $start = $subscription->current_period_start ?? null;
-        $end = $subscription->current_period_end ?? null;
+        $periodStart = null;
+        $periodEnd = null;
 
-        if ((!$start || !$end) && $firstItem) {
-            $start = $start ?: ($firstItem->current_period_start ?? null);
-            $end = $end ?: ($firstItem->current_period_end ?? null);
+        if (isset($firstItem->current_period_start)) {
+            $periodStart = \Carbon\Carbon::createFromTimestamp($firstItem->current_period_start)->toDateTimeString();
+        } elseif (isset($subscription->current_period_start)) {
+            $periodStart = \Carbon\Carbon::createFromTimestamp($subscription->current_period_start)->toDateTimeString();
         }
 
-        return [
-            $start ? date('Y-m-d H:i:s', (int) $start) : null,
-            $end ? date('Y-m-d H:i:s', (int) $end) : null,
-        ];
+        if (isset($firstItem->current_period_end)) {
+            $periodEnd = \Carbon\Carbon::createFromTimestamp($firstItem->current_period_end)->toDateTimeString();
+        } elseif (isset($subscription->current_period_end)) {
+            $periodEnd = \Carbon\Carbon::createFromTimestamp($subscription->current_period_end)->toDateTimeString();
+        }
+
+        return [$periodStart, $periodEnd];
     }
 }

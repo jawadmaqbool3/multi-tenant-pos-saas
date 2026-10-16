@@ -55,6 +55,16 @@ abstract class BaseRepository
         return $this->model->create($data);
     }
 
+    public function firstOrCreate(array $attributes, array $values = [])
+    {
+        return $this->model->firstOrCreate($attributes, $values);
+    }
+
+    public function updateOrCreate(array $attributes, array $values = [])
+    {
+        return $this->model->updateOrCreate($attributes, $values);
+    }
+
     public function update($id, array $data)
     {
         $record = $this->model->findOrFail($id);

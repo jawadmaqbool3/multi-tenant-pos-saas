@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSignupRequest;
 use App\Services\SignupService;
 use Illuminate\Support\Facades\DB;
-use Modules\Employee\Models\User;
 
 class SignupController extends Controller
 {
@@ -48,10 +47,7 @@ class SignupController extends Controller
             throw $e;
         }
 
-        $user = User::query()
-            ->where('email', $request->email)
-            ->where('company_id', $company->id)
-            ->first();
+        $user = $this->service->findUser($company->id, $request->email);
 
         if ($user) {
             auth()->login($user);

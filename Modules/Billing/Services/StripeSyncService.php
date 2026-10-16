@@ -5,14 +5,17 @@ namespace Modules\Billing\Services;
 use Modules\Billing\Models\Coupon;
 use Modules\Billing\Models\Plan;
 use Modules\Billing\Models\Price;
+use Modules\Billing\Repositories\PriceRepository;
 
 class StripeSyncService
 {
     protected $stripe;
+    protected $prices;
 
-    public function __construct(StripeService $stripe)
+    public function __construct(StripeService $stripe, PriceRepository $prices)
     {
         $this->stripe = $stripe;
+        $this->prices = $prices;
     }
 
     /**
@@ -38,7 +41,7 @@ class StripeSyncService
         $this->stripe->request(function () use ($client, $plan) {
             $this->syncProduct($client, $plan);
 
-            foreach ($plan->prices as $price) {
+            foreach ($this->prices->query()->where('plan_id', $plan->id)->get() as $price) {
                 $this->syncPrice($client, $plan, $price);
             }
         });
