@@ -17,7 +17,7 @@ class SettingSeeder extends Seeder
         Setting::firstOrCreate(
             ['company_id' => null],
             [
-            'logo' => 'logo.svg',
+            'logo' => 'logo.jpeg',
             'name' => 'POS',
             'address' => 'Some address lorem ipsum',
             'url' => 'https://pos.local',

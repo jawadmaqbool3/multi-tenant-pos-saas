@@ -224,7 +224,7 @@ class AsideMenuLinks extends Component
             $this->permissionModules = [];
 
             $permissions = Permission::with('module')
-                ->where('company_id', auth()->user()->company_id)
+                ->whereNull('company_id')
                 ->get();
 
             foreach ($permissions as $row) {

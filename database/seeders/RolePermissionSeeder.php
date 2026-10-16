@@ -47,6 +47,10 @@ class RolePermissionSeeder extends Seeder
             'suspend company',
             'view company billing',
             'view billing report',
+            // platform dashboard widgets
+            'dashboard stripe balance',
+            'dashboard due payments',
+            'dashboard active companies',
         ],
     ];
 
@@ -169,6 +173,11 @@ class RolePermissionSeeder extends Seeder
             'dashboard recent orders',
             'dashboard stock report',
             'dashboard employee mark attendance',
+            // tenant subscription / plan widgets
+            'dashboard current plan',
+            'dashboard subscription renewal',
+            'dashboard subscription usage',
+            'dashboard my invoices',
         ],
 
         "Promotions" => [

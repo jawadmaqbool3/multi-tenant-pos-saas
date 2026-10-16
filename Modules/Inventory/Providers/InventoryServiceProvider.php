@@ -23,6 +23,9 @@ class InventoryServiceProvider extends ServiceProvider
             'product' => Product::class,
         ]);
 
+        $this->app->make(\App\Dashboard\DashboardRegistry::class)
+            ->register(\Modules\Inventory\Dashboard\Widgets\StockReportWidget::class);
+
         Route::group(['middleware' => ['web']], function () {
             require base_path('Modules/Inventory/routes/web.php');
         });

@@ -62,4 +62,87 @@ class InvoiceRepository extends BaseRepository
                 return 'btn-secondary';
         }
     }
+
+    /**
+     * Most recent invoices for a company (tenant invoice widget).
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function latestForCompany(int $companyId, int $limit = 10)
+    {
+        return $this->query()
+            ->where('company_id', $companyId)
+            ->latest('id')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * The next open (unpaid) invoice for a company, soonest due first.
+     */
+    public function openForCompany(int $companyId): ?Invoice
+    {
+        return $this->query()
+            ->where('company_id', $companyId)
+            ->where('status', 'open')
+            ->orderBy('due_date')
+            ->first();
+    }
+
+    /**
+     * Open invoices past their due date (platform collections widget).
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function overdueForPlatform()
+    {
+        return $this->query()
+            ->where('status', 'open')
+            ->whereNotNull('due_date')
+            ->where('due_date', '<', now())
+            ->with('company')
+            ->orderBy('due_date')
+            ->get();
+    }
+
+    /**
+     * Open/past-due invoices for the platform due-invoice table.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function dueForPlatform(int $limit = 10)
+    {
+        return $this->query()
+            ->whereIn('status', ['open', 'uncollectible'])
+            ->with('company')
+            ->orderBy('due_date')
+            ->limit($limit)
+            ->get();
+    }
+
+    public function countStatus(string $status): int
+    {
+        return $this->query()->where('status', $status)->count();
+    }
+
+    /**
+     * Paid invoice totals per month for the last $months months (platform chart).
+     *
+     * @return array<int, float>
+     */
+    public function paidRevenueByMonth(int $months = 6): array
+    {
+        $totals = [];
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $date = now()->startOfMonth()->subMonths($i);
+            $totals[] = (float) $this->query()
+                ->where('status', 'paid')
+                ->where('created_at', '>=', $date->toDateString())
+                ->where('created_at', '<', $date->copy()->addMonth()->toDateString())
+                ->sum('amount_paid') / 100;
+        }
+
+        return $totals;
+    }
 }

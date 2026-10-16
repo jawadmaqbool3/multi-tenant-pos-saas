@@ -47,6 +47,12 @@ class StripeWebhookService
             $this->events->update($record->uid, ['status' => WebhookEvent::STATUS_PROCESSED]);
             return 'ok';
         } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Stripe webhook failed: ' . $e->getMessage(), [
+                'event_id' => $event->id,
+                'event_type' => $event->type,
+                'exception' => $e,
+            ]);
+
             $this->events->update($record->uid, [
                 'status' => WebhookEvent::STATUS_FAILED,
                 'failed_at' => now(),

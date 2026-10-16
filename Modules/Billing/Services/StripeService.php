@@ -144,7 +144,8 @@ class StripeService
     public function retrieveCheckoutSession(string $sessionId, array $expand = [])
     {
         return $this->request(function () use ($sessionId, $expand) {
-            return $this->client()->checkout->sessions->retrieve($sessionId, $expand);
+            $params = $expand ? ['expand' => $expand] : [];
+            return $this->client()->checkout->sessions->retrieve($sessionId, $params);
         });
     }
 
@@ -158,7 +159,8 @@ class StripeService
     public function retrieveSubscription(string $subscriptionId, array $expand = [])
     {
         return $this->request(function () use ($subscriptionId, $expand) {
-            return $this->client()->subscriptions->retrieve($subscriptionId, $expand);
+            $params = $expand ? ['expand' => $expand] : [];
+            return $this->client()->subscriptions->retrieve($subscriptionId, $params);
         });
     }
 }

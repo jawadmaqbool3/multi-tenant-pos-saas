@@ -11,4 +11,14 @@ class PaymentRepository extends BaseRepository
     {
         parent::__construct(new Payment());
     }
+
+    public function failedCount(): int
+    {
+        return $this->query()->where('status', 'failed')->count();
+    }
+
+    public function failedAmount(): float
+    {
+        return (float) $this->query()->where('status', 'failed')->sum('amount');
+    }
 }

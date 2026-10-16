@@ -81,7 +81,7 @@
 
                             <div class="fv-row mb-8">
                                 <label class="form-label fw-semibold text-gray-700">Test Accounts</label>
-                                <select id="test_account" class="form-select form-select-solid"
+                                <select id="test_account" class="form-select form-select-solid border border-gray-300"
                                     data-placeholder="Select a test account to autofill">
                                     <option value=""></option>
                                     @foreach ($testAccounts as $email => $name)

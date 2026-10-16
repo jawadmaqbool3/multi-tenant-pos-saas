@@ -33,7 +33,7 @@ class CompanySeeder extends Seeder
         Setting::firstOrCreate(
             ['company_id' => $company->id],
             [
-                'logo' => $global->logo ?? 'logo.svg',
+                'logo' => $global->logo ?? 'logo.jpeg',
                 'name' => $global->name ?? 'POS',
                 'email' => $global->email ?? null,
                 'address' => $global->address ?? null,

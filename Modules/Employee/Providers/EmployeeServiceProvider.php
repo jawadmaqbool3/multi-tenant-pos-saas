@@ -23,6 +23,9 @@ class EmployeeServiceProvider extends ServiceProvider
             'user' => User::class,
         ]);
 
+        $this->app->make(\App\Dashboard\DashboardRegistry::class)
+            ->register(\Modules\Employee\Dashboard\Widgets\AttendanceWidget::class);
+
         Route::group(['middleware' => ['web']], function () {
             require base_path('Modules/Employee/routes/web.php');
         });

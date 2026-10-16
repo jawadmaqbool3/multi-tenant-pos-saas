@@ -20,6 +20,8 @@ class DefaultRoles
             'employee' => [
                 'view own attendance',
                 'view own payroll',
+                'dashboard my attendance',
+                'dashboard my payslips',
             ],
 
             // Manages employees and runs payroll.
@@ -45,6 +47,16 @@ class DefaultRoles
                 'create deduction',
                 'edit deduction',
                 'delete deduction',
+                'dashboard attendance summary',
+                'dashboard attendance monthly',
+                'dashboard attendance absent today',
+                'dashboard my attendance',
+                'dashboard payroll pending',
+                'dashboard payroll due',
+                'dashboard payroll paid month',
+                'dashboard payroll cost',
+                'dashboard payroll recent',
+                'dashboard my payslips',
             ],
 
             // Accounting/bookkeeping and paying payroll.
@@ -64,6 +76,24 @@ class DefaultRoles
                 'delete voucher type',
                 'view payroll',
                 'pay payroll',
+                'dashboard my attendance',
+                'dashboard my payslips',
+                'dashboard payroll pending',
+                'dashboard payroll due',
+                'dashboard payroll paid month',
+                'dashboard payroll cost',
+                'dashboard profit loss report',
+                'dashboard revenue expense',
+                'dashboard receivables',
+                'dashboard payables',
+                'dashboard supplier payable',
+                'dashboard monthly sales',
+                'dashboard daily average sales',
+                // tenant subscription / plan widgets
+                'dashboard current plan',
+                'dashboard subscription renewal',
+                'dashboard subscription usage',
+                'dashboard my invoices',
             ],
 
             // Sells using the product catalog and processes sales orders.
@@ -85,6 +115,14 @@ class DefaultRoles
                 'view sales',
                 'order refund',
                 'view customer',
+                'dashboard my attendance',
+                'dashboard my payslips',
+                'dashboard monthly sales',
+                'dashboard monthly orders',
+                'dashboard monthly cancelled orders',
+                'dashboard monthly refunded orders',
+                'dashboard daily average sales',
+                'dashboard recent orders',
             ],
 
             // Manages stock levels, purchasing, products and categories.
@@ -102,6 +140,14 @@ class DefaultRoles
                 'add stock',
                 'view purchase orders',
                 'print purchase orders',
+                'dashboard my attendance',
+                'dashboard my payslips',
+                'dashboard stock low',
+                'dashboard stock out',
+                'dashboard stock value',
+                'dashboard stock report',
+                'dashboard supplier pending orders',
+                'dashboard supplier payable',
             ],
         ];
     }

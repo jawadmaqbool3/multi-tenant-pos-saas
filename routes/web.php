@@ -17,6 +17,9 @@ Route::group(['middleware' => ['auth']], function () {
         'as' => 'dashboard',
     ]);
 
+    Route::get('dashboard/widgets', 'HomeController@widgets')->name('dashboard.widgets');
+    Route::get('dashboard/widget/{key}', 'HomeController@widget')->name('dashboard.widget')->where('key', '[A-Za-z0-9_.]+');
+
     Route::group(['middleware' => ['role:admin']], function () {
         Route::resource('companies', CompanyController::class);
     });
