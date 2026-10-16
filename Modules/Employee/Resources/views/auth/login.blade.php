@@ -1,5 +1,7 @@
 @php
     $setting = App\Models\Setting::where('company_id', null)->first();
+    $testAccounts = App\Support\DefaultAccounts::all();
+    $testPassword = App\Support\DefaultAccounts::PASSWORD;
 @endphp
 <!DOCTYPE html>
 
@@ -77,11 +79,17 @@
                                     class="form-control form-control-solid" />
                             </div>
 
-                            <div class="d-flex gap-3 mb-8">
-                                <button type="button" class="btn btn-light-primary flex-fill"
-                                    onclick="fillCredentials('superadmin@gmail.com', '12345678')">Admin Login</button>
-                                <button type="button" class="btn btn-light-success flex-fill"
-                                    onclick="fillCredentials('admin@gmail.com', '12345678')">Company Login</button>
+                            <div class="fv-row mb-8">
+                                <label class="form-label fw-semibold text-gray-700">Test Accounts</label>
+                                <select id="test_account" class="form-select form-select-solid"
+                                    data-placeholder="Select a test account to autofill">
+                                    <option value=""></option>
+                                    @foreach ($testAccounts as $email => $name)
+                                        <option value="{{ $email }}">{{ $name }} &mdash; {{ $email }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="text-muted fs-7 mt-1">Pick an account to autofill the credentials.</div>
                             </div>
 
                             <div class="d-grid mb-10">
@@ -121,6 +129,12 @@
             document.querySelector('input[name="email"]').value = email;
             document.querySelector('input[name="password"]').value = password;
         }
+
+        document.getElementById('test_account').addEventListener('change', function() {
+            if (this.value) {
+                fillCredentials(this.value, @json($testPassword));
+            }
+        });
     </script>
 
 </body>

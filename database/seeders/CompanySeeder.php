@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\Setting;
 use App\Services\DefaultService;
+use App\Support\DefaultAccounts;
 use Modules\Employee\Models\User;
 use Modules\RBAC\Models\Role;
 use Modules\RBAC\Models\UserRole;
@@ -50,22 +51,21 @@ class CompanySeeder extends Seeder
         // company; they are global and immutable).
         app(RoleProvisioningService::class)->provisionForCompany($company->id);
 
-        $companyRole = Role::firstOrCreate([
-            'name' => 'company',
-            'company_id' => $company->id,
-        ], [
-            'status' => 'active',
-        ]);
-        $companyRole->refresh();
+        // Assign each default account to its company role.
+        foreach (DefaultAccounts::roleAccounts() as $email => $roleName) {
+            $user = User::where('email', $email)->first();
+            $role = Role::where('company_id', $company->id)->where('name', $roleName)->first();
 
-        $owner = User::where('email', 'admin@gmail.com')->first();
-        if ($owner) {
-            $owner->company_id = $company->id;
-            $owner->save();
+            if (!$user || !$role) {
+                continue;
+            }
+
+            $user->company_id = $company->id;
+            $user->save();
 
             UserRole::firstOrCreate([
-                'user_id' => $owner->id,
-                'role_id' => $companyRole->id,
+                'user_id' => $user->id,
+                'role_id' => $role->id,
             ]);
         }
 
