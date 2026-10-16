@@ -61,6 +61,24 @@ class PayslipRepository extends BaseRepository
     }
 
     /**
+     * Payslips belonging to a single employee within a company (personal
+     * payslip history). Company-scoped to prevent cross-tenant reads.
+     *
+     * @param  int  $employeeId
+     * @param  int|null  $companyId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function listForEmployee($employeeId, $companyId)
+    {
+        return $this->query()
+            ->with(['payroll'])
+            ->where('employee_id', $employeeId)
+            ->where('company_id', $companyId)
+            ->orderByDesc('payroll_id')
+            ->get();
+    }
+
+    /**
      * A single payslip with its employee, line items and run loaded (print view).
      *
      * @param  int  $id

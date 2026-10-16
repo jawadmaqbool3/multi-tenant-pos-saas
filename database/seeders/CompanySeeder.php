@@ -69,6 +69,31 @@ class CompanySeeder extends Seeder
             ]);
         }
 
+        // Provision the default tenant roles (employee, HR, accountant, sales
+        // person, stock manager) with their permission subsets.
+        foreach ((new RolePermissionSeeder())->tenantRoles as $roleName => $permissionNames) {
+            $role = Role::firstOrCreate([
+                'name' => $roleName,
+                'company_id' => $company->id,
+            ], [
+                'status' => 'active',
+            ]);
+            $role->refresh();
+
+            foreach ($permissionNames as $permissionName) {
+                $permission = Permission::where('name', $permissionName)
+                    ->where('company_id', $company->id)
+                    ->first();
+
+                if ($permission) {
+                    PermissionRole::firstOrCreate([
+                        'role_id' => $role->id,
+                        'permission_id' => $permission->id,
+                    ]);
+                }
+            }
+        }
+
         $owner = User::where('email', 'admin@gmail.com')->first();
         if ($owner) {
             $owner->company_id = $company->id;

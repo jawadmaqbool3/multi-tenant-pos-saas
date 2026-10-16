@@ -119,6 +119,16 @@ class AsideSettingService
                         'permission' => 'view employee attendance report',
                         'link' => route('attendance.index'),
                     ],
+                    [
+                        'title' => 'My Attendance',
+                        'permission' => 'view own attendance',
+                        'link' => route('attendance.me'),
+                    ],
+                    [
+                        'title' => 'My Payslips',
+                        'permission' => 'view own payroll',
+                        'link' => route('payrolls.me'),
+                    ],
                 ],
             ],
             [

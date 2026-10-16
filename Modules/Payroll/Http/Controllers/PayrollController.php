@@ -91,6 +91,10 @@ class PayrollController extends Controller
 
     public function updateStatus(UpdatePayrollStatusRequest $request, Payroll $payroll)
     {
+        if ($request->status === 'paid' && !auth()->user()->hasPermission('pay payroll')) {
+            abort(403, 'You are not authorized to pay payroll.');
+        }
+
         DB::beginTransaction();
         try {
             $this->service->updateStatus($payroll, $request->status);
@@ -124,8 +128,21 @@ class PayrollController extends Controller
         }
     }
 
+    public function myPayslips()
+    {
+        $payslips = $this->service->payslipsForCurrentEmployee();
+        return view('payroll::payrolls.mine', compact('payslips'));
+    }
+
     public function printPayslip(Payslip $payslip)
     {
+        // A user without the tenant-wide `view payroll` permission may only
+        // print their own payslip.
+        if (!auth()->user()->hasPermission('view payroll')
+            && (int) $payslip->employee_id !== (int) auth()->user()->id) {
+            abort(403, 'You are not authorized to view this payslip.');
+        }
+
         $payslip = $this->service->payslipForPrint($payslip);
         return view('payroll::payrolls.print.payslip', compact('payslip'));
     }

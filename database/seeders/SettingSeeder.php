@@ -131,6 +131,16 @@ class SettingSeeder extends Seeder
                             "link": "http://127.0.0.1:8000/attendance",
                             "title": "Employee Attendance",
                             "permission": "view employee attendance report"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/attendance/me",
+                            "title": "My Attendance",
+                            "permission": "view own attendance"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/payrolls/me",
+                            "title": "My Payslips",
+                            "permission": "view own payroll"
                         }
                     ]
                 },

@@ -16,5 +16,12 @@ Route::post('logout', [
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class)->middleware('permission:view user');
-    Route::resource('attendance', AttendanceHistoryController::class)->middleware('permission:view employee attendance report');
+
+    // Personal attendance history (employees). Declared before the resource so
+    // `attendance/me` is not captured by `attendance/{attendance}`.
+    Route::get('attendance/me', [AttendanceHistoryController::class, 'me'])
+        ->name('attendance.me')->middleware('permission:view own attendance');
+
+    Route::resource('attendance', AttendanceHistoryController::class)
+        ->middleware('permission:view employee attendance report,view own attendance');
 });

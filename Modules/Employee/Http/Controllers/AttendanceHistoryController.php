@@ -25,17 +25,38 @@ class AttendanceHistoryController extends Controller
      */
     public function index(Request $request)
     {
+        $canViewAll = auth()->user()->hasPermission('view employee attendance report');
+
         if ($request->ajax()) {
             $month = $request->month ?? Carbon::now()->format('Y-m');
-            $user = $this->service->getUserByUid($request->id);
+            // Users without the tenant-wide report only ever see their own row.
+            $user = $canViewAll
+                ? $this->service->getUserByUid($request->id)
+                : auth()->user();
             $view = view('employee::reports.employee._ajax_attendance', compact('user', 'month'))->render();
             return response([
                 'success' => true,
                 'view' => $view
             ]);
         }
+
+        // Employees without the tenant-wide report only have their own history.
+        if (!$canViewAll) {
+            return redirect()->route('attendance.me');
+        }
+
         $employees = $this->service->getEmployees();
         return view('employee::reports.employee.index', compact('employees'));
+    }
+
+    /**
+     * Personal attendance history (own-only report screen).
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function me()
+    {
+        return view('employee::reports.employee.mine');
     }
 
     /**

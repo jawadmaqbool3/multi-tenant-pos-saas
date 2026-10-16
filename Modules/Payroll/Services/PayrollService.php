@@ -79,6 +79,16 @@ class PayrollService
     }
 
     /**
+     * The acting user's own payslips (for the personal payslip history screen).
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function payslipsForCurrentEmployee()
+    {
+        return $this->payslips->listForEmployee(auth()->user()->id, auth()->user()->company_id);
+    }
+
+    /**
      * Active allowance catalog entries for the acting company.
      *
      * @return \Illuminate\Database\Eloquent\Collection

@@ -37,7 +37,14 @@ class UserService
 
     public function getUsers()
     {
-        return $this->users->dataTable($this->users->query()->filter());
+        $query = $this->users->query()->filter();
+
+        // HR manages the payroll roster: only payroll-enabled users are shown.
+        if (auth()->user() && auth()->user()->hasRole('hr')) {
+            $query->where('payroll_enabled', true);
+        }
+
+        return $this->users->dataTable($query);
     }
 
     public function getRoles()
