@@ -173,6 +173,29 @@ class RolePermissionSeeder extends Seeder
             'dashboard recent orders',
             'dashboard stock report',
             'dashboard employee mark attendance',
+            // attendance widgets
+            'dashboard attendance summary',
+            'dashboard attendance monthly',
+            'dashboard attendance absent today',
+            'dashboard my attendance',
+            // payroll widgets
+            'dashboard payroll pending',
+            'dashboard payroll due',
+            'dashboard payroll paid month',
+            'dashboard payroll cost',
+            'dashboard payroll recent',
+            'dashboard my payslips',
+            // inventory widgets
+            'dashboard stock low',
+            'dashboard stock out',
+            'dashboard stock value',
+            // finance widgets
+            'dashboard revenue expense',
+            'dashboard receivables',
+            'dashboard payables',
+            // supplier widgets
+            'dashboard supplier pending orders',
+            'dashboard supplier payable',
             // tenant subscription / plan widgets
             'dashboard current plan',
             'dashboard subscription renewal',

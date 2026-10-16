@@ -23,7 +23,7 @@ class AttendanceWidget extends AbstractWidget
 
     public function permission(): string
     {
-        return 'dashboard employee mark attendance';
+        return 'dashboard my attendance';
     }
 
     public function scope(): string

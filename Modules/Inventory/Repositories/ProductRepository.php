@@ -4,6 +4,7 @@ namespace Modules\Inventory\Repositories;
 
 use App\Repositories\BaseRepository;
 use App\Support\Icon;
+use Illuminate\Support\Facades\DB;
 
 use Modules\Inventory\Models\Product;
 
@@ -62,6 +63,74 @@ class ProductRepository extends BaseRepository
             ],
             'rawColumns' => ['stock'],
         ]);
+    }
+
+    /**
+     * Products with stock between 1 and 9 (the "low stock" threshold used
+     * across the UI).
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function lowStockCount($companyId)
+    {
+        return $this->query()
+            ->where('company_id', $companyId)
+            ->where('stock', '>', 0)
+            ->where('stock', '<', 10)
+            ->count();
+    }
+
+    /**
+     * Products with zero stock.
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function outOfStockCount($companyId)
+    {
+        return $this->query()
+            ->where('company_id', $companyId)
+            ->where('stock', 0)
+            ->count();
+    }
+
+    /**
+     * Inventory value (stock x purchase price) grouped by category. Products
+     * with no category are bucketed under "Uncategorised".
+     *
+     * @param  int  $companyId
+     * @return \Illuminate\Support\Collection
+     */
+    public function stockValueByCategory($companyId)
+    {
+        $withCategory = $this->query()
+            ->selectRaw('
+                COALESCE(categories.name, "Uncategorised") as category,
+                SUM(products.stock * products.purchase_price) as value
+            ')
+            ->leftJoin('product_categories', 'product_categories.product_id', '=', 'products.id')
+            ->leftJoin('categories', 'categories.id', '=', 'product_categories.category_id')
+            ->where('products.company_id', $companyId)
+            ->groupBy(DB::raw('COALESCE(categories.name, "Uncategorised")'))
+            ->orderByDesc('value')
+            ->get();
+
+        return $withCategory;
+    }
+
+    /**
+     * Total inventory value (stock x purchase price) for a company.
+     *
+     * @param  int  $companyId
+     * @return float
+     */
+    public function stockValue($companyId)
+    {
+        return (float) $this->query()
+            ->where('company_id', $companyId)
+            ->selectRaw('COALESCE(SUM(stock * purchase_price), 0) as value')
+            ->value('value');
     }
 
     protected function productStatus($product)

@@ -23,8 +23,11 @@ class EmployeeServiceProvider extends ServiceProvider
             'user' => User::class,
         ]);
 
-        $this->app->make(\App\Dashboard\DashboardRegistry::class)
-            ->register(\Modules\Employee\Dashboard\Widgets\AttendanceWidget::class);
+        $registry = $this->app->make(\App\Dashboard\DashboardRegistry::class);
+        $registry->register(\Modules\Employee\Dashboard\Widgets\AttendanceWidget::class);
+        $registry->register(\Modules\Employee\Dashboard\Widgets\AttendanceSummaryCard::class);
+        $registry->register(\Modules\Employee\Dashboard\Widgets\AttendanceMonthlyChart::class);
+        $registry->register(\Modules\Employee\Dashboard\Widgets\AttendanceAbsentTable::class);
 
         Route::group(['middleware' => ['web']], function () {
             require base_path('Modules/Employee/routes/web.php');

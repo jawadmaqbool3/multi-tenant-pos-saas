@@ -41,4 +41,18 @@ class PurchaseOrderRepository extends BaseRepository
             },
         ];
     }
+
+    /**
+     * Open (not yet refunded) purchase orders for a company.
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function pendingCount($companyId)
+    {
+        return $this->query()
+            ->where('company_id', $companyId)
+            ->where('status', 'generated')
+            ->count();
+    }
 }

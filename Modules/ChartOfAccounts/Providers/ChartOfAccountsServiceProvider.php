@@ -23,6 +23,11 @@ class ChartOfAccountsServiceProvider extends ServiceProvider
             'voucher' => Voucher::class,
         ]);
 
+        $registry = $this->app->make(\App\Dashboard\DashboardRegistry::class);
+        $registry->register(\Modules\ChartOfAccounts\Dashboard\Widgets\RevenueExpenseChart::class);
+        $registry->register(\Modules\ChartOfAccounts\Dashboard\Widgets\ReceivablesCard::class);
+        $registry->register(\Modules\ChartOfAccounts\Dashboard\Widgets\PayablesCard::class);
+
         Route::group(['middleware' => ['web']], function () {
             require base_path('Modules/ChartOfAccounts/routes/web.php');
         });

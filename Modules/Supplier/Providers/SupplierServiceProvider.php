@@ -25,6 +25,10 @@ class SupplierServiceProvider extends ServiceProvider
             'purchase_order' => PurchaseOrder::class,
         ]);
 
+        $registry = $this->app->make(\App\Dashboard\DashboardRegistry::class);
+        $registry->register(\Modules\Supplier\Dashboard\Widgets\PendingPurchaseOrdersCard::class);
+        $registry->register(\Modules\Supplier\Dashboard\Widgets\SupplierPayableCard::class);
+
         Route::group(['middleware' => ['web']], function () {
             require base_path('Modules/Supplier/routes/web.php');
         });

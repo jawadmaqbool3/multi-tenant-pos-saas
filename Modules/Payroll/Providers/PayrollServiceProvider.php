@@ -18,6 +18,14 @@ class PayrollServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'payroll');
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
 
+        $registry = $this->app->make(\App\Dashboard\DashboardRegistry::class);
+        $registry->register(\Modules\Payroll\Dashboard\Widgets\PayrollPendingCard::class);
+        $registry->register(\Modules\Payroll\Dashboard\Widgets\PayrollDueCard::class);
+        $registry->register(\Modules\Payroll\Dashboard\Widgets\PayrollPaidMonthCard::class);
+        $registry->register(\Modules\Payroll\Dashboard\Widgets\PayrollCostChart::class);
+        $registry->register(\Modules\Payroll\Dashboard\Widgets\PayrollRecentTable::class);
+        $registry->register(\Modules\Payroll\Dashboard\Widgets\MyPayslipsTable::class);
+
         Route::group(['middleware' => ['web']], function () {
             require base_path('Modules/Payroll/routes/web.php');
         });

@@ -79,6 +79,26 @@ class PayslipRepository extends BaseRepository
     }
 
     /**
+     * A bounded slice of an employee's payslip history (dashboard "my
+     * payslips" table), newest first.
+     *
+     * @param  int  $employeeId
+     * @param  int|null  $companyId
+     * @param  int  $limit
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function latestForEmployee($employeeId, $companyId, $limit = 5)
+    {
+        return $this->query()
+            ->with(['payroll'])
+            ->where('employee_id', $employeeId)
+            ->where('company_id', $companyId)
+            ->orderByDesc('payroll_id')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
      * A single payslip with its employee, line items and run loaded (print view).
      *
      * @param  int  $id

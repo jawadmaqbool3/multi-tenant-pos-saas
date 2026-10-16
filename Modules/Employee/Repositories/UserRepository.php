@@ -81,4 +81,50 @@ class UserRepository extends BaseRepository
             ->where('status', 'active')
             ->get();
     }
+
+    /**
+     * Active, attendance-enabled employees of a company who have not clocked in
+     * today. Uses `id` directly because `filter()` would also exclude the acting
+     * user and would not count attendance-disabled staff.
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function absentTodayCount($companyId)
+    {
+        return $this->absentTodayQuery($companyId)->count();
+    }
+
+    /**
+     * The absent employees themselves (name + image) for the "absent today" list.
+     *
+     * @param  int  $companyId
+     * @param  int  $limit
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function absentToday($companyId, $limit = 5)
+    {
+        return $this->absentTodayQuery($companyId)
+            ->orderBy('name')
+            ->limit($limit)
+            ->get(['id', 'name', 'image']);
+    }
+
+    /**
+     * @param  int  $companyId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function absentTodayQuery($companyId)
+    {
+        return $this->query()
+            ->where('company_id', $companyId)
+            ->where('attendance_enabled', true)
+            ->where('status', 'active')
+            ->whereNotIn('id', function ($query) {
+                $query->select('user_id')
+                    ->from('attendance_histories')
+                    ->where('type', 'clockin')
+                    ->whereDate('time', now()->toDateString());
+            });
+    }
 }

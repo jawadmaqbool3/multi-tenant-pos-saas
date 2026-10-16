@@ -44,4 +44,17 @@ class SupplierRepository extends BaseRepository
             },
         ];
     }
+
+    /**
+     * Total outstanding payable across a company's suppliers.
+     *
+     * @param  int  $companyId
+     * @return float
+     */
+    public function payableTotal($companyId)
+    {
+        return (float) $this->query()
+            ->where('company_id', $companyId)
+            ->sum('balance');
+    }
 }
