@@ -93,6 +93,27 @@ class SettingSeeder extends Seeder
                     ]
                 },
                 {
+                    "icon": "bi bi-cash-stack",
+                    "name": "Payroll",
+                    "links": [
+                        {
+                            "link": "http://127.0.0.1:8000/payrolls",
+                            "title": "Payroll Runs",
+                            "permission": "view payroll"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/allowances",
+                            "title": "Allowances",
+                            "permission": "view allowance"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/deductions",
+                            "title": "Deductions",
+                            "permission": "view deduction"
+                        }
+                    ]
+                },
+                {
                     "icon": "bi bi-file-earmark-bar-graph",
                     "name": "Reports",
                     "links": [
@@ -117,11 +138,6 @@ class SettingSeeder extends Seeder
                     "icon": "bi bi-person-bounding-box",
                     "name": "HR",
                     "links": [
-                        {
-                            "link": "http://127.0.0.1:8000/employees",
-                            "title": "Employees",
-                            "permission": "view employee"
-                        },
                         {
                             "link": "http://127.0.0.1:8000/suppliers",
                             "title": "Suppliers",

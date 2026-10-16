@@ -19,7 +19,10 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|unique:users,email',
             'name' => 'required|min:3',
             'role' => 'required',
-            'status' => 'required'
+            'status' => 'required',
+            'payroll_enabled' => 'nullable|boolean',
+            'attendance_enabled' => 'nullable|boolean',
+            'salary' => 'required_if:payroll_enabled,1|nullable|numeric|min:0',
         ];
     }
 }

@@ -24,4 +24,17 @@
             );
         }
     });
+
+    function toggleSalaryField() {
+        if ($('#payroll_enabled').is(':checked')) {
+            $('#salary_wrapper').removeClass('d-none');
+            $('#salary').attr('required', true);
+        } else {
+            $('#salary_wrapper').addClass('d-none');
+            $('#salary').removeAttr('required');
+        }
+    }
+
+    $('#payroll_enabled').on('change', toggleSalaryField);
+    toggleSalaryField();
 </script>

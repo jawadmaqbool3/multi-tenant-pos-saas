@@ -58,6 +58,7 @@
                             <th class="fw-bold p-0 min-w-150px text-start">Name</th>
                             <th class="text-start fw-bold p-0">Role</th>
                             <th class="text-start fw-bold p-0">Status</th>
+                            <th class="text-start fw-bold p-0">Flags</th>
                             <th class="fw-bold p-0 min-w-100px text-end">Actions</th>
                         </tr>
                     </thead>
@@ -98,6 +99,11 @@
                     },
                     {
                         "data": "status"
+                    },
+                    {
+                        "data": "flags",
+                        "orderable": false,
+                        "searchable": false
                     },
                     {
                         "data": "action",

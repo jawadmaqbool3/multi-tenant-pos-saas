@@ -19,14 +19,12 @@ class AttendanceHistoryService
 
     public function getUserByUid($uid)
     {
-        return $this->users->query()->where('uid', $uid)->firstOrFail();
+        return $this->users->query()->filter()->where('uid', $uid)->firstOrFail();
     }
 
     public function getEmployees()
     {
-        return $this->users->query()->whereHas('role', function ($query) {
-            $query->where('name', 'employee');
-        })->get();
+        return $this->users->query()->filter()->where('attendance_enabled', true)->get();
     }
 
     public function store($request)

@@ -56,6 +56,13 @@ class AttendanceHistoryController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->attendance_enabled) {
+            return response([
+                'success' => false,
+                'message' => 'Attendance is not enabled for your account',
+            ]);
+        }
+
         $type = $this->service->store($request);
         return response([
             'success' => true,

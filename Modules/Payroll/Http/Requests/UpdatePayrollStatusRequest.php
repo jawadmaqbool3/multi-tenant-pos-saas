@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Employee\Http\Requests;
+namespace Modules\Payroll\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateEmployeeRequest extends FormRequest
+class UpdatePayrollStatusRequest extends FormRequest
 {
     public function authorize()
     {
@@ -14,8 +14,7 @@ class UpdateEmployeeRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:3',
-            'status' => 'required'
+            'status' => 'required|in:processed,paid',
         ];
     }
 }

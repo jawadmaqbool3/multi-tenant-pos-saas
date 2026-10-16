@@ -71,6 +71,40 @@
 
         </div>
     </div>
+    <div class="card card-flush py-4">
+        <div class="card-header">
+            <div class="card-title">
+                <h2>Employment</h2>
+            </div>
+        </div>
+        <div class="card-body pt-0">
+            <div class="form-check form-check-custom form-check-solid mb-4">
+                <input type="hidden" name="payroll_enabled" value="0">
+                <input class="form-check-input" type="checkbox" name="payroll_enabled" value="1" id="payroll_enabled"
+                    @if (@$user->payroll_enabled) checked @endif>
+                <label class="form-check-label" for="payroll_enabled">
+                    Enable Payroll
+                </label>
+            </div>
+            <div class="fv-row mb-4 {{ @$user->payroll_enabled ? '' : 'd-none' }}" id="salary_wrapper">
+                <label class="required form-label">Monthly Salary</label>
+                <input type="number" name="salary" id="salary" min="0" step="any"
+                    value="{{ @$user->empInfo->salary }}" class="form-control mb-2" placeholder="Monthly Salary"
+                    @if (@$user->payroll_enabled) required @endif />
+                <div class="text-muted fs-7">Required when payroll is enabled.</div>
+            </div>
+            <div class="form-check form-check-custom form-check-solid">
+                <input type="hidden" name="attendance_enabled" value="0">
+                <input class="form-check-input" type="checkbox" name="attendance_enabled" value="1"
+                    id="attendance_enabled" @if (@$user->attendance_enabled) checked @endif>
+                <label class="form-check-label" for="attendance_enabled">
+                    Enable Attendance
+                </label>
+            </div>
+            <div class="text-muted fs-7 mt-2">Allows this user to be tracked by the attendance system (clock in/out and
+                attendance reports).</div>
+        </div>
+    </div>
     @if (auth()->user()->hasPermission('create user'))
         <div class="card card-flush pt-4">
             <div class="card-header">

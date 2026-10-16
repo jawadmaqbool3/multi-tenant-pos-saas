@@ -74,6 +74,33 @@ class VoucherService
         return $this->rules[$account->name][$type];
     }
 
+    /**
+     * Apply a signed balance change to a Level 4 account. The debit/credit sign
+     * is resolved from the account's Level 1 type via $rules, so callers pass an
+     * account id and a transaction type only — never a hardcoded sign.
+     *
+     * @param  int  $accountId
+     * @param  string  $type  debit|credit
+     * @param  float  $amount
+     * @return void
+     */
+    public function applyBalance($accountId, $type, $amount)
+    {
+        $account = $this->accountLevel4->query()
+            ->with('level3.level2.level1')
+            ->where('id', $accountId)
+            ->first();
+
+        if (!$account) {
+            return;
+        }
+
+        $operation = $this->getOperation($account->level3->level2->level1, $type);
+        $new = $operation === '+' ? $account->balance + $amount : $account->balance - $amount;
+
+        $this->accountLevel4->query()->where('id', $accountId)->update(['balance' => $new]);
+    }
+
     public function getVouchers()
     {
         return $this->vouchers->dataTable($this->vouchers->query()->filter());

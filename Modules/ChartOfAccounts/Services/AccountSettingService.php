@@ -120,6 +120,8 @@ class AccountSettingService
             ["name" => "Office Sale Account", "short" => "OSA", "account" => "Office Account", "level" => "level4"],
             ["name" => "Vendor Payable Account", "short" => "VPA", "account" => "Vendor Payable", "level" => "level4"],
             ["name" => "Supplier Payment Account", "short" => "SPA", "account" => "Office Account", "level" => "level4"],
+            ["name" => "Salary Expense Account", "short" => "SEA", "account" => "Salary Expense", "level" => "level4"],
+            ["name" => "Salary Deductions Payable", "short" => "SDP", "account" => "Salary Deductions Payable", "level" => "level4"],
         ];
     }
 

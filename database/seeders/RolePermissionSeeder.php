@@ -179,6 +179,21 @@ class RolePermissionSeeder extends Seeder
             'delete promotion',
         ],
 
+        "Payroll" => [
+            'view payroll',
+            'create payroll',
+            'edit payroll',
+            'delete payroll',
+            'view allowance',
+            'create allowance',
+            'edit allowance',
+            'delete allowance',
+            'view deduction',
+            'create deduction',
+            'edit deduction',
+            'delete deduction',
+        ],
+
 
         "Settings" => [
             'general setting',

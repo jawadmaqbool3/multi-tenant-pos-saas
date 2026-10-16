@@ -4,6 +4,7 @@
     "Employee": true,
     "Inventory": true,
     "Order": true,
+    "Payroll": true,
     "RBAC": true,
     "Supplier": true
 }

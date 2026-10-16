@@ -6,7 +6,10 @@ use App\Core\Helper;
 use App\Exceptions\EmailAlreadyTakenException;
 use App\Exceptions\PasswordMismatchException;
 use App\Exceptions\RoleDoesNotExistException;
+use App\Repositories\CompanyRepository;
+use Modules\Billing\Services\PlanLimitService;
 use Modules\RBAC\Services\RoleService;
+use Modules\Employee\Repositories\EmployeePersonalInformationRepository;
 use Modules\Employee\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,14 +17,22 @@ class UserService
 {
     protected $users;
     protected $roles;
+    protected $companies;
+    protected $employeeInfo;
     protected $thumbWidth = 200;
     protected $thumbHeight = 200;
     protected $profileDirectory = 'assets/media/users/profile/';
 
-    public function __construct(UserRepository $users, RoleService $roles)
-    {
+    public function __construct(
+        UserRepository $users,
+        RoleService $roles,
+        CompanyRepository $companies,
+        EmployeePersonalInformationRepository $employeeInfo
+    ) {
         $this->users = $users;
         $this->roles = $roles;
+        $this->companies = $companies;
+        $this->employeeInfo = $employeeInfo;
     }
 
     public function getUsers()
@@ -40,6 +51,14 @@ class UserService
         if (!$role) {
             throw new RoleDoesNotExistException();
         }
+
+        $payrollEnabled = $request->boolean('payroll_enabled');
+        $attendanceEnabled = $request->boolean('attendance_enabled');
+
+        if ($payrollEnabled || $attendanceEnabled) {
+            app(PlanLimitService::class)->ensureWithinLimit('employees', $this->company());
+        }
+
         $image = '';
         if ($request->file('image')) {
             $image = Helper::uploadfile([
@@ -56,10 +75,19 @@ class UserService
             'email' => $request->email,
             'status' => $request->status,
             'image' => $image,
-            'company_id' => auth()->user()->company_id
+            'company_id' => auth()->user()->company_id,
+            'payroll_enabled' => $payrollEnabled,
+            'attendance_enabled' => $attendanceEnabled,
         ]);
         $user->refresh();
         $this->roles->assignUserRole($user->id, $role->id);
+
+        if ($payrollEnabled) {
+            $this->employeeInfo->create([
+                'employee_id' => $user->id,
+                'salary' => $request->salary,
+            ]);
+        }
     }
 
     public function update($request, $user)
@@ -74,6 +102,16 @@ class UserService
         if ($this->users->query()->where('email', $request->email)->where('id', '!=', $user->id)->exists()) {
             throw new EmailAlreadyTakenException();
         }
+
+        $payrollEnabled = $request->boolean('payroll_enabled');
+        $attendanceEnabled = $request->boolean('attendance_enabled');
+
+        // Only enforce the plan limit when a previously unflagged user crosses
+        // into a flagged state, so unrelated edits still save at/over the cap.
+        if (!($user->payroll_enabled || $user->attendance_enabled) && ($payrollEnabled || $attendanceEnabled)) {
+            app(PlanLimitService::class)->ensureWithinLimit('employees', $this->company());
+        }
+
         $image = $user->image;
         if ($request->file('image')) {
             if ($user->image) {
@@ -99,14 +137,37 @@ class UserService
             'password' => $password,
             'email' => $request->email,
             'status' => $request->status,
-            'image' => $image
+            'image' => $image,
+            'payroll_enabled' => $payrollEnabled,
+            'attendance_enabled' => $attendanceEnabled,
         ]);
         $this->roles->assignUserRole($user->id, $role->id);
+
+        if ($payrollEnabled) {
+            $this->employeeInfo->query()->updateOrCreate(
+                ['employee_id' => $user->id],
+                ['salary' => $request->salary]
+            );
+        }
     }
 
     public function getByCompanyId($companyId)
     {
         return $this->users->query()->where('company_id', $companyId)->get();
+    }
+
+    /**
+     * The company the current user belongs to (null for platform accounts).
+     *
+     * @return \App\Models\Company|null
+     */
+    protected function company()
+    {
+        if (!auth()->user() || !auth()->user()->company_id) {
+            return null;
+        }
+
+        return $this->companies->query()->where('id', auth()->user()->company_id)->first();
     }
 
     public function delete($user)

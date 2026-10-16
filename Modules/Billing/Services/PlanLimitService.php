@@ -7,6 +7,7 @@ use App\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Modules\Billing\Models\Plan;
 use Modules\Employee\Models\User;
+use Modules\Employee\Repositories\UserRepository;
 use Modules\RBAC\Models\Role;
 
 class PlanLimitService
@@ -15,6 +16,16 @@ class PlanLimitService
      * A limit value below zero (e.g. -1) means "unlimited".
      */
     const UNLIMITED = -1;
+
+    /**
+     * @var \Modules\Employee\Repositories\UserRepository
+     */
+    protected $users;
+
+    public function __construct(UserRepository $users)
+    {
+        $this->users = $users;
+    }
 
     /**
      * Resolve the plan behind a company's active subscription.
@@ -113,18 +124,15 @@ class PlanLimitService
     }
 
     /**
-     * Employees are company users assigned the "employee" role.
+     * Company users flagged for payroll and/or attendance (data access via the
+     * Employee UserRepository).
      *
      * @param  \App\Models\Company  $company
      * @return int
      */
     protected function employeesUsage(Company $company): int
     {
-        return User::where('company_id', $company->id)
-            ->whereHas('role', function ($query) {
-                $query->where('name', 'employee');
-            })
-            ->count();
+        return $this->users->countFlaggedForCompany($company->id);
     }
 
     /**

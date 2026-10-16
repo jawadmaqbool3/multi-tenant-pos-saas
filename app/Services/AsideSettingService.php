@@ -80,6 +80,27 @@ class AsideSettingService
                 ],
             ],
             [
+                'name' => 'Payroll',
+                'icon' => 'bi bi-cash-stack',
+                'links' => [
+                    [
+                        'title' => 'Payroll Runs',
+                        'permission' => 'view payroll',
+                        'link' => route('payrolls.index'),
+                    ],
+                    [
+                        'title' => 'Allowances',
+                        'permission' => 'view allowance',
+                        'link' => route('allowances.index'),
+                    ],
+                    [
+                        'title' => 'Deductions',
+                        'permission' => 'view deduction',
+                        'link' => route('deductions.index'),
+                    ],
+                ],
+            ],
+            [
                 'name' => 'Reports',
                 'icon' => 'bi bi-file-earmark-bar-graph',
                 'links' => [
@@ -104,11 +125,6 @@ class AsideSettingService
                 'name' => 'HR',
                 'icon' => 'bi bi-person-bounding-box',
                 'links' => [
-                    [
-                        'title' => 'Employees',
-                        'permission' => 'view employee',
-                        'link' => route('employees.index'),
-                    ],
                     [
                         'title' => 'Suppliers',
                         'permission' => 'view supplier',

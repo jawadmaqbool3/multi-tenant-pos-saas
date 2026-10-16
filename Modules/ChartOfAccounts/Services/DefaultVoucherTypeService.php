@@ -70,6 +70,13 @@ class DefaultVoucherTypeService
                 "debit_level" => "all",
                 "description" => "BPV voucher is deals with Payable == Asset (Supplier Payment Case)",
             ],
+            [
+                "short" => "SLV",
+                "name" => "Salary Voucher",
+                "credit_level" => "level4",
+                "debit_level" => "level4",
+                "description" => "SLV voucher records monthly payroll: salary expense, deductions, and the net payment to the office account.",
+            ],
         ];
     }
 }

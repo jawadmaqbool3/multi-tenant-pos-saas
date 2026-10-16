@@ -16,6 +16,7 @@ class PlanFeatureService
         'chart-of-accounts' => ['Accounts', 'Vouchers', 'Voucher Types'],
         'inventory' => ['Products', 'Categories', 'Purchase Orders'],
         'promotions' => ['Promotions'],
+        'payroll' => ['Payroll'],
     ];
 
     /**

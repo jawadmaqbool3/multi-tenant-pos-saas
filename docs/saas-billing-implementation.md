@@ -173,8 +173,9 @@ and throws `App\Exceptions\PlanLimitExceededException` (generic message, no
 upgrade CTA). Wired into `store()` of:
 
 - `Modules/Inventory/Services/ProductService.php` — products
-- `Modules/Employee/Services/UserService.php` — users
-- `Modules/Employee/Services/EmployeeService.php` — employees
+- `Modules/Employee/Services/UserService.php` — users + employees (the
+  `employees` limit is counted from users flagged for payroll/attendance; the
+  separate Employees flow was merged into Users)
 - `Modules/Supplier/Services/SupplierService.php` — suppliers
 - `Modules/Inventory/Services/PromotionService.php` — promotions
 - `Modules/Supplier/Services/PurchaseOrderService.php` — purchase_orders

@@ -49,7 +49,7 @@ no new tables are needed — only a new limit key and enforcement code.
 
 | Lever | `resource_key` | Where enforced |
 | --- | --- | --- |
-| Employees | `employees` | `Modules/Employee/Services/EmployeeService.php` `store()` |
+| Employees | `employees` | `Modules/Employee/Services/UserService.php` `store()` / `update()` |
 | Roles | `roles` | `Modules/RBAC/Services/RoleService.php` `store()` |
 
 `roles` is **new** — it must be added to
@@ -57,9 +57,10 @@ no new tables are needed — only a new limit key and enforcement code.
 `products, users, employees, suppliers, promotions, purchase_orders`). Existing
 keys remain available; this package set only uses `employees` and `roles`.
 
-- **Employee count** = users in the company assigned the `employee` role
-  (`user_roles`; see `EmployeeService::getEmployees()`), scoped by
-  `users.company_id`. The company owner and other staff do not count.
+- **Employee count** = company users with `payroll_enabled` or
+  `attendance_enabled` (see `Modules/Employee/Repositories/UserRepository::countFlaggedForCompany()`),
+  scoped by `users.company_id`. The company owner, other staff and unflagged
+  users do not count.
 - **Role count** = `roles` where `company_id = <company>` (the provisioned
   `company` owner role is the base role and is **not** counted against the
   limit).
@@ -95,8 +96,9 @@ New service `Modules/Billing/Services/PlanLimitService.php`:
 
 Wired into:
 
-- `Modules/Employee/Services/EmployeeService.php::store()` →
-  `ensureWithinLimit('employees')` before creating the user.
+- `Modules/Employee/Services/UserService.php::store()` / `update()` →
+  `ensureWithinLimit('employees')` before enabling the payroll or attendance
+  flag on a company user (update only checks on boundary crossing).
 - `Modules/RBAC/Services/RoleService.php::store()` →
   `ensureWithinLimit('roles')` before creating the role.
 
@@ -146,14 +148,13 @@ Enforced in two places:
    `app/Http/Kernel.php` — runtime module gate.
 7. **Route wiring** — `Modules/ChartOfAccounts/routes/web.php`,
    `Modules/Inventory/routes/web.php`.
-8. **Limit wiring** — `Modules/Employee/Services/EmployeeService::store()`,
+8. **Limit wiring** — `Modules/Employee/Services/UserService::store()/update()`,
    `Modules/RBAC/Services/RoleService::store()`.
 9. **Sidebar** — `app/View/Components/AsideMenuLinks.php` filters gated modules.
 10. **`Modules/RBAC/Services/RoleService::getRoleByName()`** — falls back to the
     shared template role (`company_id = null`) when a company-scoped role has
-    not been provisioned. Fixes a pre-existing bug that made
-    `EmployeeService::role()` throw ("Role doesn't exists") and is what makes the
-    `employees` lever reachable.
+    not been provisioned. Fixes a pre-existing bug that made employee-role
+    lookups throw ("Role doesn't exists").
 11. **`database/seeders/PlanSeeder.php`** — new; seeds the three plans.
 
 ## 6. Creating the three plans
@@ -197,8 +198,9 @@ inactive`).
   once over the new limit; existing rows are not deleted.
 - **Owner role** — the provisioned `company` role is not counted toward the
   `roles` limit.
-- **Employees via other paths** — only `EmployeeService::store()` creates
-  `employee`-role users; keep the check there so all entry points are covered.
+- **Employees via other paths** — the `employees` limit is checked in
+  `UserService::store()/update()` whenever a user is created/edited with the
+  payroll or attendance flag enabled (there is no separate Employees flow).
 
 ## 8. Acceptance criteria
 

@@ -84,6 +84,76 @@ class DefaultAccountService
         }
     }
 
+    /**
+     * Ensure the payroll account branches exist for a company. Idempotent and
+     * safe for companies provisioned before payroll was introduced (unlike
+     * initiateAccounts(), which skips companies that already have a tree).
+     *
+     * @param  \App\Models\Company|null  $company
+     * @return void
+     */
+    public function provisionPayrollAccounts($company = null)
+    {
+        $companyId = $company ? $company->id : null;
+
+        $this->ensurePayrollBranch($companyId, 'Liability', 'Current Liability', 'Payroll Liabilities', '101-002', 'Salary Deductions Payable', '101-002-001');
+        $this->ensurePayrollBranch($companyId, 'Expense', 'Administrator Expenses', 'Payroll Expense', '401-002', 'Salary Expense', '401-002-001');
+    }
+
+    /**
+     * Create a Level 3 (and its Level 4 leaf) when missing, resolving parents by
+     * name + company.
+     *
+     * @return void
+     */
+    protected function ensurePayrollBranch($companyId, $level1Name, $level2Name, $level3Name, $level3Code, $level4Name, $level4Code)
+    {
+        $level1 = $this->level1->query()->where('company_id', $companyId)->where('name', $level1Name)->first();
+        if (!$level1) {
+            return;
+        }
+
+        $level2 = $this->level2->query()
+            ->where('company_id', $companyId)
+            ->where('name', $level2Name)
+            ->where('parent_id', $level1->id)
+            ->first();
+        if (!$level2) {
+            return;
+        }
+
+        $level3 = $this->level3->query()
+            ->where('company_id', $companyId)
+            ->where('name', $level3Name)
+            ->where('parent_id', $level2->id)
+            ->first();
+        if (!$level3) {
+            $level3 = $this->level3->create([
+                "name" => $level3Name,
+                "status" => "active",
+                "code" => $level3Code,
+                "parent_id" => $level2->id,
+                "company_id" => $companyId,
+            ]);
+            $level3->refresh();
+        }
+
+        $exists = $this->level4->query()
+            ->where('company_id', $companyId)
+            ->where('name', $level4Name)
+            ->where('parent_id', $level3->id)
+            ->exists();
+        if (!$exists) {
+            $this->level4->create([
+                "name" => $level4Name,
+                "status" => "active",
+                "code" => $level4Code,
+                "parent_id" => $level3->id,
+                "company_id" => $companyId,
+            ]);
+        }
+    }
+
     protected function getDefaultAccounts()
     {
         return [
@@ -190,6 +260,19 @@ class DefaultAccountService
                                     ],
                                 ]
                             ],
+                            [
+                                "name" => "Payroll Liabilities",
+                                "status" => "active",
+                                "code" => "101-002",
+                                "level4" => [
+                                    [
+                                        "name" => "Salary Deductions Payable",
+                                        "balance" => 0,
+                                        "status" => "active",
+                                        "code" => "101-002-001",
+                                    ],
+                                ]
+                            ],
                         ]
                     ],
                     [
@@ -270,6 +353,19 @@ class DefaultAccountService
                                         "balance" => 0,
                                         "status" => "active",
                                         "code" => "401-001-001",
+                                    ],
+                                ]
+                            ],
+                            [
+                                "name" => "Payroll Expense",
+                                "status" => "active",
+                                "code" => "401-002",
+                                "level4" => [
+                                    [
+                                        "name" => "Salary Expense",
+                                        "balance" => 0,
+                                        "status" => "active",
+                                        "code" => "401-002-001",
                                     ],
                                 ]
                             ],

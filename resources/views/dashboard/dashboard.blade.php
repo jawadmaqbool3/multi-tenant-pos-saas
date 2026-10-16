@@ -242,6 +242,7 @@
                     @endcan
                 </div>
                 @can('dashboard employee mark attendance')
+                    @if (auth()->user()->attendance_enabled)
                     <div class="row gy-5 g-xl-10 mt-0">
 
                         <div class="col-xl-12">
@@ -277,6 +278,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 @endcan
 
             </div>

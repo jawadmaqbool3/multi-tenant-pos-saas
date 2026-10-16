@@ -3,14 +3,13 @@
     <div class="card mb-5 mb-xl-8">
         <div class="card-header border-0 py-5">
             <h3 class="card-title align-items-start flex-column w-100">
-                <span class="card-label fw-bold fs-3 mb-1">Employees</span>
+                <span class="card-label fw-bold fs-3 mb-1">Payroll Runs</span>
             </h3>
-
             <div class="row">
                 <div class="col-md-12">
                     <x-breadcrums :links="[
                         'Home' => route('dashboard'),
-                        'Employees' => false,
+                        'Payroll Runs' => false,
                     ]" />
                 </div>
                 <div class="col-md-4">
@@ -19,10 +18,7 @@
                             <x-icon name="search" :size="18" />
                         </span>
                         <input type="text" data-table-filter="search"
-                            class="form-control form-control-solid w-250px ps-15" placeholder="Search Employees">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                            <x-icon name="search" :size="18" />
-                        </span>
+                            class="form-control form-control-solid w-250px ps-15" placeholder="Search Payroll Runs">
                     </div>
                 </div>
             </div>
@@ -34,17 +30,26 @@
                     </span>
                 </button>
                 <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px"
-                    data-kt-menu="true" style="">
+                    data-kt-menu="true">
                     <div class="menu-item px-3">
                         <div class="menu-content fs-6 text-dark fw-bold px-3 py-4">Quick Actions</div>
                     </div>
                     <div class="separator mb-3 opacity-75"></div>
                     <div class="menu-item px-3 mb-3">
-                        @can('create employee')
-                            <a href="{{ route('employees.create') }}" class="menu-link px-3">New Employee</a>
+                        @can('create payroll')
+                            <a href="{{ route('payrolls.create') }}" class="menu-link px-3">New Payroll Run</a>
                         @endcan
                     </div>
-
+                    <div class="menu-item px-3 mb-3">
+                        @can('view allowance')
+                            <a href="{{ route('allowances.index') }}" class="menu-link px-3">Allowances</a>
+                        @endcan
+                    </div>
+                    <div class="menu-item px-3 mb-3">
+                        @can('view deduction')
+                            <a href="{{ route('deductions.index') }}" class="menu-link px-3">Deductions</a>
+                        @endcan
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,9 +59,10 @@
                     <thead>
                         <tr class="border-0">
                             <th class="fw-bold p-0">SR#</th>
-                            <th class="fw-bold p-0">Avatar</th>
-                            <th class="fw-bold p-0 min-w-150px text-start">Name</th>
+                            <th class="fw-bold p-0 min-w-125px text-start">Period</th>
                             <th class="text-start fw-bold p-0">Status</th>
+                            <th class="text-start fw-bold p-0">Employees</th>
+                            <th class="text-start fw-bold p-0">Net Total</th>
                             <th class="fw-bold p-0 min-w-100px text-end">Actions</th>
                         </tr>
                     </thead>
@@ -66,51 +72,9 @@
             </div>
         </div>
     </div>
-    <x-delete url="{{ url('employees/') }}/" />
+    <x-delete url="{{ url('payrolls/') }}/" />
 @endsection
 
 @section('jsSection')
-    <script>
-        $(document).ready(function() {
-            var table = $('#category_table').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "searchDelay": 500,
-                "ajax": window.location.href,
-                "columns": [{
-                        "data": 'DT_RowIndex',
-                        "name": '',
-                        "orderable": false,
-                        "searchable": false
-                    },
-                    {
-                        "data": "image",
-                        "orderable": false,
-                        "searchable": false
-                    },
-                    {
-                        "data": "name"
-                    },
-                    {
-                        "data": "status"
-                    },
-                    {
-                        "data": "action",
-                        "orderable": false,
-                        "searchable": false
-                    },
-                ],
-            });
-
-            document.addEventListener("table_reload", function() {
-                table.ajax.reload();
-            });
-
-            $(document).on('keyup', '[data-table-filter="search"]', function() {
-                table.search($(this).val()).draw();
-            })
-
-
-        });
-    </script>
+    @include('payroll::payrolls._js')
 @endsection

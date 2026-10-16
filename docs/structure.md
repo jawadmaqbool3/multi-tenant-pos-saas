@@ -134,12 +134,12 @@ Handles authentication, users, and employee management.
 
 **Controllers:**
 - `LoginController.php` - Login/logout handling
-- `UserController.php`, `EmployeeController.php`, `AttendanceHistoryController.php`
+- `UserController.php`, `AttendanceHistoryController.php`
 
 **Routes** (`Modules/Employee/routes/web.php`):
 - `any('login')` - Login page/action
 - `post('logout')` - Logout
-- Authenticated routes for users, employees, attendance (with permission middleware)
+- Authenticated routes for users and attendance (with permission middleware)
 
 ### 2. RBAC Module (Authorization)
 
