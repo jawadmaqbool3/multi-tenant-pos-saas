@@ -73,6 +73,7 @@
 
             </div>
         </div>
+        <?php /* ?>
         <div class="card card-flush py-4 mb-8">
             <div class="card-header">
                 <div class="card-title">
@@ -83,6 +84,7 @@
                 <x-role-selector :company="@$company" />
             </div>
         </div>
+        <?php */ ?>
     </div>
     <div class="col-md-8">
         <div class="card card-flush py-4 mb-8">
