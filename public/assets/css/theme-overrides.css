@@ -374,7 +374,7 @@ body::after {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
     background:
         radial-gradient(80% 60% at 10% 0, var(--ui-wash-a) 0%, transparent 55%),
         radial-gradient(60% 50% at 90% 100%, var(--ui-wash-b) 0%, transparent 55%);
@@ -382,7 +382,6 @@ body::after {
 
 #kt_app_root {
     position: relative;
-    z-index: 1;
 }
 
 h1, h2, h3, h4, h5, h6,

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Core\Helper;
 use App\Exceptions\ImageUploadFailedException;
 use App\Exceptions\SettingNotFoundException;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Artisan;
 use Modules\RBAC\Repositories\PermissionRepository;
 use Modules\RBAC\Repositories\RoleRepository;
@@ -70,22 +71,32 @@ class SettingService
 
     public function getSetting($setting = null)
     {
-        if ($setting == false || $setting == null) {
-            $setting = $this->setting->query()->filter()->first();
+        return $this->resolveSetting($setting);
+    }
+
+    protected function resolveSetting($setting = null)
+    {
+        if ($setting instanceof Setting) {
+            return $setting;
         }
-        return $setting;
+
+        if (is_string($setting) && $setting !== '') {
+            return $this->setting->query()->where('uid', $setting)->first();
+        }
+
+        return $this->setting->query()->filter()->first();
     }
 
     public function update($request, $setting)
     {
-        if ($setting == false || $setting == null) {
-            $setting = $this->setting->query()->filter()->first();
+        $setting = $this->resolveSetting($setting);
+
+        if (!$setting) {
+            throw new SettingNotFoundException();
         }
+
         $filename = $setting->logo;
         if ($request->file('logo')) {
-            if ($setting == false || $setting == null) {
-                throw new SettingNotFoundException();
-            }
             $filename = $this->logoUpload($request->file('logo'), $setting->logo);
         }
         $this->setting->query()->where('id', $setting->id)->update([

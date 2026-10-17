@@ -74,7 +74,13 @@ class CompanyController extends Controller
      */
     public function show($company = null)
     {
-        //
+        $data = $this->service->getDetail($company);
+
+        if (!$data) {
+            abort(404);
+        }
+
+        return view('companies.show', $data);
     }
 
     /**

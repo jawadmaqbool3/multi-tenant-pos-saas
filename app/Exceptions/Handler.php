@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -14,7 +15,7 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<Throwable>>
      */
     protected $dontReport = [
-        //
+        ValidationException::class,
     ];
 
     /**
@@ -47,6 +48,21 @@ class Handler extends ExceptionHandler
                 'message' => $e->getMessage(),
                 'field' => $e->getField(),
             ]);
+        });
+
+        $this->renderable(function (ValidationException $e, $request) {
+            if (!$request->expectsJson() && !$request->ajax()) {
+                return null;
+            }
+
+            $errors = $e->errors();
+            $first = reset($errors);
+
+            return response()->json([
+                'error' => true,
+                'message' => is_array($first) ? reset($first) : $e->getMessage(),
+                'errors' => $errors,
+            ], 422);
         });
 
         $this->renderable(function (Throwable $e, $request) {

@@ -11,7 +11,7 @@
 @endphp
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-8 col-lg-7 col-xxl-8">
         <div class="d-flex flex-column gap-7 gap-lg-10 w-100 mb-7 me-lg-10">
             <div class="card card-flush py-4">
                 <div class="card-header">
@@ -111,6 +111,10 @@
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-5 col-xxl-4">
+        <div class="d-flex flex-column gap-7 gap-lg-10 w-100 mb-7">
             <div class="card card-flush py-4">
                 <div class="card-header">
                     <div class="card-title">
@@ -120,7 +124,7 @@
                         <div class="rounded-circle
                         @if (old('status', $coupon->status ?? 'active') == 'active') bg-success
                         @else bg-warning @endif
-                         w-15px h-15px" id="status_sign"></div>
+                          w-15px h-15px" id="status_sign"></div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
@@ -137,10 +141,6 @@
                     <div class="text-muted fs-7 mt-2">Inactive coupons cannot be redeemed at checkout.</div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-8">
-        <div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
             <div class="card card-flush py-4">
                 <div class="card-body pt-5">
                     <h3 class="fw-bold text-gray-800 mb-3">How coupons work</h3>

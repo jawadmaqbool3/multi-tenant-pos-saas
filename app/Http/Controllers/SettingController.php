@@ -19,6 +19,11 @@ class SettingController extends Controller
     public function index($setting = null)
     {
         $setting = $this->service->getSetting($setting);
+
+        if (!$setting) {
+            abort(404);
+        }
+
         return view('settings.generalSettings', compact('setting'));
     }
 

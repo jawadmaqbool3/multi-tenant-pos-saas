@@ -51,7 +51,11 @@ class CouponService
         $coupon = $this->coupons->create($this->attributes($request));
         $coupon->refresh();
 
-        $this->stripe->syncCoupon($coupon);
+        try {
+            $this->stripe->syncCoupon($coupon);
+        } catch (\Throwable $e) {
+            \Log::warning('Coupon Stripe sync failed (local-only): ' . $e->getMessage());
+        }
 
         return $coupon->refresh();
     }
@@ -68,7 +72,11 @@ class CouponService
         $coupon->update($this->attributes($request, $coupon));
         $coupon->refresh();
 
-        $this->stripe->syncCoupon($coupon);
+        try {
+            $this->stripe->syncCoupon($coupon);
+        } catch (\Throwable $e) {
+            \Log::warning('Coupon Stripe sync failed (local-only): ' . $e->getMessage());
+        }
 
         return $coupon->refresh();
     }
@@ -79,7 +87,11 @@ class CouponService
      */
     public function delete(Coupon $coupon)
     {
-        $this->stripe->archiveCoupon($coupon);
+        try {
+            $this->stripe->archiveCoupon($coupon);
+        } catch (\Throwable $e) {
+            \Log::warning('Coupon Stripe archive failed (local-only): ' . $e->getMessage());
+        }
 
         return $this->coupons->delete($coupon->uid);
     }

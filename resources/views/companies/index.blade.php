@@ -57,7 +57,7 @@
                             <th class="fw-bold p-0">Logo</th>
                             <th class="fw-bold p-0 min-w-150px text-start">Name</th>
                             @if (auth()->user()->hasRole('admin'))
-                                <th class="fw-bold p-0">Manager</th>
+                                <th class="fw-bold p-0 min-w-125px">Package</th>
                             @endif
                             <th class="fw-bold p-0">Status</th>
                             <th class="fw-bold p-0 min-w-100px text-end">Actions</th>
@@ -96,7 +96,9 @@
                     },
                     @if (auth()->user()->hasRole('admin'))
                         {
-                            "data": "manager.name",
+                            "data": "subscription_plan",
+                            "orderable": false,
+                            "searchable": false
                         },
                     @endif {
                         "data": "status"

@@ -39,7 +39,7 @@ class UpdateCouponRequest extends FormRequest
             'duration' => ['required', Rule::in(['once', 'repeating', 'forever'])],
             'duration_in_months' => ['nullable', 'integer', 'min:1', 'required_if:duration,repeating'],
             'max_redemptions' => ['nullable', 'integer', 'min:1'],
-            'expires_at' => ['nullable', 'date'],
+            'expires_at' => ['nullable', 'date', 'after_or_equal:today'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
         ];
     }

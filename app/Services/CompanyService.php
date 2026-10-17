@@ -15,6 +15,8 @@ use Modules\RBAC\Services\RoleProvisioningService;
 use App\Repositories\SettingRepository;
 use Modules\Employee\Repositories\UserRepository;
 use Modules\RBAC\Repositories\UserRoleRepository;
+use Modules\Billing\Repositories\InvoiceRepository;
+use Modules\Billing\Services\PlanLimitService;
 use Illuminate\Support\Facades\Hash;
 
 class CompanyService
@@ -63,6 +65,65 @@ class CompanyService
     public function getCompanies()
     {
         return $this->company->dataTable($this->company->query()->filter());
+    }
+
+    /**
+     * Detail/history payload for a single company (uid or model).
+     *
+     * @param  mixed  $company
+     * @return array|null
+     */
+    public function getDetail($company)
+    {
+        if (is_string($company)) {
+            $company = $this->company->query()->where('uid', $company)->first();
+        }
+
+        if (!$company) {
+            return null;
+        }
+
+        $company->loadMissing(['setting', 'subscriptions.plan', 'subscriptions.price']);
+
+        $limitService = app(PlanLimitService::class);
+        $plan = $limitService->planForCompany($company);
+
+        $usage = [];
+
+        if ($plan) {
+            foreach (['employees' => 'Employees', 'roles' => 'Roles'] as $key => $label) {
+                $limit = $limitService->limitFor($key, $plan);
+                $used = $limitService->usage($key, $company);
+
+                $usage[] = [
+                    'key' => $key,
+                    'label' => $label,
+                    'used' => $used,
+                    'limit' => $limit,
+                    'percent' => $limit ? min(100, (int) round($used / max(1, $limit) * 100)) : null,
+                ];
+            }
+        }
+
+        $invoices = app(InvoiceRepository::class);
+        $revenue = $invoices->paidRevenueByMonthForCompany($company->id, 6);
+
+        return [
+            'company' => $company,
+            'setting' => $company->setting,
+            'plan' => $plan,
+            'usage' => $usage,
+            'subscriptions' => $company->subscriptions->sortByDesc('id')->values(),
+            'invoices' => $invoices->latestForCompany($company->id, 10),
+            'revenue' => $revenue,
+            'revenueLabels' => $this->company->monthLabels(6),
+            'stats' => [
+                'subscriptions' => $company->subscriptions->count(),
+                'invoices' => $invoices->countForCompany($company->id),
+                'paid' => $invoices->paidTotalForCompany($company->id),
+                'currency' => strtoupper(config('billing.currency')),
+            ],
+        ];
     }
 
     public function store($request)

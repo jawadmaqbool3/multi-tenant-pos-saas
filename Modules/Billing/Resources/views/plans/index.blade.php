@@ -54,6 +54,7 @@
                             <th class="fw-bold p-0">SR#</th>
                             <th class="fw-bold p-0 min-w-150px text-start">Name</th>
                             <th class="fw-bold p-0 min-w-150px text-start">Prices</th>
+                            <th class="fw-bold p-0 min-w-150px text-start">Companies</th>
                             <th class="fw-bold p-0 min-w-150px text-start">Status</th>
                             <th class="fw-bold p-0 min-w-100px text-end">Actions</th>
                         </tr>
@@ -79,6 +80,7 @@
                     { "data": 'DT_RowIndex', "name": '', "orderable": false, "searchable": false },
                     { "data": "name" },
                     { "data": "price_summary" },
+                    { "data": "companies_count", "orderable": false, "searchable": false },
                     { "data": "status" },
                     { "data": "action", "orderable": false, "searchable": false },
                 ],

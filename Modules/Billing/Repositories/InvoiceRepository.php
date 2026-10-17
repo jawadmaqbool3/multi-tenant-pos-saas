@@ -125,6 +125,41 @@ class InvoiceRepository extends BaseRepository
         return $this->query()->where('status', $status)->count();
     }
 
+    public function countForCompany(int $companyId): int
+    {
+        return $this->query()->where('company_id', $companyId)->count();
+    }
+
+    public function paidTotalForCompany(int $companyId): float
+    {
+        return (float) $this->query()
+            ->where('company_id', $companyId)
+            ->where('status', 'paid')
+            ->sum('amount_paid') / 100;
+    }
+
+    /**
+     * Paid invoice totals per month for the last $months months for one company.
+     *
+     * @return array<int, float>
+     */
+    public function paidRevenueByMonthForCompany(int $companyId, int $months = 6): array
+    {
+        $totals = [];
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $date = now()->startOfMonth()->subMonths($i);
+            $totals[] = (float) $this->query()
+                ->where('company_id', $companyId)
+                ->where('status', 'paid')
+                ->where('created_at', '>=', $date->toDateString())
+                ->where('created_at', '<', $date->copy()->addMonth()->toDateString())
+                ->sum('amount_paid') / 100;
+        }
+
+        return $totals;
+    }
+
     /**
      * Paid invoice totals per month for the last $months months (platform chart).
      *

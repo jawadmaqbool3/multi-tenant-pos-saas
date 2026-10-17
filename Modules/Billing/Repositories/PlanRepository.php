@@ -7,8 +7,8 @@ use Modules\Billing\Models\Plan;
 
 class PlanRepository extends BaseRepository
 {
-    protected $dataTableWith = ['prices'];
-    protected $dataTableRawColumns = ['action', 'status'];
+    protected $dataTableWith = ['prices', 'subscriptions'];
+    protected $dataTableRawColumns = ['action', 'status', 'companies_count'];
 
     public function __construct()
     {
@@ -23,10 +23,18 @@ class PlanRepository extends BaseRepository
                     ->map(fn ($price) => $price->unit_amount . ' ' . strtoupper($price->currency) . ' / ' . $price->interval)
                     ->implode(', ');
             },
+            'companies_count' => function ($plan) {
+                return $plan->subscriptions
+                    ->whereIn('status', ['active', 'trialing'])
+                    ->count();
+            },
         ];
         $this->dataTableAddColumns = [
             'action' => function ($plan) {
                 $btns = [];
+                if (auth()->user()->hasPermission('view billing plan')) {
+                    $btns[] = $this->dt->viewButton(route('billing.plans.show', $plan->uid), 'Plan details');
+                }
                 if (auth()->user()->hasPermission('edit billing plan')) {
                     $btns[] = $this->dt->editButton(route('billing.plans.edit', $plan->uid));
                 }

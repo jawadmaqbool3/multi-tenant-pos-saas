@@ -9,6 +9,7 @@ use Modules\Billing\Repositories\PlanLimitRepository;
 use Modules\Billing\Repositories\PlanPermissionRepository;
 use Modules\Billing\Repositories\PlanRepository;
 use Modules\Billing\Repositories\PriceRepository;
+use Modules\Billing\Repositories\SubscriptionRepository;
 use Modules\RBAC\Repositories\PermissionModuleRepository;
 use Modules\RBAC\Repositories\PermissionRepository;
 
@@ -34,6 +35,7 @@ class PlanService
     protected $modules;
     protected $stripe;
     protected $rawStripe;
+    protected $subscriptions;
 
     public function __construct(
         PlanRepository $plans,
@@ -44,7 +46,8 @@ class PlanService
         PermissionRepository $permissions,
         PermissionModuleRepository $modules,
         StripeSyncService $stripe,
-        StripeService $rawStripe
+        StripeService $rawStripe,
+        SubscriptionRepository $subscriptions
     ) {
         $this->plans = $plans;
         $this->prices = $prices;
@@ -55,6 +58,7 @@ class PlanService
         $this->modules = $modules;
         $this->stripe = $stripe;
         $this->rawStripe = $rawStripe;
+        $this->subscriptions = $subscriptions;
     }
 
     public function getPlans()
@@ -75,6 +79,13 @@ class PlanService
      */
     public function getFormData($plan = null)
     {
+        if (is_string($plan) || (is_object($plan) && property_exists($plan, 'uid') && !method_exists($plan, 'getAttribute') === false)) {
+            // no-op: may be model; if string, resolve via repo not needed here
+        }
+        if (is_string($plan)) {
+            $plan = $this->plans->query()->where('uid', $plan)->first();
+        }
+
         $modules = $this->modules->query()->where('is_platform', 0)->orderBy('id')->get();
         $permissions = $this->permissions->query()
             ->where('is_platform', 0)
@@ -88,10 +99,11 @@ class PlanService
         $limits = [];
 
         if ($plan) {
-            $selectedModules = $this->features->query()->where('plan_id', $plan->id)->pluck('permission_module_id')->all();
-            $selectedPermissions = $this->planPermissions->query()->where('plan_id', $plan->id)->pluck('permission_id')->all();
-            $selectedPrices = $this->prices->query()->where('plan_id', $plan->id)->get();
-            $limits = $this->limits->query()->where('plan_id', $plan->id)->pluck('limit_value', 'resource_key')->all();
+            $planId = $plan->id;
+            $selectedModules = $this->features->query()->where('plan_id', $planId)->pluck('permission_module_id')->all();
+            $selectedPermissions = $this->planPermissions->query()->where('plan_id', $planId)->pluck('permission_id')->all();
+            $selectedPrices = $this->prices->query()->where('plan_id', $planId)->get();
+            $limits = $this->limits->query()->where('plan_id', $planId)->pluck('limit_value', 'resource_key')->all();
         }
 
         return [
@@ -105,6 +117,91 @@ class PlanService
             'limitKeys' => $this->limitKeys,
             'currency' => config('billing.currency'),
         ];
+    }
+
+    /**
+     * Detail payload for a single plan (prices, limits, features, subscriptions).
+     *
+     * @param  mixed  $plan
+     * @return array|null
+     */
+    public function getDetail($plan)
+    {
+        if (is_string($plan)) {
+            $plan = $this->plans->query()->where('uid', $plan)->first();
+        }
+
+        if (!$plan) {
+            return null;
+        }
+
+        $plan->loadMissing(['prices', 'features.module', 'limits', 'permissions']);
+
+        $subscriptions = $this->subscriptions->forPlan($plan->id);
+        $active = $subscriptions->whereIn('status', ['active', 'trialing']);
+
+        $mrr = $active->sum(function ($subscription) {
+            if (!$subscription->price) {
+                return 0;
+            }
+
+            $amount = (float) $subscription->price->unit_amount / 100;
+            $count = max(1, (int) ($subscription->price->interval_count ?: 1));
+            $amount = $amount / $count;
+
+            if ($subscription->price->interval === 'year') {
+                $amount = $amount / 12;
+            }
+
+            return $amount;
+        });
+
+        $companies = $active->map(function ($subscription) {
+            return [
+                'name' => optional(optional($subscription->company)->setting)->name ?: ('Company #' . $subscription->company_id),
+                'status' => $subscription->status,
+                'company' => $subscription->company,
+            ];
+        })->values();
+
+        $limits = $plan->limits->map(function ($limit) {
+            return [
+                'label' => $this->limitKeys[$limit->resource_key] ?? ucwords(str_replace('_', ' ', $limit->resource_key)),
+                'value' => ((int) $limit->limit_value) < 0 ? 'Unlimited' : (string) $limit->limit_value,
+            ];
+        })->values();
+
+        return [
+            'plan' => $plan,
+            'prices' => $plan->prices->sortByDesc('active')->values(),
+            'limits' => $limits,
+            'modules' => $plan->features->map(fn ($feature) => optional($feature->module)->name)->filter()->values(),
+            'permissionsCount' => $plan->permissions->count(),
+            'companies' => $companies,
+            'subscriptions' => $subscriptions,
+            'stats' => [
+                'companies' => $active->count(),
+                'subscriptions' => $subscriptions->count(),
+                'mrr' => round($mrr, 2),
+                'currency' => strtoupper(config('billing.currency')),
+            ],
+            'chart' => $this->subscriptions->countsByMonthForPlan($plan->id, 6),
+            'chartLabels' => $this->monthLabels(6),
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function monthLabels(int $months = 6): array
+    {
+        $labels = [];
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $labels[] = now()->startOfMonth()->subMonths($i)->format('M');
+        }
+
+        return $labels;
     }
 
     /**

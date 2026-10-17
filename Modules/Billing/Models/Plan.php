@@ -30,4 +30,9 @@ class Plan extends UIDModel
     {
         return $this->hasMany(PlanLimit::class, 'plan_id', 'id');
     }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class, 'plan_id', 'id');
+    }
 }

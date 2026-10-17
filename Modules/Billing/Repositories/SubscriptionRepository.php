@@ -47,6 +47,36 @@ class SubscriptionRepository extends BaseRepository
         return $this->query()->whereIn('status', $statuses)->count();
     }
 
+    public function forPlan(int $planId)
+    {
+        return $this->query()
+            ->where('plan_id', $planId)
+            ->with(['company.setting', 'price'])
+            ->latest('id')
+            ->get();
+    }
+
+    /**
+     * New subscriptions per month for the last $months months for one plan.
+     *
+     * @return array<int, int>
+     */
+    public function countsByMonthForPlan(int $planId, int $months = 6): array
+    {
+        $counts = [];
+
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $date = now()->startOfMonth()->subMonths($i);
+            $counts[] = $this->query()
+                ->where('plan_id', $planId)
+                ->where('created_at', '>=', $date->toDateString())
+                ->where('created_at', '<', $date->copy()->addMonth()->toDateString())
+                ->count();
+        }
+
+        return $counts;
+    }
+
     /**
      * Active subscriptions with their price/plan eager loaded (platform MRR).
      *

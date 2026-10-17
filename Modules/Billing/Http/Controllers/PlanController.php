@@ -57,7 +57,22 @@ class PlanController extends Controller
      * @param  \Modules\Billing\Models\Plan  $plan
      * @return \Illuminate\Contracts\View\View
      */
-    public function edit($plan = null)
+    public function show(Plan $plan)
+    {
+        $data = $this->service->getDetail($plan);
+
+        if (!$data) {
+            abort(404);
+        }
+
+        return view('billing::plans.show', $data);
+    }
+
+    /**
+     * @param  \Modules\Billing\Models\Plan  $plan
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function edit(Plan $plan)
     {
         $data = $this->service->getFormData($plan);
         return view('billing::plans.edit', $data);
