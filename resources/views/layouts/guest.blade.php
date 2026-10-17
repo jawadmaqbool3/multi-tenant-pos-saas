@@ -18,7 +18,7 @@
 
 <body id="kt_body" class="app-blank bgi-size-cover bgi-position-center bgi-no-repeat">
     <script>
-        var defaultThemeMode = "light";
+        var defaultThemeMode = "system";
         var themeMode;
         if (document.documentElement) {
             if (document.documentElement.hasAttribute("data-theme-mode")) {
