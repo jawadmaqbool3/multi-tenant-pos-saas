@@ -132,7 +132,49 @@ class AsideMenuLinks extends Component
         $setting = $user->setting();
         $categories = $setting ? json_decode($setting->asidebar, true) : [];
 
-        return is_array($categories) ? $categories : [];
+        if (!is_array($categories)) {
+            return [];
+        }
+
+        foreach ($categories as &$category) {
+            if (!isset($category['links']) || !is_array($category['links'])) {
+                continue;
+            }
+            foreach ($category['links'] as &$link) {
+                if (!empty($link['link'])) {
+                    $link['link'] = $this->relativeUrl($link['link']);
+                }
+            }
+            unset($link);
+        }
+        unset($category);
+
+        return $categories;
+    }
+
+    /**
+     * Stored menu links can carry an absolute host (e.g. a dev tunnel) which
+     * breaks on any other domain. Reduce them to a site-relative path so they
+     * always resolve against the current host.
+     *
+     * @param  string  $url
+     * @return string
+     */
+    protected function relativeUrl($url)
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+
+        if (!is_string($path) || $path === '') {
+            return $url;
+        }
+
+        if ($path[0] !== '/') {
+            $path = '/' . $path;
+        }
+
+        $query = parse_url($url, PHP_URL_QUERY);
+
+        return $path . ($query ? '?' . $query : '');
     }
 
     public function filterLinks($links)

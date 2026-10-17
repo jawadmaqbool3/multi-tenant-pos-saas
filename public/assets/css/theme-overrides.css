@@ -12,8 +12,8 @@
    1. Global type / geometry / motion tokens
    -------------------------------------------------------------------------- */
 :root {
-    --ui-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --ui-font-display: 'Syne', 'Inter', sans-serif;
+    --ui-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    --ui-font-display: 'Syne', 'Inter', system-ui, sans-serif;
     --ui-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
     /* radii — reference: sm 8 / md 14 / lg 20 / xl 28 */
@@ -614,6 +614,17 @@ body::-webkit-scrollbar-thumb,
 .card.card-stat,
 .card.text-start {
     border-radius: var(--ui-radius);
+}
+
+/* Dashboard widget stat values: currency + number render in one span.
+   The Syne display face + tight tracking crowds the digits, so force the
+   body face with comfortable tracking and line-height for clean numerals. */
+[data-role="value"] {
+    font-family: var(--ui-font-sans) !important;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em !important;
+    line-height: 1.15 !important;
+    white-space: nowrap;
 }
 
 /* --------------------------------------------------------------------------

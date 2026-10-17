@@ -72,11 +72,10 @@
                         "data": "amount"
                     },
                     {
-                        "data": "creator.name"
-                    },
-                    
-                    {
                         "data": "type"
+                    },
+                    {
+                        "data": "creator.name"
                     },
                     {
                         "data": "action",

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Modules\Employee\Models\User;
 use Modules\Employee\Http\Requests\StoreUserRequest;
 use Modules\Employee\Http\Requests\UpdateUserRequest;
+use Modules\Employee\Http\Requests\UpdateProfileRequest;
 use Modules\Employee\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -57,6 +58,34 @@ class UserController extends Controller
     public function show($id)
     {
         //
+    }
+
+    /**
+     * Self-service profile, available to every authenticated user regardless
+     * of RBAC permissions.
+     */
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('employee::users.profile', compact('user'));
+    }
+
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            $this->service->updateProfile($request, auth()->user());
+
+            DB::commit();
+            return response([
+                'success' => true,
+                'message' => 'Profile Updated',
+                'reload' => true,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     public function edit(User $user)

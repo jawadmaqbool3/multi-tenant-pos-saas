@@ -40,7 +40,7 @@
     </div>
 
     <div id="kt_app_content" class="app-content flex-column-fluid">
-        <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="app-container container-xxl">
             <div class="row g-5 g-xl-8 mb-5">
                 <div class="col-md-4">
                     <div class="card card-flush py-4">

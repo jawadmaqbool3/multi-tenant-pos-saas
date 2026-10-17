@@ -14,7 +14,7 @@
         </div>
     </div>
     <div id="kt_app_content" class="app-content flex-column-fluid">
-        <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="app-container container-xxl">
             <form data-ajax="true" action="{{ route('deductions.update', $deduction->uid) }}" class="form"
                 method="POST">
                 @method('PUT')

@@ -3,13 +3,13 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 
 <head>
-    <title>@setting(name) | POS</title>
+    <title>@yield('title', ucwords(str_replace(['.', '-', '_'], ' ', optional(request()->route())->getName() ?: 'Dashboard'))) | @setting(name)</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="article" />
     <link rel="shortcut icon" href="@logo(icon)" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
     @include('layouts.style')
     <script>
         (function(w, d, s, l, i) {
@@ -22,7 +22,7 @@
                 j = d.createElement(s),
                 dl = l != 'dataLayer' ? '&l=' + l : '';
             j.async = true;
-            j.src = '../../../../www.googletagmanager.com/gtm5445.html?id=' + i + dl;
+            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
             f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-5FS8GGP');
     </script>

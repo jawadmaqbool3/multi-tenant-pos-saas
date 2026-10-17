@@ -17,7 +17,7 @@
         </div>
         <div class="card-body pt-3">
             <div id="kt_app_content" class="app-content flex-column-fluid">
-                <div id="kt_app_content_container" class="p-0">
+                <div class="p-0">
                     <form id="" data-ajax="true" action="{{ route('orders.store') }}"
                         class="form d-flex flex-column flex-lg-row" data-kt-redirect="categories.html" method="POST"
                         enctype="multipart/form-data">

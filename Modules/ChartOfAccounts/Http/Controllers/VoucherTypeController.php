@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use Modules\ChartOfAccounts\Http\Requests\StoreVoucherTypeRequest;
 use Modules\ChartOfAccounts\Http\Requests\UpdateVoucherTypeRequest;
+use Modules\ChartOfAccounts\Models\VoucherType;
 use Modules\ChartOfAccounts\Services\VoucherTypeService;
 use Illuminate\Http\Request;
 
@@ -87,7 +88,7 @@ class VoucherTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateVoucherTypeRequest $request, $voucherType = null)
+    public function update(UpdateVoucherTypeRequest $request, VoucherType $voucherType)
     {
         $this->service->update($request, $voucherType);
         return response([
@@ -103,7 +104,7 @@ class VoucherTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($voucherType = null)
+    public function destroy(VoucherType $voucherType)
     {
         $this->service->delete($voucherType);
         return response([

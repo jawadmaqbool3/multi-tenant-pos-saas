@@ -14,7 +14,7 @@
         </div>
     </div>
     <div id="kt_app_content" class="app-content flex-column-fluid">
-        <div id="kt_app_content_container" class="app-container container-xxl">
+        <div class="app-container container-xxl">
             <form id="" data-ajax="true" action="{{ route('billing.plans.store') }}"
                 class="form d-flex flex-column flex-lg-row" method="POST" enctype="multipart/form-data">
                 @include('billing::plans._form')

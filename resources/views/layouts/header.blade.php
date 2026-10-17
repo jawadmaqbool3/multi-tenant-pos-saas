@@ -23,31 +23,6 @@
             </div>
         </div>
         <div class="app-navbar flex-shrink-0">
-            <div class="app-navbar-item align-items-stretch ms-1 ms-lg-3">
-                <div id="kt_header_search" class="header-search d-flex align-items-stretch"
-                    data-kt-search-keypress="true" data-kt-search-min-length="2" data-kt-search-enter="enter"
-                    data-kt-search-layout="menu" data-kt-menu-trigger="auto" data-kt-menu-overflow="false"
-                    data-kt-menu-permanent="true" data-kt-menu-placement="bottom-end">
-                    <div class="d-flex align-items-center" data-kt-search-element="toggle" id="kt_header_search_toggle">
-                        <div
-                            class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px w-md-40px h-md-40px">
-                            <x-icon name="search" :size="20" />
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="app-navbar-item ms-1 ms-lg-3">
-                <div class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px w-md-40px h-md-40px position-relative"
-                    id="kt_drawer_chat_toggle">
-                    <x-icon name="message-circle" :size="20" />
-                    <span
-                        class="bullet bullet-dot bg-success h-6px w-6px position-absolute translate-middle top-0 start-50 animation-blink"></span>
-                </div>
-            </div>
-
             <div class="app-navbar-item ms-1 ms-lg-3">
                 <a href="#"
                     class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px w-md-40px h-md-40px"
@@ -104,7 +79,7 @@
                                     <span
                                         class="badge badge-light-success fw-bold fs-8 px-2 py-1 ms-2">{{ auth()->user()->role->name }}</span>
                                 </div>
-                                <a href="#"
+                                <a href="{{ route('profile.edit') }}"
                                     class="fw-semibold text-muted text-hover-primary fs-7">{{ auth()->user()->email }}</a>
                             </div>
                         </div>
@@ -115,7 +90,7 @@
                     </div> --}}
 
                     <div class="menu-item px-5">
-                        <a href="{{ route('users.edit', auth()->user()->uid) }}" class="menu-link px-5">My Profile</a>
+                        <a href="{{ route('profile.edit') }}" class="menu-link px-5">My Profile</a>
                     </div>
 
 

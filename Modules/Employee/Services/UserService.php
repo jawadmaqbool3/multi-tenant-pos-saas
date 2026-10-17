@@ -158,6 +158,50 @@ class UserService
         }
     }
 
+    /**
+     * Update the currently authenticated user's own profile (name, email,
+     * password and avatar only). Role, status, payroll and attendance flags are
+     * intentionally untouched.
+     */
+    public function updateProfile($request, $user)
+    {
+        if ($request->password && $request->password != $request->co_password) {
+            throw new PasswordMismatchException();
+        }
+        if ($this->users->query()->where('email', $request->email)->where('id', '!=', $user->id)->exists()) {
+            throw new EmailAlreadyTakenException();
+        }
+
+        $image = $user->image;
+        if ($request->file('image')) {
+            if ($user->image) {
+                Helper::deleteExcept([
+                    'files' => [$user->image],
+                    'exceptions' => [],
+                    'path' => $this->profileDirectory
+                ]);
+            }
+            $image = Helper::uploadfile([
+                'file' => $request->file('image'),
+                'path' => $this->profileDirectory,
+                'width' => $this->thumbWidth,
+                'height' => $this->thumbHeight,
+            ]);
+        }
+
+        $password = $user->password;
+        if ($request->password) {
+            $password = Hash::make($request->password);
+        }
+
+        $this->users->query()->where('id', $user->id)->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $password,
+            'image' => $image,
+        ]);
+    }
+
     public function getByCompanyId($companyId)
     {
         return $this->users->query()->where('company_id', $companyId)->get();

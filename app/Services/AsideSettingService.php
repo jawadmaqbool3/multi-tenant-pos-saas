@@ -30,10 +30,20 @@ class AsideSettingService
                 'icon' => 'bi bi-bank',
                 'links' => [
                     [
-                        'title' => 'Accounts',
+                        'title' => 'Chart of Accounts',
                         'permission' => 'view account',
                         'link' => route('accounts.index'),
-                    ]
+                    ],
+                    [
+                        'title' => 'Vouchers',
+                        'permission' => 'view voucher',
+                        'link' => route('vouchers.index'),
+                    ],
+                    [
+                        'title' => 'Voucher Types',
+                        'permission' => 'view voucher type',
+                        'link' => route('voucher-types.index'),
+                    ],
                 ],
             ],
             [
@@ -189,7 +199,7 @@ class AsideSettingService
                         'link' => route('aside.settings'),
                     ],
                     [
-                        'title' => 'Accounts',
+                        'title' => 'Account Settings',
                         'permission' => 'account settings',
                         'link' => route('account.settings'),
                     ],
