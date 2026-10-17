@@ -201,12 +201,15 @@ class StripeSyncService
     {
         $data = [
             'name' => $plan->name,
-            'description' => $plan->description,
             'metadata' => [
                 'local_id' => (string) $plan->id,
                 'local_uid' => $plan->uid,
             ],
         ];
+
+        if (!empty($plan->description)) {
+            $data['description'] = $plan->description;
+        }
 
         if ($plan->stripe_product_id) {
             $client->products->update($plan->stripe_product_id, $data);

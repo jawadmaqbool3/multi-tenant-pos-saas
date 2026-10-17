@@ -66,19 +66,46 @@ class Helper
 
     public static function uploadFile($settings)
     {
-        $file = $settings['file'];
-        $width = $settings['width'];
-        $height = $settings['height'];
-        if (@$settings['filename']) {
-            $filename = $settings['filename'];
-        } else {
-            $filename = round(microtime(true)) . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+        $file = $settings['file'] ?? null;
+        $width = $settings['width'] ?? null;
+        $height = $settings['height'] ?? null;
+        $field = $settings['field'] ?? null;
+
+        if (!$file instanceof \Illuminate\Http\UploadedFile || !$file->isValid()) {
+            throw new \App\Exceptions\ImageUploadFailedException(
+                'The selected file could not be uploaded. Please choose a valid image.',
+                $field
+            );
         }
-        $destinationPath = public_path($settings['path']);
-        $image_complete_path = $destinationPath . $filename;
-        if ($width || $height) {
-            Image::make($file->getRealPath())->resize($width, $height)->save($image_complete_path);
+
+        try {
+            if (!empty($settings['filename'])) {
+                $filename = $settings['filename'];
+            } else {
+                $filename = round(microtime(true)) . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            }
+
+            $destinationPath = public_path($settings['path']);
+
+            if (!is_dir($destinationPath)) {
+                @mkdir($destinationPath, 0775, true);
+            }
+
+            $image_complete_path = $destinationPath . $filename;
+
+            if ($width || $height) {
+                Image::make($file->getRealPath())->resize($width, $height)->save($image_complete_path);
+            } else {
+                $file->move($destinationPath, $filename);
+            }
+        } catch (\Throwable $e) {
+            throw new \App\Exceptions\ImageUploadFailedException(
+                'The image could not be saved. Please check the storage permissions and try again.',
+                $field,
+                $e
+            );
         }
+
         return $filename;
     }
 

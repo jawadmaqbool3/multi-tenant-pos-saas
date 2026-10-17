@@ -73,6 +73,7 @@ class UserService
                 'path' => $this->profileDirectory,
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'image',
             ]);
         }
         $password = Hash::make($request->password);
@@ -133,6 +134,7 @@ class UserService
                 'path' => $this->profileDirectory,
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'image',
             ]);
         }
         $password = $user->password;
@@ -186,6 +188,7 @@ class UserService
                 'path' => $this->profileDirectory,
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'image',
             ]);
         }
 

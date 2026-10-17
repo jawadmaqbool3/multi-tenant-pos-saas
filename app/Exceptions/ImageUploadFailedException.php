@@ -2,10 +2,12 @@
 
 namespace App\Exceptions;
 
+use Throwable;
+
 class ImageUploadFailedException extends CustomException
 {
-    public function __construct()
+    public function __construct($message = 'Failed to upload image', $field = null, Throwable $previous = null)
     {
-        parent::__construct('Failed to upload image', 'error');
+        parent::__construct($message, 'error', $field, $previous);
     }
 }

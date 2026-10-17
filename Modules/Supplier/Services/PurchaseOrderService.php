@@ -2,6 +2,7 @@
 
 namespace Modules\Supplier\Services;
 
+use App\Exceptions\InvalidFieldException;
 use App\Exceptions\NoProductsSelectedException;
 use Modules\ChartOfAccounts\Services\AccountSettingService;
 use Modules\Supplier\Services\SupplierService;
@@ -9,6 +10,7 @@ use Modules\ChartOfAccounts\Services\VoucherService;
 use Modules\Inventory\Services\ProductService;
 use Modules\Supplier\Repositories\PurchaseOrderRepository;
 use Modules\Inventory\Services\StockHistoryService;
+use Modules\Supplier\Models\PurchaseOrder;
 use Modules\Supplier\Repositories\SupplierRepository;
 use Modules\ChartOfAccounts\Services\TransactionService;
 use Modules\Supplier\Repositories\VoucherSupplierRepository;
@@ -73,7 +75,7 @@ class PurchaseOrderService
 
     public function placePurchaseOrder($params): PurchaseOrder
     {
-        if ($params["product"] == false || sizeof($params["product"]) == 0) {
+        if (!isset($params['product']) || !is_array($params['product']) || count($params['product']) === 0) {
             throw new NoProductsSelectedException();
         }
         $total_amount = 0;
@@ -84,6 +86,9 @@ class PurchaseOrderService
         $inventory_account = $accountSettings->getAccount("PIA");
         $liability_account = $accountSettings->getAccount("VPA");
         $supplier = $this->suppliers->query()->where('uid', $params['supplier'])->first();
+        if (!$supplier) {
+            throw new InvalidFieldException('supplier');
+        }
         $voucher_no = $this->voucherService->nextVoucherNo('APV');
         $voucher = $this->voucherService->createVoucher([
             'voucher_no' => $voucher_no,
@@ -113,6 +118,9 @@ class PurchaseOrderService
             $purchase = $params["purchase"][$key];
             $retail = $params["retail"][$key];
             $product = $this->products->getProductByUid($product);
+            if (!$product) {
+                throw new InvalidFieldException('product');
+            }
             $amount = $quantity * $purchase;
             $this->transactions->create([
                 'transaction_no' => $voucher_no . '-' . $last_transaction_key,

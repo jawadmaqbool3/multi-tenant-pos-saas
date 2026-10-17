@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCategoryRequest extends FormRequest
 {
@@ -16,7 +17,7 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name' => 'required',
             'thumbnail' => 'mimes:jpeg,jpg,bmp,png|max:2000',
-            'status' => 'required'
+            'status' => ['required', Rule::in(['published', 'scheduled', 'unpublished'])],
         ];
     }
 }

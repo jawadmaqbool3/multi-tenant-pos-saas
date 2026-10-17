@@ -71,6 +71,7 @@ class SupplierService
                 'path' =>  $this->supplierThumbDirectory,
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'thumbnail',
             ]);
         }
         return $this->suppliers->create([
@@ -87,7 +88,7 @@ class SupplierService
     public function update($request, $supplier)
     {
         $thumbnail = $supplier->thumbnail;
-        if ($request->thumbnail) {
+        if ($request->file('thumbnail')) {
             Helper::deleteExcept([
                 'files' => [$supplier->thumbnail],
                 'exceptions' => [],
@@ -98,6 +99,7 @@ class SupplierService
                 'path' => $this->supplierThumbDirectory,
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'thumbnail',
             ]);
         }
         return $this->suppliers->query()->where('id', $supplier->id)->update([

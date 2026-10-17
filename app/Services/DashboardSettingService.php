@@ -48,7 +48,7 @@ class DashboardSettingService
         $dashboardSetting = $this->dashboardSetting->query()->filter()->first();
         $sliderImages = [];
         if ($dashboardSetting) {
-            foreach (json_decode($dashboardSetting->slider_images) as $image) {
+            foreach ((json_decode($dashboardSetting->slider_images) ?: []) as $image) {
                 $sliderImages[] = $image->image;
             }
         }
@@ -83,6 +83,7 @@ class DashboardSettingService
                     'path' => $this->sliderImagesDirectory,
                     'width' => $this->sliderImageDimanensions["width"],
                     'height' => $this->sliderImageDimanensions["height"],
+                    'field' => 'images',
                 ]);
             }
         }
@@ -91,7 +92,7 @@ class DashboardSettingService
 
         if ($settings) {
             $imagesToBeDeleted = [];
-            $oldImages = json_decode($settings->slider_images);
+            $oldImages = json_decode($settings->slider_images) ?: [];
 
 
             foreach ($oldImages as $key => $image) {
@@ -142,7 +143,7 @@ class DashboardSettingService
     public function destroy($dashboardSetting)
     {
         Helper::deleteExcept([
-            'files' => json_decode($dashboardSetting->slider_images),
+            'files' => json_decode($dashboardSetting->slider_images) ?: [],
             'exceptions' => [],
             'path' => $this->sliderImagesDirectory,
         ]);

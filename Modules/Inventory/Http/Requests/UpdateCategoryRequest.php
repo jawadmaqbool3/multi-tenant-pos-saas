@@ -15,7 +15,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'status' => 'required',
+            'status' => ['required', Rule::in(['published', 'scheduled', 'unpublished'])],
             'thumbnail' => 'sometimes|required|mimes:jpeg,jpg,bmp,png|max:2000'
         ];
     }

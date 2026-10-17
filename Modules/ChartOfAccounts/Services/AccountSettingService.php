@@ -4,6 +4,8 @@ namespace Modules\ChartOfAccounts\Services;
 
 use App\Exceptions\AccountSettingNotSetException;
 use App\Exceptions\AccountSettingNotFoundException;
+use App\Exceptions\InvalidFieldException;
+use App\Exceptions\MissingFieldException;
 use Modules\ChartOfAccounts\Repositories\AccountSettingRepository;
 use Modules\ChartOfAccounts\Repositories\AccountLevel1Repository;
 use Modules\ChartOfAccounts\Repositories\AccountLevel2Repository;
@@ -47,9 +49,15 @@ class AccountSettingService
 
     public function update($request)
     {
+        if (!is_array($request->settings) || count($request->settings) === 0) {
+            throw new MissingFieldException('settings');
+        }
         foreach ($request->settings as $key => $setting) {
 
             $_setting = $this->setting->query()->where('uid', $setting["setting"])->first();
+            if (!$_setting) {
+                throw new InvalidFieldException('settings');
+            }
 
             $level = $setting["level"];
             $account = null;

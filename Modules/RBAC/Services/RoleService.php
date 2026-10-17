@@ -6,6 +6,7 @@ use Modules\RBAC\Repositories\PermissionRepository;
 use Modules\RBAC\Repositories\PermissionRoleRepository;
 use Modules\RBAC\Repositories\UserRoleRepository;
 use Modules\RBAC\Repositories\RoleRepository;
+use App\Models\Company;
 
 class RoleService
 {
@@ -126,6 +127,6 @@ class RoleService
             return null;
         }
 
-        return $this->companies->query()->where('id', auth()->user()->company_id)->first();
+        return Company::where('id', auth()->user()->company_id)->first();
     }
 }

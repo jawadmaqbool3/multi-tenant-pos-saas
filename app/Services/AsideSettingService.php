@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\SettingRepository;
+use App\Exceptions\InvalidFieldException;
+use App\Exceptions\SettingNotFoundException;
 
 class AsideSettingService
 {
@@ -248,7 +250,8 @@ class AsideSettingService
 
     public function getSettings()
     {
-        $settings = json_decode($this->settings->query()->select('asidebar')->filter()->first()->asidebar);
+        $record = $this->settings->query()->select('asidebar')->filter()->first();
+        $settings = $record ? json_decode($record->asidebar) : null;
         return [
             'settings' => $settings,
             'menuLinks' => $this->menuLinks,
@@ -257,9 +260,18 @@ class AsideSettingService
 
     public function update($request)
     {
+        $categories = $request->categories;
+        if (is_array($categories)) {
+            $categories = json_encode($categories);
+        } elseif ($categories !== null && json_decode($categories) === null) {
+            throw new InvalidFieldException('categories');
+        }
         $setting = $this->settings->query()->filter()->first();
+        if (!$setting) {
+            throw new SettingNotFoundException();
+        }
         $this->settings->query()->where('id', $setting->id)->update([
-            'asidebar' => $request->categories,
+            'asidebar' => $categories,
         ]);
     }
 
@@ -267,6 +279,9 @@ class AsideSettingService
     {
         $menu = $this->menuLinksFor();
         $setting = $this->settings->query()->filter()->first();
+        if (!$setting) {
+            throw new SettingNotFoundException();
+        }
         $this->settings->query()->where('id', $setting->id)->update([
             'asidebar' => json_encode($menu)
         ]);

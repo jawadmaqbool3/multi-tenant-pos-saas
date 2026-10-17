@@ -4,6 +4,8 @@ namespace Modules\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use Illuminate\Validation\Rule;
+
 class StoreProductRequest extends FormRequest
 {
     public function authorize()
@@ -16,7 +18,7 @@ class StoreProductRequest extends FormRequest
         return [
             'name' => 'required',
             'thumbnail' => 'mimes:jpeg,jpg,bmp,png|max:2000',
-            'status' => 'required'
+            'status' => ['required', Rule::in(['published', 'scheduled', 'unpublished'])],
         ];
     }
 }

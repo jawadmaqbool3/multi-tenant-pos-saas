@@ -245,3 +245,54 @@ Status legend: ✅ implemented & verified · 🔧 implemented, not yet verified 
 **Fix plan.** With test keys configured: create a coupon with `percent_off`, then confirm in Stripe that (a) a Coupon exists, (b) a Promotion Code exists with the same `code`, and (c) `billing_coupons.stripe_coupon_id` / `stripe_promotion_code_id` are populated. Adjust the payload shape if the API rejects it.
 
 **Verify.** A coupon created in the UI produces both Stripe objects and the local row holds both Stripe ids; no `errors-*.log` warnings during creation.
+
+---
+
+## Phase 3 — Form submission error handling — ✅ implemented & verified
+
+**Goal.** Every form submission that fails must surface a meaningful message in the existing toast/field UI instead of the generic "Something went wrong". The frontend already has the handling wired; the backend just had to be connected to it via exceptions.
+
+### Contract (no frontend change required)
+
+`resources/views/layouts/script.blade.php` — `data-ajax` forms send `FormData` + `_token`.
+
+- **HTTP 2xx success callback** handles `{success|error|warning, message, field}` and highlights `[name=field]` with `border-danger`.
+- **HTTP 422 error callback** renders `responseJSON.errors` per field.
+- **Any other HTTP status** reads `response.message` on the jqXHR (undefined) → blank toast.
+
+Therefore `app/Exceptions/Handler.php` now returns **HTTP 200** envelopes for domain/authorization failures so the existing success callback displays them:
+
+| Thrown | Rendered |
+| --- | --- |
+| `CustomException` (all `App\Exceptions` domain errors) | `200 {error\|warning:true, message, field}` |
+| `ValidationException` | `422 {error:true, message, errors:{field:[...]}}` |
+| `HttpExceptionInterface` (403/404/… incl. middleware `abort()`) | `200 {error:true, message, status}` via `httpExceptionMessage()` |
+| `AuthorizationException` | `200 {error:true, message, status:403}` |
+| `AuthenticationException` | `401 {error:true, message}` |
+| anything else | `200 {error:true, message:'Something went wrong', console:…}` (unchanged) |
+
+### Bugs fixed
+
+- **`OrderService` / `PurchaseOrderService` — missing model imports.** `: Order` and `: PurchaseOrder` return types resolved to the *Services* namespace, so the methods threw a `TypeError` on every successful return (purchase orders and sales orders could never be created). Added `use Modules\Order\Models\Order;` and `use Modules\Supplier\Models\PurchaseOrder;`.
+- **`CategoryService::store` never set `company_id`** (NOT NULL column) → SQL integrity error. Now passes `auth()->user()->company_id`.
+- **`RoleService::company()` referenced an undefined `$companies` property** → "Undefined property" for company admins creating roles. Now uses `Company::where('id', auth()->user()->company_id)->first()`.
+- **`PromotionService`, `OrderService`, `PurchaseOrderService`** used `sizeof($params['product'])` / `$params['product'] == false` on a possibly-missing key → PHP 8 `TypeError`. Replaced with `!isset(...) || !is_array(...) || count(...) === 0` → `NoProductsSelectedException` on orders, `NoProductsAdded` (warning) on promotions.
+- **Null product/supplier lookups** inside order/purchase-order loops now throw `InvalidFieldException('product'|'supplier')` instead of "call to a member function on null".
+- **`Helper::uploadFile()`** now validates the `UploadedFile` (`isValid()`), wraps Intervention/`move` in try/catch → `ImageUploadFailedException($message, $field)`, supports a `field` key for inline field highlighting, and actually saves the file via `$file->move()` when no dimensions are given (previously silently returned). All upload call sites (category, product, supplier, user, company, setting, dashboard) pass `field` and guard on `$request->file(...)`.
+- **`PlanService`/`StripeSyncService`** — Stripe plan sync wrapped in try/catch (local-only mode logs a warning) and the `description` param is only sent when non-empty (empty string was rejected by Stripe). Plan creation now succeeds even when Stripe is unconfigured.
+- **`AccountSettingService::update`** guards a missing/empty `settings` payload → `MissingFieldException('settings')`, and an unknown setting uid → `InvalidFieldException('settings')`.
+- **`ChatOfAccountService::store`** guards invalid parent `account` uid per level → `InvalidFieldException('account')` instead of null property access.
+- **`AsideSettingService`** — `getSettings()` no longer dereferences a null setting row; `update()` accepts/is validated as JSON and throws `InvalidFieldException('categories')` on malformed input; `update()`/`reset()` throw `SettingNotFoundException` if no setting exists.
+- **`Store/UpdateCategoryRequest`, `Store/UpdateProductRequest`** validate `status` against the DB enum (`published|scheduled|unpublished`) so bad values return a 422 field error instead of a SQL data-truncation crash.
+- **`StripeServiceException`, `ImageUploadFailedException`** constructors extended with `$previous`/`$field`; `StripeServiceException` now extends `CustomException`.
+
+### Verified (live, via headless Chrome + CDP)
+
+Logged in as the company admin (`admin@gmail.com`, company 1) and superadmin, submitting real payloads:
+
+- Success: `categories`, `products`, `suppliers`, `users`, `voucher-types`, `promotions`, `purchase-orders`, `orders` (sales), `accounts`, `roles` (superadmin), `plans` (Stripe), `coupons`, general settings, aside settings, public-dashboard settings, profile.
+- Meaningful failures instead of generic: 403 → "You are not authorized to access this resource."; plan feature 403 → "This module is not included in your current plan."; role cap → "Your current plan allows up to 5 roles…"; promotion with no product → warning "Add some products first"; invalid aside payload → "Categories is invalid." (field `categories`); empty account settings → "Settings is required."; invalid product status → 422 "The selected status is invalid."
+
+### Known non-issue
+
+Superadmin (platform account, `company_id = NULL`) posting to tenant-scoped forms (e.g. `/suppliers`, `/allowances`) hits the NOT NULL `company_id` column → generic 200 envelope. Platform accounts are not expected to create tenant data; the tenant sidebar does not expose these forms. Consider a friendly guard if platform accounts ever get those forms.

@@ -29,13 +29,16 @@ class CategoryService
 
     public function store($request)
     {
-        $image = '';
-        $thumbnail = Helper::uploadfile([
-            'file' => $request->file('thumbnail'),
-            'path' => 'assets/media/categories/thumbs/',
-            'width' => $this->thumbWidth,
-            'height' => $this->thumbHeight,
-        ]);
+        $thumbnail = '';
+        if ($request->file('thumbnail')) {
+            $thumbnail = Helper::uploadfile([
+                'file' => $request->file('thumbnail'),
+                'path' => 'assets/media/categories/thumbs/',
+                'width' => $this->thumbWidth,
+                'height' => $this->thumbHeight,
+                'field' => 'thumbnail',
+            ]);
+        }
         $category = $this->category->create([
             'name' => $request->name,
             'thumbnail' => $thumbnail,
@@ -46,6 +49,7 @@ class CategoryService
             'slug' => Helper::hyphened($request->name),
             'published_date' => $request->published_date,
             'status' => $request->status,
+            'company_id' => auth()->user()->company_id,
         ]);
         $category->refresh();
         if ($request->featured) {
@@ -59,7 +63,7 @@ class CategoryService
     public function update($request, Category $category)
     {
         $thumbnail = $category->thumbnail;
-        if ($request->thumbnail) {
+        if ($request->file('thumbnail')) {
             Helper::deleteExcept([
                 'files' => [$category->thumbnail],
                 'exceptions' => [],
@@ -70,6 +74,7 @@ class CategoryService
                 'path' => 'assets/media/categories/thumbs/',
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'thumbnail',
             ]);
         }
         $this->category->query()->where('id', $category->id)->update([

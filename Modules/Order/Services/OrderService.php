@@ -3,11 +3,13 @@
 namespace Modules\Order\Services;
 
 use App\Exceptions\InsufficientStockException;
+use App\Exceptions\InvalidFieldException;
 use App\Exceptions\NoProductsSelectedException;
 use Modules\ChartOfAccounts\Services\AccountSettingService;
 use Modules\ChartOfAccounts\Services\TransactionService;
 use Modules\Order\Repositories\OrderProductRepository;
 use Modules\Order\Repositories\OrderRepository;
+use Modules\Order\Models\Order;
 use Modules\Inventory\Services\ProductService;
 use Modules\ChartOfAccounts\Services\VoucherService;
 use Carbon\Carbon;
@@ -53,7 +55,7 @@ class OrderService
 
     public function placeSaleOrder($params): Order
     {
-        if ($params["product"] == false || sizeof($params["product"]) == 0) {
+        if (!isset($params['product']) || !is_array($params['product']) || count($params['product']) === 0) {
             throw new NoProductsSelectedException();
         }
         $payment_method = null;
@@ -98,6 +100,9 @@ class OrderService
             $quantity = $params["quantity"][$key];
             $price = $params["price"][$key];
             $product = $this->products->getProductByUid($product);
+            if (!$product) {
+                throw new InvalidFieldException('product');
+            }
             $amount = $quantity * $price;
             $amount_ = $quantity * $product->purchase_price;
             if ($quantity > $product->stock) {

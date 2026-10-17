@@ -35,7 +35,8 @@ class PromotionService
 
     public function store($request)
     {
-        if (sizeof($request->product) == 0) {
+        $products = $request->product;
+        if (!is_array($products) || count($products) === 0) {
             throw new NoProductsAddedException();
         }
         $promotion = $this->promotion->create([
@@ -45,20 +46,24 @@ class PromotionService
             'company_id' => auth()->user()->company_id
         ]);
         $promotion->refresh();
-        foreach ($request->product as $key => $product) {
-            $product = $this->product->query()->where('uid', $product)->first();
+        foreach ($products as $key => $productUid) {
+            $product = $this->product->query()->where('uid', $productUid)->first();
+            if (!$product) {
+                continue;
+            }
             $this->promotionProducts->create([
                 'promotion_id' => $promotion->id,
                 'product_id' => $product->id,
-                'amount' => $request->amount[$key],
-                'percentage' => $request->percentage[$key],
+                'amount' => $request->amount[$key] ?? 0,
+                'percentage' => $request->percentage[$key] ?? 0,
             ]);
         }
     }
 
     public function update($request, $promotion)
     {
-        if (sizeof($request->product) == 0) {
+        $products = $request->product;
+        if (!is_array($products) || count($products) === 0) {
             throw new NoProductsAddedException();
         }
         $this->promotion->query()->where('id', $promotion->id)->update([
@@ -67,13 +72,16 @@ class PromotionService
             'end_date' => $request->end_date,
         ]);
         $this->promotionProducts->query()->where('promotion_id', $promotion->id)->delete();
-        foreach ($request->product as $key => $product) {
-            $product = $this->product->query()->where('uid', $product)->first();
+        foreach ($products as $key => $productUid) {
+            $product = $this->product->query()->where('uid', $productUid)->first();
+            if (!$product) {
+                continue;
+            }
             $this->promotionProducts->create([
                 'promotion_id' => $promotion->id,
                 'product_id' => $product->id,
-                'amount' => $request->amount[$key],
-                'percentage' => $request->percentage[$key],
+                'amount' => $request->amount[$key] ?? 0,
+                'percentage' => $request->percentage[$key] ?? 0,
             ]);
         }
     }

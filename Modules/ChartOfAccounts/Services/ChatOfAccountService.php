@@ -6,6 +6,7 @@ use Modules\ChartOfAccounts\Repositories\AccountLevel1Repository;
 use Modules\ChartOfAccounts\Repositories\AccountLevel2Repository;
 use Modules\ChartOfAccounts\Repositories\AccountLevel3Repository;
 use Modules\ChartOfAccounts\Repositories\AccountLevel4Repository;
+use App\Exceptions\InvalidFieldException;
 
 class ChatOfAccountService
 {
@@ -36,6 +37,9 @@ class ChatOfAccountService
         switch ($request->level) {
             case 'level1':
                 $parentAccount = $this->level1->query()->where('uid', $request->account)->first();
+                if (!$parentAccount) {
+                    throw new InvalidFieldException('account');
+                }
                 $code = $this->level2->query()->where('parent_id', $parentAccount->id)->max('code');
                 if ($code) {
                     $code = str_pad($code + 1, 3, 0, STR_PAD_LEFT);
@@ -52,6 +56,9 @@ class ChatOfAccountService
                 break;
             case 'level2':
                 $parentAccount = $this->level2->query()->where('uid', $request->account)->first();
+                if (!$parentAccount) {
+                    throw new InvalidFieldException('account');
+                }
                 $code = $this->level3->query()->where('parent_id', $parentAccount->id)->max('code');
                 if ($code) {
                     $code = str_replace($parentAccount->code . '-', '', $code);
@@ -70,6 +77,9 @@ class ChatOfAccountService
                 break;
             case 'level3':
                 $parentAccount = $this->level3->query()->where('uid', $request->account)->first();
+                if (!$parentAccount) {
+                    throw new InvalidFieldException('account');
+                }
                 $code = $this->level4->query()->where('parent_id', $parentAccount->id)->max('code');
                 if ($code) {
                     $code = str_replace($parentAccount->code . '-', '', $code);

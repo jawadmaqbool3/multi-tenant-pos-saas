@@ -2,9 +2,12 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -65,6 +68,48 @@ class Handler extends ExceptionHandler
             ], 422);
         });
 
+        // Permission/role middleware deny access with abort(403, '...').
+        // Surface the real message to the AJAX form handler instead of the
+        // generic "Something went wrong" envelope.
+        $this->renderable(function (HttpExceptionInterface $e, $request) {
+            if (!$request->expectsJson() && !$request->ajax()) {
+                return null;
+            }
+
+            $this->logError($e, 'warning', $request);
+
+            return response([
+                'error' => true,
+                'message' => $this->httpExceptionMessage($e),
+                'status' => $e->getStatusCode(),
+            ]);
+        });
+
+        $this->renderable(function (AuthorizationException $e, $request) {
+            if (!$request->expectsJson() && !$request->ajax()) {
+                return null;
+            }
+
+            $this->logError($e, 'warning', $request);
+
+            return response([
+                'error' => true,
+                'message' => $e->getMessage() ?: 'You are not authorized to perform this action.',
+            ]);
+        });
+
+        $this->renderable(function (AuthenticationException $e, $request) {
+            if (!$request->expectsJson() && !$request->ajax()) {
+                return null;
+            }
+
+            return response([
+                'error' => true,
+                'message' => 'Your session has expired. Please log in again.',
+                'status' => 401,
+            ], 401);
+        });
+
         $this->renderable(function (Throwable $e, $request) {
             if (!$request->expectsJson() && !$request->ajax()) {
                 return null;
@@ -78,6 +123,33 @@ class Handler extends ExceptionHandler
                 'console' => $e->getMessage(),
             ]);
         });
+    }
+
+    /**
+     * Human readable message for an HTTP exception, falling back to the
+     * status text when no explicit message was provided.
+     *
+     * @param  \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface  $e
+     * @return string
+     */
+    protected function httpExceptionMessage(HttpExceptionInterface $e)
+    {
+        $message = trim((string) $e->getMessage());
+
+        if ($message !== '' && $e->getStatusCode() !== 404) {
+            return $message;
+        }
+
+        $messages = [
+            400 => 'The request could not be understood.',
+            401 => 'Your session has expired. Please log in again.',
+            403 => 'You are not authorized to perform this action.',
+            404 => 'The requested resource was not found.',
+            419 => 'Your session has expired. Please refresh the page and try again.',
+            429 => 'Too many requests. Please slow down and try again.',
+        ];
+
+        return $messages[$e->getStatusCode()] ?? 'Something went wrong';
     }
 
     /**

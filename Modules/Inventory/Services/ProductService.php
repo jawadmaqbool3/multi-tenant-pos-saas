@@ -84,12 +84,16 @@ class ProductService
     public function store($request)
     {
         $code = $this->generateCode();
-        $thumbnail = Helper::uploadfile([
-            'file' => $request->file('thumbnail'),
-            'path' => 'assets/media/products/thumbs/',
-            'width' => $this->thumbWidth,
-            'height' => $this->thumbHeight,
-        ]);
+        $thumbnail = '';
+        if ($request->file('thumbnail')) {
+            $thumbnail = Helper::uploadfile([
+                'file' => $request->file('thumbnail'),
+                'path' => 'assets/media/products/thumbs/',
+                'width' => $this->thumbWidth,
+                'height' => $this->thumbHeight,
+                'field' => 'thumbnail',
+            ]);
+        }
         $images = [];
         if (is_array($request->images)) {
             foreach ($request->images as $key => $image) {
@@ -98,6 +102,7 @@ class ProductService
                     'path' => $this->productImageDirectory,
                     'width' => $this->thumbWidth,
                     'height' => $this->thumbHeight,
+                    'field' => 'images',
                 ]);
             }
         }
@@ -145,7 +150,7 @@ class ProductService
     public function update($request, $product)
     {
         $thumbnail = $product->thumbnail;
-        if ($request->thumbnail) {
+        if ($request->file('thumbnail')) {
             Helper::deleteExcept([
                 'files' => [$product->thumbnail],
                 'exceptions' => [],
@@ -156,6 +161,7 @@ class ProductService
                 'path' => 'assets/media/products/thumbs/',
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'thumbnail',
             ]);
         }
         $images = [];
@@ -166,6 +172,7 @@ class ProductService
                     'path' => $this->productImageDirectory,
                     'width' => $this->thumbWidth,
                     'height' => $this->thumbHeight,
+                    'field' => 'images',
                 ]);
             }
         }
@@ -173,8 +180,8 @@ class ProductService
             $images = array_merge($images, $request->old_images);
         }
         Helper::deleteExcept([
-            'files' => json_decode($product->images),
-            'exceptions' => $request->old_images,
+            'files' => json_decode($product->images) ?: [],
+            'exceptions' => (array) $request->old_images,
             'path' => $this->productImageDirectory
         ]);
         $this->products->query()->where('id', $product->id)->update([

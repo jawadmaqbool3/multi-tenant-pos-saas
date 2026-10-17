@@ -135,6 +135,7 @@ class CompanyService
                 'path' => $this->profileDirectory,
                 'width' => $this->thumbWidth,
                 'height' => $this->thumbHeight,
+                'field' => 'image',
             ]);
             $companyImage = $this->settingService->logoUpload($request->file('image'));
         }

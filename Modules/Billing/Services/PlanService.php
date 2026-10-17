@@ -232,7 +232,11 @@ class PlanService
             return $plan;
         });
 
-        $this->stripe->syncPlan($plan->refresh());
+        try {
+            $this->stripe->syncPlan($plan->refresh());
+        } catch (\Throwable $e) {
+            \Log::warning('Plan Stripe sync failed (local-only): ' . $e->getMessage());
+        }
 
         return $plan->refresh();
     }
@@ -267,7 +271,11 @@ class PlanService
             $this->saveLimits($plan, $request->input('limits', []));
         });
 
-        $this->stripe->syncPlan($plan->refresh());
+        try {
+            $this->stripe->syncPlan($plan->refresh());
+        } catch (\Throwable $e) {
+            \Log::warning('Plan Stripe sync failed (local-only): ' . $e->getMessage());
+        }
 
         return $plan->refresh();
     }

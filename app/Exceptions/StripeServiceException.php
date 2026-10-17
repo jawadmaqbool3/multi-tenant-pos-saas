@@ -2,10 +2,9 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use Throwable;
 
-class StripeServiceException extends Exception
+class StripeServiceException extends CustomException
 {
     /**
      * Machine friendly error kind.
@@ -32,7 +31,7 @@ class StripeServiceException extends Exception
     {
         $this->kind = $kind;
         $this->isRetryable = $isRetryable;
-        parent::__construct($message, 0, $previous);
+        parent::__construct($message, 'error', null, $previous);
     }
 
     public function getKind()
