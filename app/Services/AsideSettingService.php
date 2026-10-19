@@ -46,6 +46,16 @@ class AsideSettingService
                         'permission' => 'view voucher type',
                         'link' => route('voucher-types.index'),
                     ],
+                    [
+                        'title' => 'Ledger',
+                        'permission' => 'view ledger',
+                        'link' => route('ledger.index'),
+                    ],
+                    [
+                        'title' => 'Balance Sheet',
+                        'permission' => 'view balance sheet',
+                        'link' => route('balance-sheet.index'),
+                    ],
                 ],
             ],
             [
@@ -61,6 +71,11 @@ class AsideSettingService
                         'title' => 'Products',
                         'permission' => 'view product',
                         'link' => route('products.index'),
+                    ],
+                    [
+                        'title' => 'Suppliers',
+                        'permission' => 'view supplier',
+                        'link' => route('suppliers.index'),
                     ],
                 ],
             ],
@@ -127,11 +142,6 @@ class AsideSettingService
                         'link' => route('sales.index'),
                     ],
                     [
-                        'title' => 'Employee Attendance',
-                        'permission' => 'view employee attendance report',
-                        'link' => route('attendance.index'),
-                    ],
-                    [
                         'title' => 'My Attendance',
                         'permission' => 'view own attendance',
                         'link' => route('attendance.me'),
@@ -148,9 +158,14 @@ class AsideSettingService
                 'icon' => 'bi bi-person-bounding-box',
                 'links' => [
                     [
-                        'title' => 'Suppliers',
-                        'permission' => 'view supplier',
-                        'link' => route('suppliers.index'),
+                        'title' => 'Employees',
+                        'permission' => 'view employee',
+                        'link' => route('employee.index'),
+                    ],
+                    [
+                        'title' => 'Attendance',
+                        'permission' => 'view employee attendance report',
+                        'link' => route('attendance.index'),
                     ],
                 ],
             ],

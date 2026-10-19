@@ -23,8 +23,8 @@
                 </div>
                 <div class="col-md-4">
                     <select name="" id="employee_selector" class="form-control-solid  form-control">
+                        <option value="" disabled selected>Select Option</option>
                         @foreach ($employees as $employee)
-                            <option value="" disabled selected>Select Option</option>
                             <option value="{{ $employee->uid }}">{{ $employee->name }}</option>
                         @endforeach
                     </select>

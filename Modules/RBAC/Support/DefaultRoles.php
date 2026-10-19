@@ -66,6 +66,8 @@ class DefaultRoles
                 'edit account',
                 'delete account',
                 'account settings',
+                'view ledger',
+                'view balance sheet',
                 'view voucher',
                 'create voucher',
                 'edit voucher',

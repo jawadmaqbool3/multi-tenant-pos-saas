@@ -62,6 +62,11 @@ class SettingSeeder extends Seeder
                             "link": "http://127.0.0.1:8000/products",
                             "title": "Products",
                             "permission": "view product"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/suppliers",
+                            "title": "Suppliers",
+                            "permission": "view supplier"
                         }
                     ]
                 },
@@ -128,11 +133,6 @@ class SettingSeeder extends Seeder
                             "permission": "view sales"
                         },
                         {
-                            "link": "http://127.0.0.1:8000/attendance",
-                            "title": "Employee Attendance",
-                            "permission": "view employee attendance report"
-                        },
-                        {
                             "link": "http://127.0.0.1:8000/attendance/me",
                             "title": "My Attendance",
                             "permission": "view own attendance"
@@ -149,9 +149,14 @@ class SettingSeeder extends Seeder
                     "name": "HR",
                     "links": [
                         {
-                            "link": "http://127.0.0.1:8000/suppliers",
-                            "title": "Suppliers",
-                            "permission": "view supplier"
+                            "link": "http://127.0.0.1:8000/employee",
+                            "title": "Employees",
+                            "permission": "view employee"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/attendance",
+                            "title": "Employee Attendance",
+                            "permission": "view employee attendance report"
                         }
                     ]
                 },

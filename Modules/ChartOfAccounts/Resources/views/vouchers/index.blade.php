@@ -12,18 +12,21 @@
                         'Vouchers' => false,
                     ]" />
                 </div>
-                <div class="col-md-4">
-                    <div class="d-flex align-items-center position-relative my-1 mb-2 mb-md-0">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                            <x-icon name="search" :size="18" />
-                        </span>
-                        <input type="text" data-table-filter="search"
-                            class="form-control form-control-solid w-250px ps-15" placeholder="Search Vouchers">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                            <x-icon name="search" :size="18" />
-                        </span>
-                    </div>
+            </div>
+            <div class="card-toolbar">
+                <div class="d-flex align-items-center position-relative my-1 me-3">
+                    <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                        <x-icon name="search" :size="18" />
+                    </span>
+                    <input type="text" data-table-filter="search"
+                        class="form-control form-control-solid w-250px ps-15" placeholder="Search Vouchers">
                 </div>
+                @can('create voucher')
+                    <a href="{{ route('vouchers.create') }}" class="btn btn-primary">
+                        <x-icon name="plus" :size="18" class="me-1" />
+                        Create Voucher
+                    </a>
+                @endcan
             </div>
         </div>
         <div class="card-body pt-3">
@@ -46,6 +49,7 @@
             </div>
         </div>
     </div>
+    @include('chartofaccounts::vouchers.void_modal')
 @endsection
 
 @section('jsSection')

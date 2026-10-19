@@ -286,11 +286,15 @@ class AsideMenuLinks extends Component
      */
     protected function markActive($links)
     {
+        $paths = $this->linkPaths($links);
+        $requestPath = trim(request()->path(), '/');
+        $exactMatch = $requestPath !== '' && isset($paths[$requestPath]);
+
         foreach ($links as $x => $menu) {
             foreach ($menu['categories'] as $y => $category) {
                 $categoryActive = false;
                 foreach ($category['links'] as $z => $link) {
-                    $active = $this->isActiveLink($link['link'] ?? '');
+                    $active = $this->isActiveLink($link['link'] ?? '', $requestPath, $exactMatch);
                     $links[$x]['categories'][$y]['links'][$z]['active'] = $active;
                     if ($active) {
                         $categoryActive = true;
@@ -304,21 +308,68 @@ class AsideMenuLinks extends Component
     }
 
     /**
-     * Match a menu URL against the current request path, ignoring the host so
-     * that stored (absolute) links and the live request always line up.
+     * The set of site-relative paths referenced by the menu, keyed by path.
+     *
+     * @param  array  $links
+     * @return array<string, bool>
+     */
+    protected function linkPaths($links)
+    {
+        $paths = [];
+
+        foreach ($links as $menu) {
+            foreach (($menu['categories'] ?? []) as $category) {
+                foreach (($category['links'] ?? []) as $link) {
+                    $path = $this->linkPath($link['link'] ?? '');
+                    if ($path !== '') {
+                        $paths[$path] = true;
+                    }
+                }
+            }
+        }
+
+        return $paths;
+    }
+
+    /**
+     * A menu link is active when the current request path matches it exactly.
+     * Sub-pages (e.g. `/users/1/edit`) also light up their parent link, but only
+     * when no other menu link matches the request exactly — so `/attendance`
+     * does not stay lit while the more specific `/attendance/me` is open.
      *
      * @param  string  $url
+     * @param  string  $requestPath
+     * @param  bool  $exactMatch
      * @return bool
      */
-    protected function isActiveLink($url)
+    protected function isActiveLink($url, $requestPath = '', $exactMatch = false)
     {
-        $path = trim((string) parse_url($url, PHP_URL_PATH), '/');
+        $path = $this->linkPath($url);
 
         if ($path === '') {
             return false;
         }
 
+        if ($path === $requestPath) {
+            return true;
+        }
+
+        if ($exactMatch) {
+            return false;
+        }
+
         return request()->is($path) || request()->is($path . '/*');
+    }
+
+    /**
+     * Normalise a menu URL to a site-relative path with no surrounding slashes.
+     *
+     * @param  string  $url
+     * @return string
+     */
+    protected function linkPath($url)
+    {
+        return trim((string) parse_url($url, PHP_URL_PATH), '/');
     }
 
     /**

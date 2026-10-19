@@ -59,7 +59,7 @@ class OrderRepository extends BaseRepository
             ],
             'addColumns' => [
                 'action' => function ($order) {
-                    return $this->printButton(route('order.print', $order->uid), 'Print Invoice');
+                    return $this->printButton(route('sales.order.print', $order->uid), 'Print Invoice');
                 },
             ],
         ]);

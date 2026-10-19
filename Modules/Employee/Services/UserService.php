@@ -35,16 +35,63 @@ class UserService
         $this->employeeInfo = $employeeInfo;
     }
 
-    public function getUsers()
+    public function getUsers($filter = null)
+    {
+        return $this->users->dataTable($this->rosterQuery($filter));
+    }
+
+    /**
+     * Lightweight uid/name list of the users on the given roster, for pickers.
+     *
+     * @param  string|null  $filter
+     * @return \Illuminate\Support\Collection
+     */
+    public function employeeList($filter = null)
+    {
+        return $this->rosterQuery($filter)->orderBy('name')->get(['uid', 'name']);
+    }
+
+    /**
+     * Base query for a user roster.
+     *
+     * The Employees screen lists the payroll roster; the attendance screen lists
+     * the staff tracked by the attendance system. Anything else shows every
+     * user.
+     *
+     * @param  string|null  $filter
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function rosterQuery($filter = null)
     {
         $query = $this->users->query()->filter();
+
+        $flag = $this->flagForFilter($filter);
+        if ($flag) {
+            $query->where($flag, true);
+        }
 
         // HR manages the payroll roster: only payroll-enabled users are shown.
         if (auth()->user() && auth()->user()->hasRole('hr')) {
             $query->where('payroll_enabled', true);
         }
 
-        return $this->users->dataTable($query);
+        return $query;
+    }
+
+    /**
+     * Map a requested list filter to the boolean user column it narrows by.
+     *
+     * @param  string|null  $filter
+     * @return string|null
+     */
+    protected function flagForFilter($filter)
+    {
+        $map = [
+            'payroll' => 'payroll_enabled',
+            'attendance' => 'attendance_enabled',
+        ];
+
+        return $map[$filter] ?? null;
     }
 
     public function getRoles()

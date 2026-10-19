@@ -214,16 +214,22 @@ when a child account is created:
 | POST | `/accounts/delete/{account}` | `accounts.delete` | `@delete` | same |
 | GET | `/settings/accounts/{company?}` | `account.settings` | `AccountSettingController@index` | `auth`, `permission:account settings`, plan |
 | POST | `/settings/accounts/update/{company?}` | `account.settings.update` | `@update` | same |
-| * | `/vouchers` (resource) | `vouchers.*` | `VoucherController` | `auth`, `permission:view voucher`, plan |
 | * | `/voucher-types` (resource) | `voucher-types.*` | `VoucherTypeController` | `auth`, `permission:view voucher type`, plan |
-| GET | `/print/print/{voucher}` | `print.voucher` | `VoucherController@print` | **none** (public print view) |
+| GET | `/vouchers` | `vouchers.index` | `VoucherController@index` | `auth`, `permission:view voucher`, plan |
+| GET | `/vouchers/create` | `vouchers.create` | `@create` | `auth`, `permission:create voucher`, plan |
+| POST | `/vouchers` | `vouchers.store` | `@store` | `auth`, `permission:create voucher`, plan |
+| POST | `/vouchers/void/{voucher}` | `vouchers.void` | `@void` | `auth`, `permission:delete voucher`, plan |
+| GET | `/vouchers/{voucher}/print` | `print.voucher` | `@print` | `auth`, `permission:view voucher`, plan |
 
 Conventions:
 - Two middleware on every screen: RBAC (`permission:...`) **and** plan gating
   (`plan.feature:chart-of-accounts`, see `docs/subscription-plans.md`).
 - Accounts/settings use explicit `POST` verbs for store/update/delete (not resource).
-- Vouchers/voucher-types use `Route::resource` (only index/store/update/destroy/print are
-  actually implemented; `create/edit/show` are empty stubs).
+- Vouchers use explicit routes with per-action permissions (`view`/`create`/`delete`).
+  Manual vouchers are created via the full-page `vouchers.create` form
+  (`StoreVoucherRequest` → `VoucherService::createManualVoucher`) and voided via
+  `vouchers.void` (reuses the `delete voucher` permission; no edit, no hard delete).
+- Voucher-types use `Route::resource` (`permission:view voucher type` on all actions).
 
 ---
 
@@ -242,10 +248,10 @@ Pattern used by all four controllers (`AccountController`, `AccountSettingContro
 - Controllers never query models or repositories.
 
 **Unrouted / unused surface (don't assume it works):**
-- `VoucherController::voidVoucher` (L105) — exists, no route.
 - `AccountSettingController::getAccount($short)` — exists, no route.
 - `vouchers/create_modal.blade.php` and `vouchers/edit_modal.blade.php` are orphaned and
   actually contain *voucher-type* forms; `voucher_types/index.blade.php` does not include them.
+  (The real manual-voucher UI is `vouchers/create.blade.php` + `_create_js.blade.php`.)
 
 ---
 
@@ -257,10 +263,13 @@ Pattern used by all four controllers (`AccountController`, `AccountSettingContro
 | `UpdateAccountRequest` | `name` required, `status` required, `level` required |
 | `StoreVoucherTypeRequest` | `name` required, `short` required |
 | `UpdateVoucherTypeRequest` | `name` required |
+| `StoreVoucherRequest` | `voucher_type_id` required + company-scoped exists, `date` required, `lines` required `min:2`, per-line account (level-4 uid, company-scoped exists), exactly one of `debit`/`credit` per line, debit total must equal credit total (after-hook) |
 
-Plain string rules, no custom Rule objects. For new endpoints: create a
+Plain string rules by default. For new endpoints: create a
 `StoreXRequest`/`UpdateXRequest` in `Http/Requests/`, put rules + `messages()` there, and
-type-hint it in the controller. Add a `company_id`-aware unique rule when uniqueness matters.
+type-hint it in the controller. Add a `company_id`-aware unique/exists rule when
+uniqueness or tenancy matters (`Rule::exists(...)->where('company_id', ...)`, as in
+`StoreVoucherRequest`).
 
 ---
 
@@ -275,7 +284,7 @@ All in `Modules/ChartOfAccounts/Services/`. Constructor-inject repositories — 
 | `AccountSettingService` | Settings CRUD, `getAccount($short)` resolution (throws `AccountSettingNotFoundException` / `AccountSettingNotSetException`), `setAccountBalance($id, $balance)`, default settings map |
 | `DefaultAccountService` | Per-company default COA seeding (`initiateAccounts($company)`), idempotent |
 | `DefaultVoucherTypeService` | Per-company default voucher types (BRV, CRV, APV, INV, BPV) |
-| `VoucherService` | Voucher listing (Yajra), `nextVoucherNo($short)` = `<short>-<count+1>`, `voidVoucher()` (reverses balances, sets `type='void'`) |
+| `VoucherService` | Voucher listing (Yajra), `nextVoucherNo($short)` = `<short>-<count+1>`, `createManualVoucher($data)` (balanced journal lines, `applyBalance()` per line), `voidVoucher($voucher)` (reverses balances, sets `type='void'`; guards already-void + company scope), `getVoucherTypesForSelect()` |
 | `VoucherTypeService` | Voucher type CRUD |
 | `TransactionService` | Journal line creation / queries used by Order & Supplier modules |
 
@@ -359,9 +368,12 @@ Resources/views/<resource>/
 
 ### `<x-account-selector>`
 `app/View/Components/AccountSelector.php` + `resources/views/components/account-selector.blade.php`.
-Attributes: `accountLevel` (`all|level1|level2|level3|level4`), `selectLevel`, `name`,
+Attributes: `accountLevel` (`all|level1|level2|level3|level4|level4only`), `selectLevel`, `name`,
 `id`, `selected`, `isRequired`, `class`. Walks `level2Active/level3Active/level4Active`
-to render indented options with `data-level`. The `_js.blade.php` writes the selected
+to render indented options with `data-level`. `level4only` renders a flat list of only
+postable Level-4 accounts with full-path labels (`Asset › Current Assets › HBL`) — use it
+for any account input that will be posted to `transactions.account_id` (the FK only accepts
+Level-4 ids). The `_js.blade.php` writes the selected
 option's `data-level` into the hidden `input.level`, which `UpdateAccountRequest` requires.
 **Always use this component for account inputs** — do not hand-roll `<select>`s.
 
@@ -429,6 +441,7 @@ Supplier/SupplierService  ──┘   VoucherService (create/void/nextVoucherNo)
 | Order cancel/refund (~L170-260) | same | voids `INV`/`CRV`/payment | `VoucherService::voidVoucher` |
 | Purchase order (`PurchaseOrderService` L82-152) | PIA, VPA | `APV` | |
 | Supplier payment (`SupplierService` L125-174) | OSA, VPA | `BPV` | guards `InsufficientSupplierBalanceException` |
+| Manual voucher (`VoucherController@store`) | — | any company type | `StoreVoucherRequest` → `VoucherService::createManualVoucher`; void via `vouchers.void` |
 | Dashboard (`HomeService`) | — | — | revenue/expense sums from `TransactionRepository` |
 | Trial balance (`TrailBalance` component) | — | — | `sum(debit) - sum(credit)` |
 
@@ -516,7 +529,8 @@ Supplier/SupplierService  ──┘   VoucherService (create/void/nextVoucherNo)
 4. `Transaction` is the only model not on `UIDModel` (no `uid`).
 5. Orphaned `vouchers/create_modal.blade.php` & `vouchers/edit_modal.blade.php`
    (voucher-type forms never `@include`d).
-6. Unrouted methods: `VoucherController::voidVoucher`, `AccountSettingController::getAccount`.
+6. Unrouted method: `AccountSettingController::getAccount`. (`VoucherController`'s
+   void action is now routed as `vouchers.void`; the old `voidVoucher` method was replaced.)
 7. Broken named routes referenced in views/repos: `voucher-type.store`, `voucher-type.update`,
    `voucher.type.update` — actual names are `voucher-types.store` / `voucher-types.update`.
 8. `accounts/tree.blade.php:112` hardcodes `http://localhost/ssss/general/report/5/filter`.

@@ -78,6 +78,31 @@ class Helper
             );
         }
 
+        // Inspect the image without fully decoding it: this lets us reject
+        // formats the local GD build cannot read and to size memory correctly.
+        $sourcePath = $file->getRealPath();
+        $info = @getimagesize($sourcePath);
+
+        if ($info === false) {
+            throw new \App\Exceptions\ImageUploadFailedException(
+                'The selected file is not a readable image. Please upload a JPG, PNG, BMP or GIF file.',
+                $field
+            );
+        }
+
+        [$imageWidth, $imageHeight] = $info;
+        $type = $info[2];
+
+        if (!self::gdSupports($type)) {
+            throw new \App\Exceptions\ImageUploadFailedException(
+                sprintf(
+                    'The %s image format is not supported by this server. Please upload a JPG, PNG, BMP or GIF file.',
+                    strtoupper(ltrim(image_type_to_extension($type, false), '.'))
+                ),
+                $field
+            );
+        }
+
         try {
             if (!empty($settings['filename'])) {
                 $filename = $settings['filename'];
@@ -85,19 +110,29 @@ class Helper
                 $filename = round(microtime(true)) . rand(100, 999) . '.' . $file->getClientOriginalExtension();
             }
 
-            $destinationPath = public_path($settings['path']);
+            $destinationPath = rtrim(public_path($settings['path']), '/\\');
 
             if (!is_dir($destinationPath)) {
                 @mkdir($destinationPath, 0775, true);
             }
 
-            $image_complete_path = $destinationPath . $filename;
+            if (!is_dir($destinationPath) || !is_writable($destinationPath)) {
+                throw new \RuntimeException(
+                    sprintf('The upload directory "%s" does not exist or is not writable.', $destinationPath)
+                );
+            }
+
+            $image_complete_path = $destinationPath . DIRECTORY_SEPARATOR . $filename;
 
             if ($width || $height) {
-                Image::make($file->getRealPath())->resize($width, $height)->save($image_complete_path);
+                self::withImageMemory($imageWidth, $imageHeight, $field, function () use ($sourcePath, $width, $height, $image_complete_path) {
+                    Image::make($sourcePath)->resize($width, $height)->save($image_complete_path);
+                });
             } else {
                 $file->move($destinationPath, $filename);
             }
+        } catch (\App\Exceptions\ImageUploadFailedException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             throw new \App\Exceptions\ImageUploadFailedException(
                 'The image could not be saved. Please check the storage permissions and try again.',
@@ -107,6 +142,108 @@ class Helper
         }
 
         return $filename;
+    }
+
+    /**
+     * Whether the installed GD build can decode the given IMAGETYPE_* constant.
+     *
+     * @param  int  $type
+     * @return bool
+     */
+    protected static function gdSupports($type)
+    {
+        $flags = [
+            IMAGETYPE_GIF => IMG_GIF,
+            IMAGETYPE_JPEG => IMG_JPG,
+            IMAGETYPE_PNG => IMG_PNG,
+        ];
+
+        // The remaining constants are not available on every supported PHP/GD
+        // build, so only reference them when the runtime actually defines them.
+        foreach (['BMP', 'WBMP', 'WEBP', 'AVIF'] as $name) {
+            if (defined('IMAGETYPE_' . $name) && defined('IMG_' . $name)) {
+                $flags[constant('IMAGETYPE_' . $name)] = constant('IMG_' . $name);
+            }
+        }
+
+        if (!isset($flags[$type])) {
+            return false;
+        }
+
+        $supported = imagetypes();
+
+        return $flags[$type] !== 0 && ($supported & $flags[$type]) === $flags[$type];
+    }
+
+    /**
+     * Run an image operation with enough memory to decode the source image.
+     *
+     * GD keeps a full truecolour buffer (~4 bytes per pixel) in memory while
+     * decoding and the resize may hold a second working copy, so a large photo
+     * can exceed the default memory_limit and crash the request. Temporarily
+     * raise the ceiling for the duration and always restore it afterwards.
+     *
+     * @param  int  $width
+     * @param  int  $height
+     * @param  string|null  $field
+     * @param  callable  $callback
+     * @return void
+     */
+    protected static function withImageMemory($width, $height, $field, callable $callback)
+    {
+        $limit = self::memoryLimitInBytes();
+        $needed = ($width * $height * 4 * 2) + (80 * 1024 * 1024);
+        $ceiling = 512 * 1024 * 1024;
+
+        if ($needed > $ceiling) {
+            throw new \App\Exceptions\ImageUploadFailedException(
+                'This image is too large to process. Please upload an image smaller than 50 megapixels.',
+                $field
+            );
+        }
+
+        $restore = null;
+
+        if ($needed > $limit) {
+            $restore = ini_get('memory_limit');
+            @ini_set('memory_limit', (string) (int) ceil($needed / (1024 * 1024)) . 'M');
+        }
+
+        try {
+            $callback();
+        } finally {
+            if ($restore !== null) {
+                @ini_set('memory_limit', $restore);
+            }
+        }
+    }
+
+    /**
+     * @return int
+     */
+    protected static function memoryLimitInBytes()
+    {
+        $limit = trim((string) ini_get('memory_limit'));
+
+        if ($limit === '' || $limit === '-1') {
+            return PHP_INT_MAX;
+        }
+
+        $value = (int) $limit;
+
+        switch (strtolower(substr($limit, -1))) {
+            case 'g':
+                $value *= 1024 * 1024 * 1024;
+                break;
+            case 'm':
+                $value *= 1024 * 1024;
+                break;
+            case 'k':
+                $value *= 1024;
+                break;
+        }
+
+        return $value;
     }
 
 

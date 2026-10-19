@@ -9,7 +9,6 @@ use Modules\Inventory\Services\ProductService;
 use Modules\Inventory\Services\CategoryService;
 use App\Services\AsideSettingService;
 use App\Repositories\CompanyRepository;
-use Modules\RBAC\Repositories\PermissionRepository;
 use Modules\RBAC\Repositories\RoleRepository;
 use Modules\RBAC\Services\RoleProvisioningService;
 use App\Repositories\SettingRepository;
@@ -26,7 +25,6 @@ class CompanyService
     protected $role;
     protected $user;
     protected $userRole;
-    protected $permission;
     protected $settingService;
     protected $categoryService;
     protected $dashboardSettingService;
@@ -42,7 +40,6 @@ class CompanyService
         RoleRepository $role,
         UserRepository $user,
         UserRoleRepository $userRole,
-        PermissionRepository $permission,
         SettingService $settingService,
         CategoryService $categoryService,
         DashboardSettingService $dashboardSettingService
@@ -52,7 +49,6 @@ class CompanyService
         $this->role = $role;
         $this->user = $user;
         $this->userRole = $userRole;
-        $this->permission = $permission;
         $this->settingService = $settingService;
         $this->categoryService = $categoryService;
         $this->dashboardSettingService = $dashboardSettingService;
@@ -185,14 +181,6 @@ class CompanyService
             foreach ($roles as $key => $role) {
                 $provisioning->ensureRole($company->id, $role->name, $request->status);
             }
-        }
-
-        if ($request->permissions) {
-            $permissions = $this->permission->query()
-                ->whereIn('uid', $request->permissions)
-                ->where('is_platform', false)
-                ->get();
-            $provisioning->syncRolePermissions($companyRole->id, $permissions->pluck('id')->all());
         }
 
         $defaultService = app(DefaultService::class);

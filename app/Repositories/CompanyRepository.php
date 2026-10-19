@@ -21,8 +21,20 @@ class CompanyRepository extends BaseRepository
             'setting.logo' => function ($company) {
                 $logo = @$company->setting->logo;
 
-                if ($logo && is_file(public_path('assets/media/small/logo/' . $logo))) {
-                    return $this->dt->thumbnail('assets/media/small/logo', $logo);
+                if ($logo) {
+                    $directories = [
+                        'assets/media/small/logo',
+                        'assets/media/medium/logo',
+                        'assets/media/large/logo',
+                        'assets/media/icons/logo',
+                        'assets/media/logos',
+                    ];
+
+                    foreach ($directories as $directory) {
+                        if (is_file(public_path($directory . '/' . $logo))) {
+                            return $this->dt->thumbnail($directory, $logo);
+                        }
+                    }
                 }
 
                 return $this->dt->letterAvatar(@$company->setting->name ?: 'Company');

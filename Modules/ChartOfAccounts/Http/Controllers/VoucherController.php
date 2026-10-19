@@ -4,17 +4,19 @@ namespace Modules\ChartOfAccounts\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 
+use Modules\ChartOfAccounts\Models\Voucher;
+use Modules\ChartOfAccounts\Services\ChatOfAccountService;
 use Modules\ChartOfAccounts\Services\VoucherService;
+use Modules\ChartOfAccounts\Http\Requests\StoreVoucherRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VoucherController extends Controller
 {
     protected $service;
-    protected $voucher;
 
-    public function __construct($voucher = null)
+    public function __construct()
     {
-        $this->voucher = $voucher;
         $this->service = app(VoucherService::class);
     }
 
@@ -32,77 +34,75 @@ class VoucherController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the manual voucher creation form.
      *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        $accounts = app(ChatOfAccountService::class)->getAccounts();
+        $voucherTypes = $this->service->getVoucherTypesForSelect();
+
+        return view('chartofaccounts::vouchers.create', compact('accounts', 'voucherTypes'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a manually created voucher with its journal lines.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Modules\ChartOfAccounts\Http\Requests\StoreVoucherRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreVoucherRequest $request)
     {
-        //
+        DB::transaction(function () use ($request) {
+            $this->service->createManualVoucher($request->validated());
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voucher created successfully.',
+            'redirect' => true,
+            'url' => route('vouchers.index'),
+        ]);
     }
 
     /**
-     * Display the specified resource.
+     * Void a voucher (reverse its balance impact).
      *
      * @param  \Modules\ChartOfAccounts\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function show($voucher = null)
+    public function void(Voucher $voucher)
     {
-        //
+        $voided = false;
+        DB::transaction(function () use ($voucher, &$voided) {
+            $voided = $this->service->voidVoucher($voucher);
+        });
+
+        if (!$voided) {
+            return response()->json([
+                'error' => true,
+                'message' => 'This voucher cannot be voided.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Voucher voided successfully.',
+            'table_reload' => true,
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Print a voucher with its journal lines.
      *
      * @param  \Modules\ChartOfAccounts\Models\Voucher  $voucher
      * @return \Illuminate\Http\Response
      */
-    public function edit($voucher = null)
+    public function print(Voucher $voucher)
     {
-        //
-    }
+        $voucher->load(['transactions.account', 'voucherType', 'creator']);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $voucher = null)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($voucher = null)
-    {
-        //
-    }
-
-
-    public function print($voucher = null)
-    {
         return view('chartofaccounts::vouchers.print', compact('voucher'));
-    }
-
-    public function voidVoucher()
-    {
-        return $this->service->voidVoucher($this->voucher);
     }
 }

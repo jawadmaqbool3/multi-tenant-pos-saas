@@ -3,14 +3,17 @@
 namespace Modules\ChartOfAccounts\Services;
 
 use Modules\ChartOfAccounts\Repositories\AccountLevel4Repository;
+use Modules\ChartOfAccounts\Repositories\TransactionRepository;
 use Modules\ChartOfAccounts\Repositories\VoucherRepository;
 use Modules\ChartOfAccounts\Repositories\VoucherTypeRepository;
+use App\Exceptions\InvalidFieldException;
 
 class VoucherService
 {
     protected $vouchers;
     protected $accountLevel4;
     protected $voucherTypes;
+    protected $transactions;
     protected $rules = [
         'Asset' => [
             'debit' => '+',
@@ -34,16 +37,22 @@ class VoucherService
         ]
     ];
 
-    public function __construct(VoucherRepository $vouchers, AccountLevel4Repository $accountLevel4, VoucherTypeRepository $voucherTypes)
+    public function __construct(VoucherRepository $vouchers, AccountLevel4Repository $accountLevel4, VoucherTypeRepository $voucherTypes, TransactionRepository $transactions)
     {
         $this->vouchers = $vouchers;
         $this->accountLevel4 = $accountLevel4;
         $this->voucherTypes = $voucherTypes;
+        $this->transactions = $transactions;
     }
 
     public function getVoucherTypeByShort($short)
     {
         return $this->voucherTypes->query()->filter()->where('short', $short)->first();
+    }
+
+    public function getVoucherTypesForSelect()
+    {
+        return $this->voucherTypes->query()->filter()->get(['id', 'name', 'short']);
     }
 
     public function nextVoucherNo($short)
@@ -56,6 +65,64 @@ class VoucherService
     public function createVoucher($data)
     {
         return $this->vouchers->create($data);
+    }
+
+    /**
+     * Create a manual journal voucher with balanced debit/credit lines.
+     * Each line must be a Level 4 account uid (already validated by
+     * StoreVoucherRequest). Called inside the controller's DB transaction.
+     *
+     * @param  array  $data  voucher_type_id, date, description, lines[]
+     * @return \Modules\ChartOfAccounts\Models\Voucher
+     */
+    public function createManualVoucher(array $data)
+    {
+        $voucherType = $this->voucherTypes->query()->filter()->where('id', $data['voucher_type_id'])->first();
+        if (!$voucherType) {
+            throw new InvalidFieldException('voucher_type_id');
+        }
+
+        $totalDebit = 0;
+        foreach ($data['lines'] as $line) {
+            $totalDebit += !empty($line['debit']) ? (float) $line['debit'] : 0;
+        }
+
+        $voucher = $this->createVoucher([
+            'voucher_no' => $this->nextVoucherNo($voucherType->short),
+            'voucher_type_id' => $voucherType->id,
+            'date' => $data['date'],
+            'amount' => $totalDebit,
+            'type' => count($data['lines']) == 2 ? 'single' : 'multiple',
+            'description' => $data['description'] ?? null,
+            'created_by' => auth()->user()->id,
+        ]);
+        $voucher->refresh();
+
+        $lineNumber = 0;
+        foreach ($data['lines'] as $line) {
+            $lineNumber++;
+            $account = $this->accountLevel4->query()->filter()->where('uid', $line['account'])->first();
+            if (!$account) {
+                throw new InvalidFieldException('account');
+            }
+
+            $type = !empty($line['debit']) ? 'debit' : 'credit';
+            $amount = !empty($line['debit']) ? (float) $line['debit'] : (float) $line['credit'];
+
+            $this->transactions->create([
+                'transaction_no' => $voucher->voucher_no . '-' . $lineNumber,
+                'voucher_id' => $voucher->id,
+                'account_id' => $account->id,
+                'amount' => $amount,
+                'type' => $type,
+                'source' => 'manual',
+                'description' => $line['description'] ?? null,
+            ]);
+
+            $this->applyBalance($account->id, $type, $amount);
+        }
+
+        return $voucher;
     }
 
     public function updateVoucher($id, $data)
@@ -72,6 +139,25 @@ class VoucherService
     public function getOperation($account, $type)
     {
         return $this->rules[$account->name][$type];
+    }
+
+    /**
+     * Apply the double-entry sign for a Level 1 account type to an amount.
+     * Positive means the transaction increases the account's natural balance.
+     * Callers pass a type name (Asset, Liability, Equity, Revenue, Expense) and
+     * a transaction type (debit|credit) — the sign is never hardcoded outside
+     * this service.
+     *
+     * @param  string  $accountType
+     * @param  string  $type  debit|credit
+     * @param  float  $amount
+     * @return float
+     */
+    public function signedAmount($accountType, $type, $amount)
+    {
+        $operation = $this->rules[$accountType][$type] ?? '+';
+
+        return $operation === '+' ? (float) $amount : (float) $amount * -1;
     }
 
     /**
@@ -108,6 +194,15 @@ class VoucherService
 
     public function voidVoucher($voucher)
     {
+        if ($voucher->type === 'void') {
+            return false;
+        }
+        if (!auth()->user()->hasRole('admin')) {
+            $voucherType = $voucher->voucherType;
+            if (!$voucherType || $voucherType->company_id != auth()->user()->company_id) {
+                return false;
+            }
+        }
         foreach ($voucher->transactions as $transaction) {
             $account = $transaction->account;
             $level1 = $account->level3->level2->level1;

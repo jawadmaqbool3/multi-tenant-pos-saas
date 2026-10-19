@@ -163,16 +163,6 @@
             </div>
         </div>
 
-        <div class="card card-flush py-4 mb-8">
-            <div class="card-header">
-                <div class="card-title">
-                    <h2>Attach Permissions</h2>
-                </div>
-            </div>
-            <div class="card-body my-3">
-                <x-permission-selector :company="@$company" />
-            </div>
-        </div>
         <div class="d-flex justify-content-end">
             <a href="{{ route('companies.index') }}"
                 id="kt_ecommerce_add_product_cancel" class="btn btn-light me-5">Cancel</a>

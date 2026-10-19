@@ -23,10 +23,12 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
+        $filter = $request->query('filter');
+
         if ($request->ajax()) {
-            return $this->service->getUsers();
+            return $this->service->getUsers($filter);
         }
-        return view('employee::users.index');
+        return view('employee::users.index', compact('filter'));
     }
 
     public function create()

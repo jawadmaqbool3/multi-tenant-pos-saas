@@ -1,6 +1,7 @@
 <?php
 
 use Modules\Employee\Http\Controllers\AttendanceHistoryController;
+use Modules\Employee\Http\Controllers\EmployeeController;
 use Modules\Employee\Http\Controllers\LoginController;
 use Modules\Employee\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,14 @@ Route::post('logout', [
 
 Route::group(['middleware' => ['auth']], function () {
     Route::resource('users', UserController::class)->middleware('permission:view user');
+
+    // Dedicated employee screen. The payroll roster is fetched from the
+    // frontend via the employee data endpoint. Attendance reuses the existing
+    // `/attendance` report route.
+    Route::get('employee/data', [EmployeeController::class, 'data'])
+        ->name('employee.data')->middleware('permission:view employee');
+    Route::get('employee', [EmployeeController::class, 'index'])
+        ->name('employee.index')->middleware('permission:view employee');
 
     // Self-service profile: available to every authenticated user regardless of RBAC.
     Route::get('profile', [UserController::class, 'profile'])->name('profile.edit');

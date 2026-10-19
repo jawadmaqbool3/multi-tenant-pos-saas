@@ -115,7 +115,9 @@ class RolePermissionSeeder extends Seeder
             'create account',
             'edit account',
             'delete account',
-            'account settings'
+            'account settings',
+            'view ledger',
+            'view balance sheet',
         ],
 
 

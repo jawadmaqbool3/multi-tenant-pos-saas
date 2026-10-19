@@ -52,7 +52,7 @@ class RoleService
 
     public function getRolesList()
     {
-        return $this->roles->query()->filter()->whereNull('company_id')->get();
+        return $this->roles->query()->filter()->get();
     }
 
     public function assignUserRole($userId, $roleId)

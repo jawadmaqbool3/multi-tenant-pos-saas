@@ -101,6 +101,23 @@
         <input type="hidden" value="{{ @$accounts->uid }}" name="{{ $name }}" id="{{ $id }}">
     @break
 
-@endswitch
+    @case('level4only')
+        <select name="{{ $name }}" {{ $isRequired ? 'required' : '' }}
+            class="form-control form-control-solid {{ $class }} _select2" id="{{ $id }}">
+            <option value="" @if ($selected == 'all') selected @endif data-level="level4">Select Account</option>
+            @foreach ($accounts as $level1)
+                @foreach ($level1->level2Active as $level2)
+                    @foreach ($level2->level3Active as $level3)
+                        @foreach ($level3->level4Active as $level4)
+                            <option data-level="level4" @if ($selected == $level4->uid) selected @endif
+                                value="{{ $level4->uid }}">
+                                {{ $level1->name }} › {{ $level2->name }} › {{ $level3->name }} › {{ $level4->name }}
+                            </option>
+                        @endforeach
+                    @endforeach
+                @endforeach
+            @endforeach
+        </select>
+    @break
 
-</select>
+@endswitch
