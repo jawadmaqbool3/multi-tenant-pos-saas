@@ -1,0 +1,425 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e3]:
+    - generic [ref=f13e7]:
+      - link [ref=f13e9] [cursor=pointer]:
+        - /url: "#"
+      - img "user" [ref=f13e19] [cursor=pointer]
+    - generic [ref=f13e20]:
+      - generic [ref=f13e21]:
+        - generic [ref=f13e22]:
+          - link [ref=f13e23] [cursor=pointer]:
+            - /url: http://localhost:8000
+            - generic [ref=f13e24]:
+              - img "Logo" [ref=f13e25]
+              - heading "POS" [level=3] [ref=f13e26]
+          - generic [ref=f13e27] [cursor=pointer]
+        - generic [ref=f13e34]:
+          - link "Dashboards" [ref=f13e36] [cursor=pointer]:
+            - /url: http://localhost:8000
+          - generic [ref=f13e46]: Pages
+          - generic [ref=f13e48]: Bank
+          - generic [ref=f13e56]: Inventory
+          - generic [ref=f13e67]: Orders
+          - generic [ref=f13e77]: Promotions
+          - generic [ref=f13e86]: Reports
+          - generic [ref=f13e93]: HR
+          - generic [ref=f13e102]: Users
+          - generic [ref=f13e113]: Access Control
+          - generic [ref=f13e122]: Settings
+          - generic [ref=f13e131]: Billing
+      - generic [ref=f13e139]:
+        - generic [ref=f13e141]:
+          - generic [ref=f13e144]:
+            - generic [ref=f13e146]:
+              - generic [ref=f13e147]: Overview
+              - heading "Dashboard" [level=1] [ref=f13e148]
+              - list [ref=f13e150]:
+                - listitem [ref=f13e151]:
+                  - link "Home" [ref=f13e152] [cursor=pointer]:
+                    - /url: http://localhost:8000
+                  - text: /
+                - listitem [ref=f13e153]:
+                  - generic [ref=f13e154]: Dashboard
+            - generic [ref=f13e155]:
+              - generic:
+                - link "Create Product" [ref=f13e156] [cursor=pointer]:
+                  - /url: http://localhost:8000/products/create
+                - generic [ref=f13e158] [cursor=pointer]: Create Purchase Order
+                - generic [ref=f13e159] [cursor=pointer]: Create Sale Order
+          - generic [ref=f13e162]:
+            - generic [ref=f13e164]:
+              - generic [ref=f13e166]:
+                - generic [ref=f13e167]:
+                  - generic [ref=f13e168]: PKR
+                  - generic [ref=f13e169]: "30"
+                - generic [ref=f13e175]: Today Profit
+              - generic [ref=f13e177]:
+                - generic [ref=f13e178]:
+                  - generic [ref=f13e180]: Expense
+                  - generic [ref=f13e181]: "900"
+                - generic [ref=f13e182]:
+                  - generic [ref=f13e184]: Revenue
+                  - generic [ref=f13e185]: "930"
+            - generic [ref=f13e200]:
+              - generic [ref=f13e202]:
+                - generic [ref=f13e203]:
+                  - generic [ref=f13e204]: PKR
+                  - generic [ref=f13e205]: "132.86"
+                - generic [ref=f13e211]: Average Daily Sales
+              - img [ref=f13e216]:
+                - generic [ref=f13e219]:
+                  - generic "Tue" [ref=f13e220]
+                  - generic "Wed" [ref=f13e221]
+                  - generic "Thu" [ref=f13e222]
+                  - generic "Fri" [ref=f13e223]
+                  - generic "Sat" [ref=f13e224]
+                  - generic "Sun" [ref=f13e225]
+                  - generic "Mon" [ref=f13e226]
+                - generic [ref=f13e233]:
+                  - generic "1000" [ref=f13e234]
+                  - generic "800" [ref=f13e235]
+                  - generic "600" [ref=f13e236]
+                  - generic "400" [ref=f13e237]
+                  - generic "200" [ref=f13e238]
+                  - generic "0" [ref=f13e239]
+            - generic [ref=f13e242]:
+              - generic [ref=f13e243]:
+                - generic [ref=f13e244]: PKR 930
+                - generic [ref=f13e252]: Sales this month
+              - generic [ref=f13e253]: "1"
+            - generic [ref=f13e257]:
+              - generic [ref=f13e258]:
+                - generic [ref=f13e259]: PKR 930
+                - generic [ref=f13e267]: Orders this month
+              - generic [ref=f13e268]: "1"
+            - generic [ref=f13e272]:
+              - generic [ref=f13e273]:
+                - generic [ref=f13e274]: PKR 0
+                - generic [ref=f13e282]: Cancelled Orders this month
+              - generic [ref=f13e283]: "0"
+            - generic [ref=f13e287]:
+              - generic [ref=f13e288]:
+                - generic [ref=f13e289]: PKR 0
+                - generic [ref=f13e297]: Refunded Orders this month
+              - generic [ref=f13e298]: "0"
+            - generic [ref=f13e303]:
+              - generic [ref=f13e304]: "0"
+              - generic [ref=f13e312]: New Customers This Month
+            - generic [ref=f13e314]:
+              - heading "Recent Orders" [level=3] [ref=f13e316]
+              - table [ref=f13e320]:
+                - rowgroup [ref=f13e321]:
+                  - row [ref=f13e322]:
+                    - columnheader "Order" [ref=f13e323]
+                    - columnheader "Customer" [ref=f13e324]
+                    - columnheader "Status" [ref=f13e325]
+                - rowgroup [ref=f13e326]:
+                  - row [ref=f13e327]:
+                    - cell "INV-1" [ref=f13e328]
+                    - cell "Instore Order" [ref=f13e329]
+                    - cell "paid" [ref=f13e330]
+            - generic [ref=f13e333]:
+              - heading "Stock Report" [level=3] [ref=f13e335]
+              - generic [ref=f13e337]:
+                - generic [ref=f13e338]:
+                  - generic [ref=f13e339]: Status
+                  - combobox [aria-hidden] [ref=f13e340]
+                  - combobox [ref=f13e343] [cursor=pointer]:
+                    - textbox "Show All" [ref=f13e344]
+                  - button [ref=f13e345] [cursor=pointer]
+                - generic [ref=f13e351]:
+                  - table [ref=f13e353]:
+                    - rowgroup [ref=f13e354]:
+                      - row [ref=f13e355]:
+                        - columnheader "SR#" [ref=f13e356] [cursor=pointer]
+                        - 'columnheader "Item: activate to sort column ascending" [ref=f13e357] [cursor=pointer]': Item
+                        - 'columnheader "Purchase Price: activate to sort column ascending" [ref=f13e358] [cursor=pointer]': Purchase Price
+                        - 'columnheader "Status: activate to sort column ascending" [ref=f13e359] [cursor=pointer]': Status
+                        - columnheader "QTY" [ref=f13e360]
+                    - rowgroup [ref=f13e361]:
+                      - row [ref=f13e362]:
+                        - cell "1" [ref=f13e363]
+                        - cell "Oliver Glover" [ref=f13e364]
+                        - cell "300" [ref=f13e365]
+                        - cell "Low Stock" [ref=f13e366]
+                        - cell "7 PCS" [ref=f13e368]
+                  - generic [ref=f13e369]:
+                    - generic [ref=f13e370]:
+                      - combobox [ref=f13e373]:
+                        - option "10" [selected]
+                        - option "25"
+                        - option "50"
+                        - option "100"
+                      - status [ref=f13e374]: Showing 1 to 1 of 1 records
+                    - list [ref=f13e377]:
+                      - listitem [ref=f13e378]:
+                        - link:
+                          - /url: "#"
+                      - listitem [ref=f13e379]:
+                        - link "1" [ref=f13e380] [cursor=pointer]:
+                          - /url: "#"
+                      - listitem [ref=f13e381]:
+                        - link:
+                          - /url: "#"
+            - generic [ref=f13e384]:
+              - generic [ref=f13e385]:
+                - generic [ref=f13e386]: "4"
+                - generic [ref=f13e389]: Attendance Today
+              - generic [ref=f13e390]:
+                - generic [ref=f13e391]: Absent today
+                - generic [ref=f13e392]: "0"
+            - generic [ref=f13e394]:
+              - generic [ref=f13e396]:
+                - generic [ref=f13e397]:
+                  - generic [ref=f13e398]: PKR
+                  - generic [ref=f13e399]: "20"
+                - generic [ref=f13e400]: Attendance This Month
+              - img [ref=f13e405]:
+                - generic [ref=f13e408]:
+                  - generic "1" [ref=f13e409]
+                  - generic "2" [ref=f13e410]
+                  - generic "3" [ref=f13e411]
+                  - generic "4" [ref=f13e412]
+                  - generic "5" [ref=f13e413]
+                  - generic "6" [ref=f13e414]
+                  - generic "7" [ref=f13e415]
+                  - generic "8" [ref=f13e416]
+                  - generic "9" [ref=f13e417]
+                  - generic "10" [ref=f13e418]
+                  - generic "11" [ref=f13e419]
+                  - generic "12" [ref=f13e420]
+                  - generic "13" [ref=f13e421]
+                  - generic "14" [ref=f13e422]
+                  - generic "15" [ref=f13e423]
+                  - generic "16" [ref=f13e424]
+                  - generic "17" [ref=f13e425]
+                  - generic "18" [ref=f13e426]
+                  - generic "19" [ref=f13e427]
+                  - generic "20" [ref=f13e428]
+                  - generic "21" [ref=f13e429]
+                  - generic "22" [ref=f13e430]
+                  - generic "23" [ref=f13e431]
+                  - generic "24" [ref=f13e432]
+                  - generic "25" [ref=f13e433]
+                  - generic "26" [ref=f13e434]
+                  - generic "27" [ref=f13e435]
+                  - generic "28" [ref=f13e436]
+                  - generic "29" [ref=f13e437]
+                  - generic "30" [ref=f13e438]
+                  - generic "31" [ref=f13e439]
+                - generic [ref=f13e450]:
+                  - generic "4.0" [ref=f13e451]
+                  - generic "3.0" [ref=f13e452]
+                  - generic "2.0" [ref=f13e453]
+                  - generic "1.0" [ref=f13e454]
+                  - generic "0.0" [ref=f13e455]
+            - generic [ref=f13e457]:
+              - heading "Absent Today" [level=3] [ref=f13e459]
+              - generic [ref=f13e461]: Everyone is present today.
+            - generic [ref=f13e466]:
+              - generic [ref=f13e467]:
+                - generic [ref=f13e468]: USD 49
+                - generic [ref=f13e470]: ACTIVE
+                - generic [ref=f13e472]: Current Plan
+              - generic [ref=f13e473]:
+                - generic [ref=f13e474]:
+                  - generic [ref=f13e475]: Plan
+                  - generic [ref=f13e476]: Pro
+                - generic [ref=f13e477]:
+                  - generic [ref=f13e478]: Billing
+                  - generic [ref=f13e479]: Month
+              - link "Manage plan" [ref=f13e481] [cursor=pointer]:
+                - /url: http://localhost:8000/pricing
+            - generic [ref=f13e484]:
+              - generic [ref=f13e485]:
+                - generic [ref=f13e486]: "0"
+                - generic [ref=f13e488]: ACTIVE
+                - generic [ref=f13e490]: Subscription Renewal
+              - generic [ref=f13e491]:
+                - generic [ref=f13e492]:
+                  - generic [ref=f13e493]: Period ends
+                  - generic [ref=f13e494]: Nov 19, 2026
+                - generic [ref=f13e495]:
+                  - generic [ref=f13e496]: Auto renew
+                  - generic [ref=f13e497]: "Yes"
+              - link "Manage plan" [ref=f13e499] [cursor=pointer]:
+                - /url: http://localhost:8000/pricing
+            - generic [ref=f13e501]:
+              - generic [ref=f13e502]:
+                - heading "Plan Usage" [level=3] [ref=f13e503]
+                - link "Change plan" [ref=f13e506] [cursor=pointer]:
+                  - /url: http://localhost:8000/pricing
+              - table [ref=f13e509]:
+                - rowgroup [ref=f13e510]:
+                  - row [ref=f13e511]:
+                    - columnheader "Resource" [ref=f13e512]
+                    - columnheader "Used" [ref=f13e513]
+                    - columnheader "Limit" [ref=f13e514]
+                - rowgroup [ref=f13e515]:
+                  - row [ref=f13e516]:
+                    - cell "Employees" [ref=f13e517]
+                    - cell "5" [ref=f13e518]
+                    - cell "25" [ref=f13e519]
+                  - row [ref=f13e520]:
+                    - cell "Roles" [ref=f13e521]
+                    - cell "5" [ref=f13e522]
+                    - cell "5" [ref=f13e523]
+            - generic [ref=f13e526]:
+              - generic [ref=f13e527]:
+                - generic [ref=f13e528]: "0"
+                - generic [ref=f13e531]: Draft Payroll Runs
+              - link "Open payroll" [ref=f13e533] [cursor=pointer]:
+                - /url: http://localhost:8000/payrolls
+            - generic [ref=f13e536]:
+              - generic [ref=f13e537]:
+                - generic [ref=f13e538]: PKR 12.5k
+                - generic [ref=f13e540]: Paid
+                - generic [ref=f13e542]: Payroll Due
+              - generic [ref=f13e543]:
+                - generic [ref=f13e544]: Employees
+                - generic [ref=f13e545]: "3"
+              - link "View run" [ref=f13e547] [cursor=pointer]:
+                - /url: http://localhost:8000/payrolls/3769b98c0cf74e26ef0d43c4e480c3a9
+            - generic [ref=f13e551]:
+              - generic [ref=f13e552]: PKR 12.5k
+              - generic [ref=f13e560]: Payroll Paid This Month
+            - generic [ref=f13e562]:
+              - generic [ref=f13e564]:
+                - generic [ref=f13e565]:
+                  - generic [ref=f13e566]: PKR
+                  - generic [ref=f13e567]: 12.5k
+                - generic [ref=f13e568]: Payroll Cost
+              - img [ref=f13e573]:
+                - generic [ref=f13e576]:
+                  - generic "May" [ref=f13e577]
+                  - generic "Jun" [ref=f13e578]
+                  - generic "Jul" [ref=f13e579]
+                  - generic "Aug" [ref=f13e580]
+                  - generic "Sep" [ref=f13e581]
+                  - generic "Oct" [ref=f13e582]
+                - generic [ref=f13e589]:
+                  - generic "15000" [ref=f13e590]
+                  - generic "12000" [ref=f13e591]
+                  - generic "9000" [ref=f13e592]
+                  - generic "6000" [ref=f13e593]
+                  - generic "3000" [ref=f13e594]
+                  - generic "0" [ref=f13e595]
+            - generic [ref=f13e597]:
+              - generic [ref=f13e598]:
+                - heading "Recent Payroll Runs" [level=3] [ref=f13e599]
+                - link "View all payroll" [ref=f13e602] [cursor=pointer]:
+                  - /url: http://localhost:8000/payrolls
+              - table [ref=f13e605]:
+                - rowgroup [ref=f13e606]:
+                  - row [ref=f13e607]:
+                    - columnheader "Period" [ref=f13e608]
+                    - columnheader "Employees" [ref=f13e609]
+                    - columnheader "Net" [ref=f13e610]
+                    - columnheader "Status" [ref=f13e611]
+                - rowgroup [ref=f13e612]:
+                  - row [ref=f13e613]:
+                    - cell "Oct 2026" [ref=f13e614]
+                    - cell "3" [ref=f13e615]
+                    - cell "12500" [ref=f13e616]
+                    - cell "Paid" [ref=f13e618]
+            - generic [ref=f13e621]:
+              - generic [ref=f13e622]:
+                - heading "My Payslips" [level=3] [ref=f13e623]
+                - link "View all payslips" [ref=f13e626] [cursor=pointer]:
+                  - /url: http://localhost:8000/payrolls/me
+              - generic [ref=f13e627]: No payslips yet.
+            - generic [ref=f13e632]:
+              - generic [ref=f13e633]:
+                - generic [ref=f13e634]: "1"
+                - generic [ref=f13e637]: Low Stock
+              - link "View stock" [ref=f13e639] [cursor=pointer]:
+                - /url: http://localhost:8000/stocks
+            - generic [ref=f13e642]:
+              - generic [ref=f13e643]:
+                - generic [ref=f13e644]: "0"
+                - generic [ref=f13e647]: Out of Stock
+              - link "View stock" [ref=f13e649] [cursor=pointer]:
+                - /url: http://localhost:8000/stocks
+            - generic [ref=f13e651]:
+              - generic [ref=f13e653]:
+                - generic [ref=f13e654]:
+                  - generic [ref=f13e655]: PKR
+                  - generic [ref=f13e656]: 2.1k
+                - generic [ref=f13e657]: Stock Value by Category
+              - img [ref=f13e662]:
+                - generic "Home Decorators" [ref=f13e666]
+                - generic [ref=f13e673]:
+                  - generic "2500" [ref=f13e674]
+                  - generic "2000" [ref=f13e675]
+                  - generic "1500" [ref=f13e676]
+                  - generic "1000" [ref=f13e677]
+                  - generic "500" [ref=f13e678]
+                  - generic "0" [ref=f13e679]
+            - generic [ref=f13e681]:
+              - generic [ref=f13e683]:
+                - generic [ref=f13e684]:
+                  - generic [ref=f13e685]: PKR
+                  - generic [ref=f13e686]: "30"
+                - generic [ref=f13e692]: Revenue vs Expense
+              - generic [ref=f13e693]:
+                - generic [ref=f13e694]:
+                  - generic [ref=f13e695]:
+                    - generic [ref=f13e697]: Revenue
+                    - generic [ref=f13e698]: "930"
+                  - generic [ref=f13e699]:
+                    - generic [ref=f13e701]: Expense
+                    - generic [ref=f13e702]: "900"
+                - img [ref=f13e706]:
+                  - generic [ref=f13e708]:
+                    - generic [ref=f13e709] [cursor=pointer]: Revenue
+                    - generic [ref=f13e712] [cursor=pointer]: Expense
+                  - generic [ref=f13e717]:
+                    - generic "Nov" [ref=f13e718]
+                    - generic "Dec" [ref=f13e719]
+                    - generic "Jan" [ref=f13e720]
+                    - generic "Feb" [ref=f13e721]
+                    - generic "Mar" [ref=f13e722]
+                    - generic "Apr" [ref=f13e723]
+                    - generic "May" [ref=f13e724]
+                    - generic "Jun" [ref=f13e725]
+                    - generic "Jul" [ref=f13e726]
+                    - generic "Aug" [ref=f13e727]
+                    - generic "Sep" [ref=f13e728]
+                    - generic "Oct" [ref=f13e729]
+                  - generic [ref=f13e738]:
+                    - generic "1000" [ref=f13e739]
+                    - generic "800" [ref=f13e740]
+                    - generic "600" [ref=f13e741]
+                    - generic "400" [ref=f13e742]
+                    - generic "200" [ref=f13e743]
+                    - generic "0" [ref=f13e744]
+            - generic [ref=f13e747]:
+              - generic [ref=f13e748]:
+                - generic [ref=f13e749]: PKR 0
+                - generic [ref=f13e752]: Receivables
+              - link "View accounts" [ref=f13e754] [cursor=pointer]:
+                - /url: http://localhost:8000/accounts
+            - generic [ref=f13e757]:
+              - generic [ref=f13e758]:
+                - generic [ref=f13e759]: PKR 3.0k
+                - generic [ref=f13e762]: Payables
+              - link "View accounts" [ref=f13e764] [cursor=pointer]:
+                - /url: http://localhost:8000/accounts
+            - generic [ref=f13e767]:
+              - generic [ref=f13e768]:
+                - generic [ref=f13e769]: "1"
+                - generic [ref=f13e772]: Open Purchase Orders
+              - link "View orders" [ref=f13e774] [cursor=pointer]:
+                - /url: http://localhost:8000/purchase-orders
+            - generic [ref=f13e777]:
+              - generic [ref=f13e778]:
+                - generic [ref=f13e779]: PKR 3.0k
+                - generic [ref=f13e782]: Payable to Suppliers
+              - link "View suppliers" [ref=f13e784] [cursor=pointer]:
+                - /url: http://localhost:8000/suppliers
+        - generic [ref=f13e787]:
+          - text: 2026©
+          - link "POS" [ref=f13e788] [cursor=pointer]:
+            - /url: ""
+          - generic [ref=f13e789]: "0"
+  - button "Scroll to top"

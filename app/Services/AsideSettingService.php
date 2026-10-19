@@ -164,7 +164,7 @@ class AsideSettingService
                     ],
                     [
                         'title' => 'Bulk Payroll',
-                        'permission' => 'view payroll',
+                        'permission' => 'create payroll',
                         'link' => route('payrolls.create'),
                     ],
                     [

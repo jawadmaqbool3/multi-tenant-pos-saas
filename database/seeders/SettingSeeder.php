@@ -140,7 +140,7 @@ class SettingSeeder extends Seeder
                         {
                             "link": "http://127.0.0.1:8000/payrolls/create",
                             "title": "Bulk Payroll",
-                            "permission": "view payroll"
+                            "permission": "create payroll"
                         },
                         {
                             "link": "http://127.0.0.1:8000/allowances",

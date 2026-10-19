@@ -26,6 +26,8 @@ class DefaultRoles
 
             // Manages employees and runs payroll.
             'hr' => [
+                'view own attendance',
+                'view own payroll',
                 'view user',
                 'create user',
                 'edit user',
@@ -50,6 +52,7 @@ class DefaultRoles
                 'dashboard attendance summary',
                 'dashboard attendance monthly',
                 'dashboard attendance absent today',
+                'dashboard employee mark attendance',
                 'dashboard my attendance',
                 'dashboard payroll pending',
                 'dashboard payroll due',
@@ -61,6 +64,8 @@ class DefaultRoles
 
             // Accounting/bookkeeping and paying payroll.
             'accountant' => [
+                'view own attendance',
+                'view own payroll',
                 'view account',
                 'create account',
                 'edit account',
@@ -103,6 +108,8 @@ class DefaultRoles
 
             // Sells using the product catalog and processes sales orders.
             'sales person' => [
+                'view own attendance',
+                'view own payroll',
                 'view product',
                 'create product',
                 'edit product',
@@ -120,18 +127,25 @@ class DefaultRoles
                 'view sales',
                 'order refund',
                 'view customer',
+                'view promotion',
+                'create promotion',
+                'edit promotion',
+                'delete promotion',
                 'dashboard my attendance',
                 'dashboard my payslips',
                 'dashboard monthly sales',
                 'dashboard monthly orders',
                 'dashboard monthly cancelled orders',
                 'dashboard monthly refunded orders',
+                'dashboard monthly customers',
                 'dashboard daily average sales',
                 'dashboard recent orders',
             ],
 
             // Manages stock levels, purchasing, products and categories.
             'stock manager' => [
+                'view own attendance',
+                'view own payroll',
                 'view product',
                 'create product',
                 'edit product',
@@ -153,6 +167,11 @@ class DefaultRoles
                 'dashboard stock report',
                 'dashboard supplier pending orders',
                 'dashboard supplier payable',
+                'view supplier',
+                'create supplier',
+                'edit supplier',
+                'delete supplier',
+                'pay supplier',
             ],
         ];
     }
