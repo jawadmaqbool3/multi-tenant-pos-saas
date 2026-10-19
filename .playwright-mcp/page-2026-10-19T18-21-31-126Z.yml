@@ -1,0 +1,123 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - generic [ref=f4e7]:
+      - link [ref=f4e9] [cursor=pointer]:
+        - /url: "#"
+      - img "user" [ref=f4e19] [cursor=pointer]
+    - generic [ref=f4e20]:
+      - generic [ref=f4e21]:
+        - generic [ref=f4e22]:
+          - link [ref=f4e23] [cursor=pointer]:
+            - /url: http://localhost:8000
+            - generic [ref=f4e24]:
+              - img "Logo" [ref=f4e25]
+              - heading "POS" [level=3] [ref=f4e26]
+          - generic [ref=f4e27] [cursor=pointer]
+        - generic [ref=f4e34]:
+          - link "Dashboards" [ref=f4e36] [cursor=pointer]:
+            - /url: http://localhost:8000
+          - generic [ref=f4e46]: Pages
+          - generic [ref=f4e48]: Bank
+          - generic [ref=f4e56]:
+            - generic [ref=f4e57] [cursor=pointer]: Inventory
+            - generic [ref=f4e67]:
+              - link "Categories" [ref=f4e69] [cursor=pointer]:
+                - /url: /categories
+              - link "Products" [ref=f4e74] [cursor=pointer]:
+                - /url: /products
+              - link "Suppliers" [ref=f4e79] [cursor=pointer]:
+                - /url: /suppliers
+          - generic [ref=f4e83]: Orders
+          - generic [ref=f4e93]: Promotions
+          - generic [ref=f4e102]: Reports
+          - generic [ref=f4e109]: HR
+          - generic [ref=f4e118]: Users
+          - generic [ref=f4e129]: Access Control
+          - generic [ref=f4e138]: Settings
+          - generic [ref=f4e147]: Billing
+      - generic [ref=f4e155]:
+        - generic [ref=f4e156]:
+          - generic [ref=f4e159]:
+            - heading "Edit Category" [level=1] [ref=f4e160]
+            - list [ref=f4e162]:
+              - listitem [ref=f4e163]:
+                - link "Home" [ref=f4e164] [cursor=pointer]:
+                  - /url: http://localhost:8000
+                - text: /
+              - listitem [ref=f4e165]:
+                - link "Categories" [ref=f4e166] [cursor=pointer]:
+                  - /url: http://localhost:8000/categories
+                - text: /
+              - listitem [ref=f4e167]:
+                - generic [ref=f4e168]: Edit
+          - generic [ref=f4e171]:
+            - generic [ref=f4e172]:
+              - generic [ref=f4e173]:
+                - heading "Thumbnail" [level=2] [ref=f4e176]
+                - generic [ref=f4e177]:
+                  - generic "Change avatar" [ref=f4e180] [cursor=pointer]:
+                    - button "Change avatar"
+                  - generic [ref=f4e184]: Set the category thumbnail image. Only *.png, *.jpg and *.jpeg image files are accepted
+              - generic [ref=f4e185]:
+                - heading "Status" [level=2] [ref=f4e188]
+                - generic [ref=f4e191]:
+                  - combobox [aria-hidden] [ref=f4e192]
+                  - combobox [ref=f4e195] [cursor=pointer]:
+                    - textbox "Published" [ref=f4e196]
+                  - generic [ref=f4e197]: Set the category status.
+              - generic [ref=f4e200]:
+                - checkbox "Featured" [ref=f4e201]
+                - generic [ref=f4e202]: Featured
+            - generic [ref=f4e203]:
+              - generic [ref=f4e204]:
+                - heading "General" [level=2] [ref=f4e207]
+                - generic [ref=f4e208]:
+                  - generic [ref=f4e209]:
+                    - generic [ref=f4e210]: Category Name*
+                    - textbox "Product name" [ref=f4e211]: Home Decorators
+                    - generic [ref=f4e212]: A category name is required and recommended to be unique.
+                  - generic [ref=f4e213]:
+                    - generic [ref=f4e214]: Description
+                    - generic [ref=f4e215]:
+                      - generic [ref=f4e217]:
+                        - button "Normal" [ref=f4e218] [cursor=pointer]
+                        - text: Heading 1 Heading 2 Normal
+                      - generic [ref=f4e222]:
+                        - button [ref=f4e223] [cursor=pointer]
+                        - button [ref=f4e227] [cursor=pointer]
+                        - button [ref=f4e230] [cursor=pointer]
+                      - generic [ref=f4e234]:
+                        - button [ref=f4e235] [cursor=pointer]
+                        - button [ref=f4e240] [cursor=pointer]
+                    - generic [ref=f4e245]:
+                      - paragraph [ref=f4e247]: Home Decorators
+                      - text: "Visit URL: EditRemove"
+                    - generic [ref=f4e248]: Set a description to the category for better visibility.
+              - generic [ref=f4e249]:
+                - heading "Meta Options" [level=2] [ref=f4e252]
+                - generic [ref=f4e253]:
+                  - generic [ref=f4e254]:
+                    - generic [ref=f4e255]: Meta Tag Title
+                    - textbox "Meta tag name" [ref=f4e256]
+                    - generic [ref=f4e257]: Set a meta tag title. Recommended to be simple and precise keywords.
+                  - generic [ref=f4e258]:
+                    - generic [ref=f4e259]: Meta Tag Description
+                    - textbox [ref=f4e260]
+                    - generic [ref=f4e261]: Set a meta tag description to the category for increased SEO ranking.
+                  - generic [ref=f4e262]:
+                    - generic [ref=f4e263]: Meta Tag Keywords
+                    - textbox [ref=f4e264]
+                    - generic [ref=f4e265]:
+                      - text: Set a list of keywords that the category is related to. Separate the keywords by adding a comma
+                      - code [ref=f4e266]: ","
+                      - text: between each keyword.
+              - generic [ref=f4e267]:
+                - link "Cancel" [ref=f4e268] [cursor=pointer]:
+                  - /url: http://localhost:8000/categories
+                - button "Save Changes" [ref=f4e269] [cursor=pointer]
+        - generic [ref=f4e272]:
+          - text: 2026©
+          - link "POS" [ref=f4e273] [cursor=pointer]:
+            - /url: ""
+          - generic [ref=f4e274]: "0"
+  - button "Scroll to top"

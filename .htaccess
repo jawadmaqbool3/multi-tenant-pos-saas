@@ -9,13 +9,24 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+    # The Laravel entry point and all static assets (css, js, images, fonts,
+    # ...) live in the public/ folder, but this project may be deployed with
+    # the repository root as the web root. Any request that resolves to a real
+    # file under public/ is served from there. REQUEST_FILENAME is relative to
+    # the document root and updates after an internal rewrite, so once the path
+    # is rewritten to public/... this condition fails and the rewrite stops.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
+    # Send every request that is not an existing file to the front controller
+    # inside public/. Existing files (the rewritten assets above, or anything
+    # already living at the web root) are served directly.
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteRule ^ public/index.php [L]
 </IfModule>

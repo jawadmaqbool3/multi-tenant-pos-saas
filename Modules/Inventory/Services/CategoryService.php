@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Services;
 
 use App\Core\Helper;
+use Modules\Inventory\Models\Category;
 use Modules\Inventory\Repositories\CategoryRepository;
 use Modules\Inventory\Repositories\FeatureRepository;
 
