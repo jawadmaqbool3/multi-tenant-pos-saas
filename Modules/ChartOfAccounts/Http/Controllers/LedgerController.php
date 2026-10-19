@@ -39,6 +39,10 @@ class LedgerController extends Controller
 
         $accounts = $this->service->getAccounts();
 
-        return view('chartofaccounts::reports.ledger.index', compact('accounts'));
+        $selected = $request->account ?: 'all';
+        $from = $request->from ?: now()->startOfMonth()->toDateString();
+        $to = $request->to ?: now()->endOfMonth()->toDateString();
+
+        return view('chartofaccounts::reports.ledger.index', compact('accounts', 'selected', 'from', 'to'));
     }
 }

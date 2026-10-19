@@ -28,6 +28,17 @@ class AsideSettingService
                 ],
             ],
             [
+                'name' => 'Billing',
+                'icon' => 'bi bi-credit-card',
+                'links' => [
+                    [
+                        'title' => 'Plans',
+                        'permission' => 'view billing plan',
+                        'link' => route('billing.plans.index'),
+                    ],
+                ],
+            ],
+            [
                 'name' => 'Bank',
                 'icon' => 'bi bi-bank',
                 'links' => [
@@ -55,6 +66,11 @@ class AsideSettingService
                         'title' => 'Balance Sheet',
                         'permission' => 'view balance sheet',
                         'link' => route('balance-sheet.index'),
+                    ],
+                    [
+                        'title' => 'Payroll Runs',
+                        'permission' => 'view payroll',
+                        'link' => route('payrolls.index'),
                     ],
                 ],
             ],
@@ -107,27 +123,6 @@ class AsideSettingService
                 ],
             ],
             [
-                'name' => 'Payroll',
-                'icon' => 'bi bi-cash-stack',
-                'links' => [
-                    [
-                        'title' => 'Payroll Runs',
-                        'permission' => 'view payroll',
-                        'link' => route('payrolls.index'),
-                    ],
-                    [
-                        'title' => 'Allowances',
-                        'permission' => 'view allowance',
-                        'link' => route('allowances.index'),
-                    ],
-                    [
-                        'title' => 'Deductions',
-                        'permission' => 'view deduction',
-                        'link' => route('deductions.index'),
-                    ],
-                ],
-            ],
-            [
                 'name' => 'Reports',
                 'icon' => 'bi bi-file-earmark-bar-graph',
                 'links' => [
@@ -166,6 +161,21 @@ class AsideSettingService
                         'title' => 'Attendance',
                         'permission' => 'view employee attendance report',
                         'link' => route('attendance.index'),
+                    ],
+                    [
+                        'title' => 'Bulk Payroll',
+                        'permission' => 'view payroll',
+                        'link' => route('payrolls.create'),
+                    ],
+                    [
+                        'title' => 'Allowances',
+                        'permission' => 'view allowance',
+                        'link' => route('allowances.index'),
+                    ],
+                    [
+                        'title' => 'Deductions',
+                        'permission' => 'view deduction',
+                        'link' => route('deductions.index'),
                     ],
                 ],
             ],
@@ -239,9 +249,25 @@ class AsideSettingService
      */
     public function getTenantMenuLinks()
     {
-        return array_values(array_filter($this->menuLinks, function ($menu) {
+        $menus = array_values(array_filter($this->menuLinks, function ($menu) {
             return ($menu['name'] ?? null) !== 'SaaS';
         }));
+
+        // The tenant-only self-service subscription link is added here so it is
+        // never offered to platform (SaaS owner) accounts.
+        foreach ($menus as $i => $menu) {
+            if (($menu['name'] ?? null) !== 'Billing') {
+                continue;
+            }
+
+            $menus[$i]['links'][] = [
+                'title' => 'My Subscription',
+                'permission' => 'manage company subscription',
+                'link' => route('billing.subscription'),
+            ];
+        }
+
+        return $menus;
     }
 
     /**

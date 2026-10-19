@@ -1,0 +1,119 @@
+- generic [active] [ref=f9e1]:
+  - generic [ref=f9e3]:
+    - generic [ref=f9e7]:
+      - link [ref=f9e9] [cursor=pointer]:
+        - /url: "#"
+      - img "user" [ref=f9e19] [cursor=pointer]
+    - generic [ref=f9e20]:
+      - generic [ref=f9e21]:
+        - generic [ref=f9e22]:
+          - link [ref=f9e23] [cursor=pointer]:
+            - /url: http://localhost:8000
+            - generic [ref=f9e24]:
+              - img "Logo" [ref=f9e25]
+              - heading "POS" [level=3] [ref=f9e26]
+          - generic [ref=f9e27] [cursor=pointer]
+        - generic [ref=f9e34]:
+          - link "Dashboards" [ref=f9e36] [cursor=pointer]:
+            - /url: http://localhost:8000
+          - generic [ref=f9e46]: Pages
+          - generic [ref=f9e48]:
+            - generic [ref=f9e49] [cursor=pointer]: Bank
+            - generic [ref=f9e56]:
+              - link "Chart of Accounts" [ref=f9e58] [cursor=pointer]:
+                - /url: /accounts
+              - link "Vouchers" [ref=f9e63] [cursor=pointer]:
+                - /url: /vouchers
+              - link "Voucher Types" [ref=f9e68] [cursor=pointer]:
+                - /url: /voucher-types
+              - link "Ledger" [ref=f9e73] [cursor=pointer]:
+                - /url: /reports/ledger
+              - link "Balance Sheet" [ref=f9e78] [cursor=pointer]:
+                - /url: /reports/balance-sheet
+              - link "Payroll Runs" [ref=f9e83] [cursor=pointer]:
+                - /url: /payrolls
+          - generic [ref=f9e87]: Inventory
+          - generic [ref=f9e98]: Orders
+          - generic [ref=f9e108]: Promotions
+          - generic [ref=f9e117]: Reports
+          - generic [ref=f9e124]: HR
+          - generic [ref=f9e133]: Users
+          - generic [ref=f9e144]: Access Control
+          - generic [ref=f9e153]: Settings
+          - generic [ref=f9e162]: Billing
+      - generic [ref=f9e170]:
+        - generic [ref=f9e172]:
+          - generic [ref=f9e173]:
+            - heading "Ledger" [level=3] [ref=f9e174]
+            - generic [ref=f9e176]:
+              - list [ref=f9e179]:
+                - listitem [ref=f9e180]:
+                  - link "Home" [ref=f9e181] [cursor=pointer]:
+                    - /url: http://localhost:8000
+                  - text: /
+                - listitem [ref=f9e182]:
+                  - generic [ref=f9e183]: Ledger
+              - generic [ref=f9e184]:
+                - generic [ref=f9e185]: Account
+                - combobox [aria-hidden] [ref=f9e186]
+                - combobox [ref=f9e189] [cursor=pointer]:
+                  - button "Remove all items" [ref=f9e190]
+                  - textbox "Cash in Hand" [ref=f9e191]
+              - generic [ref=f9e192]:
+                - generic [ref=f9e193]: Date Range
+                - textbox "All dates" [ref=f9e198]: 2026-10-01 - 2026-10-31
+          - generic [ref=f9e200]:
+            - generic [ref=f9e202]:
+              - generic [ref=f9e203]: Cash in Hand
+              - text: 001-002 · Asset · 2026-10-01 to 2026-10-31
+            - table [ref=f9e204]:
+              - rowgroup [ref=f9e205]:
+                - row [ref=f9e206]:
+                  - columnheader "Date" [ref=f9e207]
+                  - columnheader "Voucher#" [ref=f9e208]
+                  - columnheader "Description" [ref=f9e209]
+                  - columnheader "Debit" [ref=f9e210]
+                  - columnheader "Credit" [ref=f9e211]
+                  - columnheader "Balance" [ref=f9e212]
+              - rowgroup [ref=f9e213]:
+                - row [ref=f9e214]:
+                  - cell "Opening Balance" [ref=f9e215]
+                  - cell "0.00" [ref=f9e216]
+                - row [ref=f9e217]:
+                  - cell "2026-10-19" [ref=f9e218]
+                  - cell "CRV-1 (CRV)" [ref=f9e219]
+                  - cell "Payment received against INV-1" [ref=f9e220]
+                  - cell "930.00" [ref=f9e221]
+                  - cell "-" [ref=f9e222]
+                  - cell "930.00" [ref=f9e223]
+                - row [ref=f9e224]:
+                  - cell "2026-10-19" [ref=f9e225]
+                  - cell "SLV-1 (SLV)" [ref=f9e226]
+                  - cell "Net salary paid" [ref=f9e227]
+                  - cell "-" [ref=f9e228]
+                  - cell "5,000.00" [ref=f9e229]
+                  - cell "-4,070.00" [ref=f9e230]
+                - row [ref=f9e231]:
+                  - cell "2026-10-19" [ref=f9e232]
+                  - cell "SLV-1 (SLV)" [ref=f9e233]
+                  - cell "Net salary paid" [ref=f9e234]
+                  - cell "-" [ref=f9e235]
+                  - cell "4,000.00" [ref=f9e236]
+                  - cell "-8,070.00" [ref=f9e237]
+                - row [ref=f9e238]:
+                  - cell "2026-10-19" [ref=f9e239]
+                  - cell "SLV-1 (SLV)" [ref=f9e240]
+                  - cell "Net salary paid" [ref=f9e241]
+                  - cell "-" [ref=f9e242]
+                  - cell "3,500.00" [ref=f9e243]
+                  - cell "-11,570.00" [ref=f9e244]
+              - rowgroup [ref=f9e245]:
+                - row [ref=f9e246]:
+                  - cell "Closing Balance" [ref=f9e247]
+                  - cell "-11,570.00" [ref=f9e248]
+        - generic [ref=f9e251]:
+          - text: 2026©
+          - link "POS" [ref=f9e252] [cursor=pointer]:
+            - /url: ""
+          - generic [ref=f9e253]: "0"
+  - button "Scroll to top"

@@ -42,7 +42,7 @@
                 }).addClass('form-control'));
             var removeCol = $('<div>').addClass('col-md-1 d-flex align-items-center')
                 .append($('<button>').attr('type', 'button').addClass('btn btn-icon btn-light-danger remove-row')
-                    .html('<span class="svg-icon svg-icon-3"><x-icon name="x" :size="16" /></span>'));
+                    .html(@json('<span class="svg-icon svg-icon-3">'.\App\Support\Icon::svg('x', 16).'</span>')));
 
             row.append(selectCol, amountCol, removeCol);
             return row;

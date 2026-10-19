@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-md-5">
                     <label class="form-label">Account</label>
-                    <x-account-selector accountLevel="all" selectLevel="all" selected="all" :account="$accounts"
+                    <x-account-selector accountLevel="all" selectLevel="all" :selected="$selected" :account="$accounts"
                         id="ledger_account" name="account" class="account-selector" isRequired="true" />
                 </div>
                 <div class="col-md-4">
@@ -24,7 +24,8 @@
                             <x-icon name="calendar" :size="18" />
                         </span>
                         <input type="text" id="ledger_date_range" class="form-control form-control-solid ps-15"
-                            placeholder="All dates" readonly>
+                            placeholder="All dates" readonly
+                            value="{{ $from ? $from . ' - ' . $to : '' }}">
                     </div>
                 </div>
             </div>
@@ -36,5 +37,5 @@
 @endsection
 
 @section('jsSection')
-    @include('chartofaccounts::reports.ledger._js')
+    @include('chartofaccounts::reports.ledger._js', ['from' => $from, 'to' => $to])
 @endsection

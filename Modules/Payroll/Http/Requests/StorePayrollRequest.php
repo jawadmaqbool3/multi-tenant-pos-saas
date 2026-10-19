@@ -21,6 +21,8 @@ class StorePayrollRequest extends FormRequest
                 Rule::unique('payrolls', 'period')->where('company_id', auth()->user()->company_id),
             ],
             'notes' => 'nullable',
+            'employees' => 'nullable|array',
+            'employees.*' => 'string',
         ];
     }
 

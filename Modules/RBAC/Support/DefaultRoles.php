@@ -96,6 +96,9 @@ class DefaultRoles
                 'dashboard subscription renewal',
                 'dashboard subscription usage',
                 'dashboard my invoices',
+                // tenant billing surfaces
+                'manage company subscription',
+                'view company invoice',
             ],
 
             // Sells using the product catalog and processes sales orders.

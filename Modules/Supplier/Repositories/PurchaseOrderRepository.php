@@ -55,4 +55,16 @@ class PurchaseOrderRepository extends BaseRepository
             ->where('status', 'generated')
             ->count();
     }
+
+    /**
+     * Total purchase orders for a company — the count that consumes the plan's
+     * `purchase_orders` limit.
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function countForCompany($companyId)
+    {
+        return $this->query()->where('company_id', $companyId)->count();
+    }
 }

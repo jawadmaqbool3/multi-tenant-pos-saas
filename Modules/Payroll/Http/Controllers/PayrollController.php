@@ -4,7 +4,10 @@ namespace Modules\Payroll\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Employee\Models\User;
+use Modules\Payroll\Http\Requests\GenerateEmployeePayrollRequest;
 use Modules\Payroll\Http\Requests\StorePayrollRequest;
 use Modules\Payroll\Http\Requests\UpdatePayrollStatusRequest;
 use Modules\Payroll\Http\Requests\UpdatePayslipRequest;
@@ -31,14 +34,20 @@ class PayrollController extends Controller
 
     public function create()
     {
-        return view('payroll::payrolls.create');
+        $employees = $this->service->employeeOptions();
+
+        return view('payroll::payrolls.create', compact('employees'));
     }
 
     public function store(StorePayrollRequest $request)
     {
         DB::beginTransaction();
         try {
-            $result = $this->service->generate($request->period, $request->notes);
+            $result = $this->service->generate(
+                $request->period,
+                $request->notes,
+                $request->input('employees') ?: null
+            );
             DB::commit();
 
             $skipped = $result['skipped'];
@@ -52,6 +61,41 @@ class PayrollController extends Controller
                 'message' => $message,
                 'redirect' => true,
                 'url' => route('payrolls.show', $result['payroll']->uid),
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Land a single employee inside the run for a month, generating the run
+     * first when it does not exist yet.
+     *
+     * @param  \Modules\Payroll\Http\Requests\GenerateEmployeePayrollRequest  $request
+     * @param  \Modules\Employee\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function generateForEmployee(GenerateEmployeePayrollRequest $request, User $user)
+    {
+        DB::beginTransaction();
+        try {
+            $result = $this->service->ensureEmployeeInRun($request->period, $user->id);
+            DB::commit();
+
+            $month = Carbon::parse($result['payroll']->period)->format('F Y');
+            $message = $result['created']
+                ? 'Payroll run generated for ' . $month
+                : 'Employee added to the ' . $month . ' run';
+
+            if (!empty($result['skipped'])) {
+                $message .= '. Skipped (no salary set): ' . implode(', ', $result['skipped']);
+            }
+
+            return response([
+                'success' => true,
+                'message' => $message,
+                'reload' => true,
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();

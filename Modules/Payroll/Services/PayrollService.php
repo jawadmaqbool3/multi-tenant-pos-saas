@@ -109,6 +109,21 @@ class PayrollService
     }
 
     /**
+     * Payroll-eligible employees of the acting company, as uid/name pairs for
+     * the run generator's employee picker.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function employeeOptions()
+    {
+        return $this->users->payrollEnabledForCompany($this->company()->id)
+            ->map(function ($employee) {
+                return ['uid' => $employee->uid, 'name' => $employee->name];
+            })
+            ->values();
+    }
+
+    /**
      * The acting user's company. Payroll is tenant-only, so a platform account
      * without a company cannot use it.
      *
@@ -132,13 +147,16 @@ class PayrollService
     }
 
     /**
-     * Generate a draft payroll run for the given month (YYYY-MM).
+     * Generate a draft payroll run for the given month (YYYY-MM). When a list
+     * of employee uids is supplied, only those payroll-enabled staff are
+     * included; otherwise every payroll-enabled staff member is.
      *
      * @param  string  $period
      * @param  string|null  $notes
-     * @return \Modules\Payroll\Models\Payroll
+     * @param  array|null  $employeeUids
+     * @return array
      */
-    public function generate($period, $notes = null)
+    public function generate($period, $notes = null, array $employeeUids = null)
     {
         $company = $this->company();
         $periodDate = \Illuminate\Support\Carbon::createFromFormat('Y-m', $period)->startOfMonth()->toDateString();
@@ -164,7 +182,9 @@ class PayrollService
         $payroll->refresh();
 
         $skipped = [];
-        $employees = $this->users->payrollEnabledForCompany($company->id);
+        $employees = !empty($employeeUids)
+            ? $this->users->payrollEnabledByUids($company->id, $employeeUids)
+            : $this->users->payrollEnabledForCompany($company->id);
 
         foreach ($employees as $employee) {
             $info = $this->employeeInfo->query()->where('employee_id', $employee->id)->first();
@@ -191,6 +211,90 @@ class PayrollService
         return [
             'payroll' => $payroll->refresh(),
             'skipped' => $skipped,
+        ];
+    }
+
+    /**
+     * Ensure a single employee has a payslip inside the run for a given month.
+     * The run is created first (for every payroll-enabled staff member) when it
+     * does not exist yet, so this always lands the employee in the one run the
+     * month allows. An existing processed/paid run is never amended.
+     *
+     * @param  string  $period
+     * @param  int  $employeeId
+     * @return array
+     */
+    public function ensureEmployeeInRun($period, $employeeId)
+    {
+        $company = $this->company();
+        $periodDate = \Illuminate\Support\Carbon::createFromFormat('Y-m', $period)->startOfMonth()->toDateString();
+
+        $employee = $this->users->findPayrollEnabled($company->id, $employeeId);
+
+        if (!$employee) {
+            throw new CustomException('That employee is not eligible for payroll.', 'error');
+        }
+
+        $payroll = $this->payrolls->forPeriod($company->id, $period);
+        $created = false;
+
+        if (!$payroll) {
+            $payroll = $this->payrolls->create([
+                'company_id' => $company->id,
+                'period' => $periodDate,
+                'status' => 'draft',
+                'created_by' => auth()->user()->id,
+            ]);
+            $payroll->refresh();
+            $created = true;
+        } elseif ($payroll->status !== 'draft') {
+            throw new CustomException('Only draft payroll runs can be amended.', 'error');
+        }
+
+        $existing = $this->payslips->forEmployeeInRun($employee->id, $payroll->id);
+
+        if ($existing) {
+            $this->recomputeTotals($payroll);
+
+            return [
+                'payroll' => $payroll->refresh(),
+                'payslip' => $existing,
+                'created' => $created,
+                'skipped' => [],
+            ];
+        }
+
+        $info = $this->employeeInfo->forEmployee($employee->id);
+        $salary = $info ? round((float) $info->salary, 2) : 0;
+
+        if (!$info || $salary <= 0) {
+            $this->recomputeTotals($payroll);
+
+            return [
+                'payroll' => $payroll->refresh(),
+                'payslip' => null,
+                'created' => $created,
+                'skipped' => [$employee->name],
+            ];
+        }
+
+        $payslip = $this->payslips->create([
+            'payroll_id' => $payroll->id,
+            'employee_id' => $employee->id,
+            'company_id' => $company->id,
+            'base_salary' => $salary,
+            'total_allowances' => 0,
+            'total_deductions' => 0,
+            'net_salary' => $salary,
+        ]);
+
+        $this->recomputeTotals($payroll);
+
+        return [
+            'payroll' => $payroll->refresh(),
+            'payslip' => $payslip,
+            'created' => $created,
+            'skipped' => [],
         ];
     }
 

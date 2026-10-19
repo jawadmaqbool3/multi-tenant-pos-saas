@@ -9,8 +9,11 @@ use App\Exceptions\RoleDoesNotExistException;
 use App\Repositories\CompanyRepository;
 use Modules\Billing\Services\PlanLimitService;
 use Modules\RBAC\Services\RoleService;
+use Modules\Employee\Repositories\AttendanceHistoryRepository;
 use Modules\Employee\Repositories\EmployeePersonalInformationRepository;
 use Modules\Employee\Repositories\UserRepository;
+use Modules\Payroll\Repositories\PayrollRepository;
+use Modules\Payroll\Repositories\PayslipRepository;
 use Illuminate\Support\Facades\Hash;
 
 class UserService
@@ -19,6 +22,9 @@ class UserService
     protected $roles;
     protected $companies;
     protected $employeeInfo;
+    protected $attendance;
+    protected $payrolls;
+    protected $payslips;
     protected $thumbWidth = 200;
     protected $thumbHeight = 200;
     protected $profileDirectory = 'assets/media/users/profile/';
@@ -27,17 +33,87 @@ class UserService
         UserRepository $users,
         RoleService $roles,
         CompanyRepository $companies,
-        EmployeePersonalInformationRepository $employeeInfo
+        EmployeePersonalInformationRepository $employeeInfo,
+        AttendanceHistoryRepository $attendance,
+        PayrollRepository $payrolls,
+        PayslipRepository $payslips
     ) {
         $this->users = $users;
         $this->roles = $roles;
         $this->companies = $companies;
         $this->employeeInfo = $employeeInfo;
+        $this->attendance = $attendance;
+        $this->payrolls = $payrolls;
+        $this->payslips = $payslips;
     }
 
     public function getUsers($filter = null)
     {
         return $this->users->dataTable($this->rosterQuery($filter));
+    }
+
+    /**
+     * The employees roster for the Employees screen: same rows as
+     * `getUsers()`, but the action column is narrowed to a single View button.
+     *
+     * @param  string|null  $filter
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function employeeTable($filter = null)
+    {
+        return $this->users->useEmployeeActions()->dataTable($this->rosterQuery($filter));
+    }
+
+    /**
+     * Everything the employee detail screen renders: the user with their role,
+     * personal information and salary, a per-day attendance presence series for
+     * a month, that month's run (when the viewer may see payroll) and the
+     * employee's payslip history.
+     *
+     * @param  \Modules\Employee\Models\User  $user
+     * @param  string|null  $yearMonth  YYYY-MM, defaults to the current month
+     * @return array
+     */
+    public function employeeDetail($user, $yearMonth = null)
+    {
+        $yearMonth = $yearMonth ?: now()->format('Y-m');
+        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $yearMonth)) {
+            $yearMonth = now()->format('Y-m');
+        }
+        $daysInMonth = \Illuminate\Support\Carbon::createFromFormat('Y-m', $yearMonth)->startOfMonth()->daysInMonth;
+        $companyId = auth()->user()->company_id;
+
+        $canViewPayroll = auth()->user()->hasPermission('view payroll');
+
+        $info = $this->employeeInfo->forEmployee($user->id);
+
+        $run = $canViewPayroll ? $this->payrolls->forPeriod($companyId, $yearMonth) : null;
+        $payslips = $canViewPayroll ? $this->payslips->listForEmployee($user->id, $companyId) : collect();
+
+        return [
+            'user' => $user,
+            'info' => $info,
+            'salary' => $info ? (float) $info->salary : 0,
+            'role' => $user->role,
+            'canViewPayroll' => $canViewPayroll,
+            'run' => $run,
+            'payslips' => $payslips,
+            'month' => $yearMonth,
+            'daysInMonth' => $daysInMonth,
+            'presence' => $this->attendance->presentDaysByDayForUser($user->id, $yearMonth, $daysInMonth),
+        ];
+    }
+
+    /**
+     * A single employee's payslip within a given run, for the detail screen.
+     *
+     * @param  \Modules\Employee\Models\User  $user
+     * @param  \Modules\Payroll\Models\Payroll  $payroll
+     * @return \Modules\Payroll\Models\Payslip|null
+     */
+    public function payslipInRun($user, $payroll)
+    {
+        return $this->payslips->forEmployeeInRun($user->id, $payroll->id);
     }
 
     /**

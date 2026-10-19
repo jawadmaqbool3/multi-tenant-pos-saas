@@ -12,4 +12,15 @@ class EmployeePersonalInformationRepository extends BaseRepository
     {
         parent::__construct(new EmployeePersonalInformation());
     }
+
+    /**
+     * Personal information (and salary) row for a single employee.
+     *
+     * @param  int  $employeeId
+     * @return \Modules\Employee\Models\EmployeePersonalInformation|null
+     */
+    public function forEmployee($employeeId)
+    {
+        return $this->query()->where('employee_id', $employeeId)->first();
+    }
 }

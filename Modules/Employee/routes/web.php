@@ -26,6 +26,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('employee', [EmployeeController::class, 'index'])
         ->name('employee.index')->middleware('permission:view employee');
 
+    // Employee detail. Declared after the static routes above so `data` is not
+    // captured by the `{user}` segment.
+    Route::get('employee/{user}', [EmployeeController::class, 'show'])
+        ->name('employee.show')->middleware('permission:view employee');
+    Route::get('employee/{user}/attendance', [EmployeeController::class, 'attendance'])
+        ->name('employee.attendance')->middleware('permission:view employee');
+
     // Self-service profile: available to every authenticated user regardless of RBAC.
     Route::get('profile', [UserController::class, 'profile'])->name('profile.edit');
     Route::put('profile', [UserController::class, 'updateProfile'])->name('profile.update');

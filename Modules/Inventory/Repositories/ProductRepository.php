@@ -82,6 +82,18 @@ class ProductRepository extends BaseRepository
     }
 
     /**
+     * Total products for a company — the count that consumes the plan's
+     * `products` limit.
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function countForCompany($companyId)
+    {
+        return $this->query()->where('company_id', $companyId)->count();
+    }
+
+    /**
      * Products with zero stock.
      *
      * @param  int  $companyId

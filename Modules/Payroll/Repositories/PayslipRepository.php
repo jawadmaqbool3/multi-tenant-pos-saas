@@ -99,6 +99,22 @@ class PayslipRepository extends BaseRepository
     }
 
     /**
+     * A single employee's payslip inside a specific run (or null), so callers
+     * never have to filter a relation themselves.
+     *
+     * @param  int  $employeeId
+     * @param  int  $payrollId
+     * @return \Modules\Payroll\Models\Payslip|null
+     */
+    public function forEmployeeInRun($employeeId, $payrollId)
+    {
+        return $this->query()
+            ->where('employee_id', $employeeId)
+            ->where('payroll_id', $payrollId)
+            ->first();
+    }
+
+    /**
      * A single payslip with its employee, line items and run loaded (print view).
      *
      * @param  int  $id

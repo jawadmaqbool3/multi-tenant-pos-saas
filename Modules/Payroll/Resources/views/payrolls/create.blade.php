@@ -31,6 +31,20 @@
                                 generated once.</div>
                         </div>
                         <div class="mb-10 fv-row">
+                            <label class="form-label">Employees</label>
+                            <select name="employees[]" multiple
+                                class="form-control form-control-solid mb-2 _select2" id="payroll_employees">
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee['uid'] }}"
+                                        @if (in_array($employee['uid'], old('employees', []), true)) selected @endif>
+                                        {{ $employee['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="text-muted fs-7">Choose which employees this run should include. Leave empty to
+                                include every payroll-eligible employee.</div>
+                        </div>
+                        <div class="mb-10 fv-row">
                             <label class="form-label">Notes</label>
                             <textarea name="notes" class="form-control mb-2" rows="3" placeholder="Optional notes">{{ old('notes') }}</textarea>
                         </div>
@@ -48,4 +62,16 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('jsSection')
+    <script>
+        $(document).ready(function() {
+            $('#payroll_employees').select2({
+                placeholder: 'All payroll-eligible employees',
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    </script>
 @endsection

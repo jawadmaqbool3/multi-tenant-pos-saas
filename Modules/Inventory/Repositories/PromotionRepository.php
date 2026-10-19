@@ -31,4 +31,16 @@ class PromotionRepository extends BaseRepository
             },
         ];
     }
+
+    /**
+     * Total promotions for a company — the count that consumes the plan's
+     * `promotions` limit.
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function countForCompany($companyId)
+    {
+        return $this->query()->where('company_id', $companyId)->count();
+    }
 }

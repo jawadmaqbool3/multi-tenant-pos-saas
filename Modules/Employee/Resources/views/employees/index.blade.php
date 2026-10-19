@@ -67,7 +67,6 @@
             </div>
         </div>
     </div>
-    <x-delete url="{{ url('users/') }}/" />
 @endsection
 
 @section('jsSection')

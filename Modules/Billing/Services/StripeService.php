@@ -163,4 +163,28 @@ class StripeService
             return $this->client()->subscriptions->retrieve($subscriptionId, $params);
         });
     }
+
+    /**
+     * Repoint an existing subscription's single item to another price. Used
+     * for in-place plan changes (upgrade/downgrade) without re-checkout.
+     *
+     * @param  string  $subscriptionId
+     * @param  string  $stripeSubscriptionItemId
+     * @param  string  $stripePriceId
+     * @param  array  $extra
+     * @return \Stripe\Subscription
+     *
+     * @throws \App\Exceptions\StripeServiceException
+     */
+    public function updateSubscriptionPrice(string $subscriptionId, string $stripeSubscriptionItemId, string $stripePriceId, array $extra = [])
+    {
+        return $this->request(function () use ($subscriptionId, $stripeSubscriptionItemId, $stripePriceId, $extra) {
+            return $this->client()->subscriptions->update($subscriptionId, array_merge([
+                'items' => [
+                    ['id' => $stripeSubscriptionItemId, 'price' => $stripePriceId],
+                ],
+                'proration_behavior' => 'create_prorations',
+            ], $extra));
+        });
+    }
 }

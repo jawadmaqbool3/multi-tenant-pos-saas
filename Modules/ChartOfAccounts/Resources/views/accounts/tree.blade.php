@@ -7,7 +7,8 @@
                     <x-icon name="check-circle" :size="16" />
                 </span>
                 <b>
-                    {{ $account->start_code }} - {{ $account->name }} </b>
+                    <a href="{{ route('ledger.index', ['account' => $account->uid, 'from' => now()->startOfMonth()->toDateString(), 'to' => now()->endOfMonth()->toDateString()]) }}"
+                        style="text-decoration: none">{{ $account->start_code }} - {{ $account->name }}</a> </b>
                 <b class="float-end mt-2">({{ $account->calculatebalance() }})</b>
 
                 @if (auth()->user()->hasPermission('edit account'))
@@ -40,7 +41,8 @@
                                 <x-icon name="check-circle" :size="16" />
                             </span>
 
-                            {{ $level2->code }} - {{ $level2->name }}
+                            <a href="{{ route('ledger.index', ['account' => $level2->uid, 'from' => now()->startOfMonth()->toDateString(), 'to' => now()->endOfMonth()->toDateString()]) }}"
+                                style="text-decoration: none">{{ $level2->code }} - {{ $level2->name }}</a>
                             <b class="float-end mt-2">({{ $level2->calculatebalance() }})</b>
                             @if (auth()->user()->hasPermission('edit account'))
                                 <a data-modal_id="{{ $level2->uid }}" data-bs-toggle="modal"
@@ -74,7 +76,8 @@
                                             class="svg-icon svg-icon-2 btn btn-sm btn-icon @if ($level3->status == 'active') btn-color-primary @else btn-color-danger @endif btn-active-light-primary">
                                             <x-icon name="check-circle" :size="16" />
                                         </span>
-                                        {{ $level3->code }} -{{ $level3->name }}
+                                        <a href="{{ route('ledger.index', ['account' => $level3->uid, 'from' => now()->startOfMonth()->toDateString(), 'to' => now()->endOfMonth()->toDateString()]) }}"
+                                            style="text-decoration: none">{{ $level3->code }} -{{ $level3->name }}</a>
                                         <b class="float-end mt-2">({{ $level3->calculatebalance() }})</b>
                                         @if (auth()->user()->hasPermission('edit account'))
                                             <a data-bs-toggle="modal" data-modal_name="{{ $level3->name }}"
@@ -109,7 +112,7 @@
                                                         class="svg-icon svg-icon-2 btn btn-sm btn-icon @if ($level4->status == 'active') btn-color-primary @else btn-color-danger @endif btn-active-light-primary ">
                                                         <x-icon name="check-circle" :size="16" />
                                                     </i>
-                                                    <a href="http://localhost/ssss/general/report/5/filter"
+                                                    <a href="{{ route('ledger.index', ['account' => $level4->uid, 'from' => now()->startOfMonth()->toDateString(), 'to' => now()->endOfMonth()->toDateString()]) }}"
                                                         style="text-decoration: none"> {{ $level4->code }} -
                                                         {{ $level4->name }} </a>
                                                     <b class="float-end mt-2">({{ $level4->calculatebalance() }})</b>

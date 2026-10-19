@@ -8,6 +8,11 @@ Route::group(['middleware' => ['auth', 'plan.feature:payroll']], function () {
     Route::get('payrolls/me', [\Modules\Payroll\Http\Controllers\PayrollController::class, 'myPayslips'])
         ->name('payrolls.me')->middleware('permission:view own payroll');
 
+    // Per-employee generation from the employee detail screen. Extra path
+    // segments keep it clear of the `payrolls/{payroll}` resource binding.
+    Route::post('payrolls/employees/{user}/generate', [\Modules\Payroll\Http\Controllers\PayrollController::class, 'generateForEmployee'])
+        ->name('payrolls.employees.generate')->middleware('permission:view payroll');
+
     Route::resource('payrolls', \Modules\Payroll\Http\Controllers\PayrollController::class)
         ->except(['edit', 'update'])->middleware('permission:view payroll');
     Route::resource('allowances', \Modules\Payroll\Http\Controllers\AllowanceController::class)

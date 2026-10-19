@@ -98,27 +98,6 @@ class SettingSeeder extends Seeder
                     ]
                 },
                 {
-                    "icon": "bi bi-cash-stack",
-                    "name": "Payroll",
-                    "links": [
-                        {
-                            "link": "http://127.0.0.1:8000/payrolls",
-                            "title": "Payroll Runs",
-                            "permission": "view payroll"
-                        },
-                        {
-                            "link": "http://127.0.0.1:8000/allowances",
-                            "title": "Allowances",
-                            "permission": "view allowance"
-                        },
-                        {
-                            "link": "http://127.0.0.1:8000/deductions",
-                            "title": "Deductions",
-                            "permission": "view deduction"
-                        }
-                    ]
-                },
-                {
                     "icon": "bi bi-file-earmark-bar-graph",
                     "name": "Reports",
                     "links": [
@@ -157,6 +136,21 @@ class SettingSeeder extends Seeder
                             "link": "http://127.0.0.1:8000/attendance",
                             "title": "Attendance",
                             "permission": "view employee attendance report"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/payrolls/create",
+                            "title": "Bulk Payroll",
+                            "permission": "view payroll"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/allowances",
+                            "title": "Allowances",
+                            "permission": "view allowance"
+                        },
+                        {
+                            "link": "http://127.0.0.1:8000/deductions",
+                            "title": "Deductions",
+                            "permission": "view deduction"
                         }
                     ]
                 },

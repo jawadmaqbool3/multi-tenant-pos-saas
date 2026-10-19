@@ -237,6 +237,11 @@ class RolePermissionSeeder extends Seeder
             'account settings'
         ],
 
+        "Billing" => [
+            'manage company subscription',
+            'view company invoice',
+        ],
+
 
     ];
 

@@ -57,4 +57,16 @@ class SupplierRepository extends BaseRepository
             ->where('company_id', $companyId)
             ->sum('balance');
     }
+
+    /**
+     * Total suppliers for a company — the count that consumes the plan's
+     * `suppliers` limit.
+     *
+     * @param  int  $companyId
+     * @return int
+     */
+    public function countForCompany($companyId)
+    {
+        return $this->query()->where('company_id', $companyId)->count();
+    }
 }

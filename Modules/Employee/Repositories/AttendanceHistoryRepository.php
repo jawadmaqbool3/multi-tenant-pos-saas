@@ -56,6 +56,43 @@ class AttendanceHistoryRepository extends BaseRepository
     }
 
     /**
+     * Whether a single employee clocked in on each day of a month, indexed by
+     * day (1-based) with 1 for present and 0 for absent. Used by the employee
+     * detail attendance chart.
+     *
+     * @param  int  $userId
+     * @param  string  $yearMonth
+     * @param  int  $daysInMonth
+     * @return array
+     */
+    public function presentDaysByDayForUser($userId, $yearMonth, $daysInMonth)
+    {
+        [$year, $month] = explode('-', $yearMonth);
+
+        $days = $this->query()
+            ->selectRaw('DAY(time) as day')
+            ->where('type', 'clockin')
+            ->where('user_id', $userId)
+            ->whereYear('time', (int) $year)
+            ->whereMonth('time', (int) $month)
+            ->groupBy(DB::raw('DAY(time)'))
+            ->pluck('day')
+            ->map(function ($day) {
+                return (int) $day;
+            })
+            ->all();
+
+        $series = array_fill(1, (int) $daysInMonth, 0);
+        foreach ($days as $day) {
+            if ($day >= 1 && $day <= $daysInMonth) {
+                $series[$day] = 1;
+            }
+        }
+
+        return $series;
+    }
+
+    /**
      * @param  int  $companyId
      * @return \Closure
      */

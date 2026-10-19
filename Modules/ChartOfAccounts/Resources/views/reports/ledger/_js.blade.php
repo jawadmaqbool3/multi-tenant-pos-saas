@@ -6,13 +6,15 @@
         });
 
         var dateRange = {
-            start: '',
-            end: ''
+            start: @json($from ?? ''),
+            end: @json($to ?? '')
         };
 
         $('#ledger_date_range').daterangepicker({
             autoUpdateInput: false,
             opens: 'left',
+            startDate: dateRange.start || undefined,
+            endDate: dateRange.end || undefined,
             locale: {
                 cancelLabel: 'Clear'
             }

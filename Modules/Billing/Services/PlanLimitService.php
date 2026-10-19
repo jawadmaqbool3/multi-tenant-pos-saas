@@ -5,8 +5,12 @@ namespace Modules\Billing\Services;
 use App\Exceptions\PlanLimitExceededException;
 use App\Models\Company;
 use Modules\Employee\Repositories\UserRepository;
+use Modules\Inventory\Repositories\ProductRepository;
+use Modules\Inventory\Repositories\PromotionRepository;
 use Modules\RBAC\Repositories\RoleRepository;
 use Modules\RBAC\Repositories\UserRoleRepository;
+use Modules\Supplier\Repositories\PurchaseOrderRepository;
+use Modules\Supplier\Repositories\SupplierRepository;
 use Modules\Billing\Repositories\PlanLimitRepository;
 use Modules\Billing\Repositories\PlanRepository;
 use Modules\Billing\Repositories\SubscriptionRepository;
@@ -24,6 +28,10 @@ class PlanLimitService
     protected $subscriptions;
     protected $plans;
     protected $planLimits;
+    protected $products;
+    protected $suppliers;
+    protected $promotions;
+    protected $purchaseOrders;
 
     public function __construct(
         UserRepository $users,
@@ -31,7 +39,11 @@ class PlanLimitService
         UserRoleRepository $userRoles,
         SubscriptionRepository $subscriptions,
         PlanRepository $plans,
-        PlanLimitRepository $planLimits
+        PlanLimitRepository $planLimits,
+        ProductRepository $products,
+        SupplierRepository $suppliers,
+        PromotionRepository $promotions,
+        PurchaseOrderRepository $purchaseOrders
     ) {
         $this->users = $users;
         $this->roles = $roles;
@@ -39,6 +51,10 @@ class PlanLimitService
         $this->subscriptions = $subscriptions;
         $this->plans = $plans;
         $this->planLimits = $planLimits;
+        $this->products = $products;
+        $this->suppliers = $suppliers;
+        $this->promotions = $promotions;
+        $this->purchaseOrders = $purchaseOrders;
     }
 
     /**
@@ -105,8 +121,18 @@ class PlanLimitService
         switch ($key) {
             case 'employees':
                 return $this->employeesUsage($company);
+            case 'users':
+                return $this->users->countForCompany($company->id);
             case 'roles':
                 return $this->rolesUsage($company);
+            case 'products':
+                return $this->products->countForCompany($company->id);
+            case 'suppliers':
+                return $this->suppliers->countForCompany($company->id);
+            case 'promotions':
+                return $this->promotions->countForCompany($company->id);
+            case 'purchase_orders':
+                return $this->purchaseOrders->countForCompany($company->id);
         }
 
         return 0;
