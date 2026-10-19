@@ -155,7 +155,7 @@ class SettingSeeder extends Seeder
                         },
                         {
                             "link": "http://127.0.0.1:8000/attendance",
-                            "title": "Employee Attendance",
+                            "title": "Attendance",
                             "permission": "view employee attendance report"
                         }
                     ]
